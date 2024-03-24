@@ -1,0 +1,33 @@
+﻿#loader-screen {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    background: white;
+    z-index: 9999;
+    color: #CB6CE6;
+    align-items: center;
+    align-content: center;
+}
+
+.loader-gif {
+    width: 200px;
+    height: 200px;
+}
+
+.loader-close-button {
+    position:absolute;
+    width: 40px;
+    height: 40px;
+    color: rgb(203, 108, 230);
+    background-color: white;
+    font-size: 30px;
+    border: none;
+    z-index: 10000;
+    top:0;
+    left:0;
+}

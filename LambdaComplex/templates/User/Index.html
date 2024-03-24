@@ -1,0 +1,56 @@
+{% block content %}
+<div class="col-md-6 grid-margin stretch-card">
+    <div class="card">
+        <div class="card-body">
+            <h4 class="card-title">Profile info</h4>
+            <p class="card-description"> View/Edit profile </p>
+            <form class="forms-sample">
+                <div class="form-group row">
+                    <label for="txtUserName" class="col-sm-3 col-form-label">UserName</label>
+                    <div class="col-sm-9">
+                        <input type="text" class="form-control" id="txtUserName" placeholder="Username" required>
+                    </div>
+                </div>
+                <div class="form-group row">
+                    <label for="txtRole" class="col-sm-3 col-form-label">Role</label>
+                    <div class="col-sm-9">
+                        <input type="text" class="form-control" id="txtRole" placeholder="Role" readonly>
+                    </div>
+                </div>
+                <div class="form-group row">
+                    <label for="txtFirstName" class="col-sm-3 col-form-label">First name</label>
+                    <div class="col-sm-9">
+                        <input type="email" class="form-control" id="txtFirstName" placeholder="First name" readonly>
+                    </div>
+                </div>
+                <div class="form-group row">
+                    <label for="txtLastName" class="col-sm-3 col-form-label">Last name</label>
+                    <div class="col-sm-9">
+                        <input type="email" class="form-control" id="txtLastName" placeholder="Last name" readonly>
+                    </div>
+                </div>
+                <div class="form-group row">
+                    <label for="nmPhoneNumber" class="col-sm-3 col-form-label">Mobile</label>
+                    <div class="col-sm-9">
+                        <input type="text" class="form-control" id="nmMobileNumber" placeholder="Mobile number"
+                            required>
+                    </div>
+                </div>
+                <div class="form-group row">
+                    <label for="emEmailID" class="col-sm-3 col-form-label">Email Address</label>
+                    <div class="col-sm-9">
+                        <input type="email" class="form-control" id="emEmailID" placeholder="Email ID" required>
+                    </div>
+                </div>
+                <button type="button" class="btn btn-gradient-primary me-2" onclick="UpdateUserDetails()">Edit</button>
+            </form>
+        </div>
+    </div>
+</div>
+
+<script>
+    $(document).ready(function () {
+        GetUserDetails();
+    });
+</script>
+{% endblock %}

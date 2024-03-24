@@ -1,0 +1,266 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <title>Lambda Complex</title>
+    <link rel="stylesheet" href="static/assets/vendors/mdi/css/materialdesignicons.min.css">
+    <link rel="stylesheet" href="static/assets/vendors/css/vendor.bundle.base.css">
+    <link rel="stylesheet" href="static/assets/css/style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.css">
+    <link rel="shortcut icon" href="static/favicon.ico" />
+    <link href="static/css/loader.css" rel="stylesheet" />
+
+    <script src="static/lib/jquery/dist/jquery.min.js"></script>
+    <script src="static/lib/jquery/dist/jquery.js"></script>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11.10.6/dist/sweetalert2.all.min.js"></script>
+    <link href="https://cdn.jsdelivr.net/npm/sweetalert2@11.10.6/dist/sweetalert2.min.css" rel="stylesheet">
+
+    <script src="static/js/common.js"></script>
+    <script src="static/js/home.js"></script>
+    <script src="static/js/user.js"></script>
+
+    <script>
+        $(document).ready(function () {
+            $(".mdi").css("color", "#CB6CE6");
+        });
+    </script>
+</head>
+
+<body>
+    <input type="hidden" id="USER_ID" />
+    <input type="hidden" id="ROLE" />
+    <input type="hidden" id="USERNAME" />
+
+
+    <div class="container-scroller">
+        <nav class="navbar default-layout-navbar col-lg-12 col-12 p-0 fixed-top d-flex flex-row">
+            <div class="text-center navbar-brand-wrapper d-flex align-items-center justify-content-center">
+                <a class="navbar-brand brand-logo align-items-center">
+                    <img src="static/Images/Lambda Logo.png" alt="logo" style="width:30px;height:30px" />
+                    <b style="color:#CB6CE6;font-size:20px">Lambda Complex</b>
+                </a>
+                <a class="navbar-brand brand-logo brand-logo-mini align-items-center">
+                    <img src="static/Images/Lambda Logo.png" alt="logo" style="width:30px;height:30px" />
+                </a>
+            </div>
+            <div class="navbar-menu-wrapper d-flex align-items-stretch">
+                <button class="navbar-toggler navbar-toggler align-self-center" type="button" data-toggle="minimize">
+                    <span class="mdi mdi-menu"></span>
+                </button>
+
+                <ul class="navbar-nav navbar-nav-right">
+                    <li class="nav-item nav-profile dropdown" style="font-size:large;color:#CB6CE6">
+                        <div class="nav-profile-text">
+                            <p style="font-size:large;color:#CB6CE6" class="mb-1" id="txt-user-name">Admin</p>
+                        </div>
+                    </li>
+
+                    <li class="nav-item dropdown">
+                        <a class="nav-link count-indicator"">
+                            <i class=" mdi mdi-email-outline"></i>
+                            <span class="count-symbol bg-warning"></span>
+                        </a>
+                    </li>
+                    <li class="nav-item nav-profile dropdown">
+                        <a class="dropdown-item" href="/Login/Sessioned">
+                            <i style="font-size:large;color:#CB6CE6" class="mdi mdi-logout"> Signout</i>
+                        </a>
+                    </li>
+
+                </ul>
+                <button class="navbar-toggler navbar-toggler-right d-lg-none align-self-center" type="button"
+                    data-toggle="offcanvas">
+                    <span class="mdi mdi-menu"></span>
+                </button>
+            </div>
+        </nav>
+        <!-- partial -->
+        <div class="container-fluid page-body-wrapper">
+            <!-- partial:../../partials/_sidebar.html -->
+            <nav class="sidebar sidebar-offcanvas" id="sidebar">
+                <ul class="nav">
+
+                    <li class="nav-item">
+                        <a class="nav-link" data-bs-toggle="collapse" href="#home-inner" aria-expanded="false"
+                            aria-controls="home-inner">
+                            <span class="menu-title">Home</span>
+                            <i class="menu-arrow"></i>
+                            <i class="mdi mdi-home menu-icon"></i>
+                        </a>
+                        <div class="collapse" id="home-inner">
+                            <ul class="nav flex-column sub-menu">
+                                <li class="nav-item">
+                                    <a class="nav-link" href="#">
+                                        <span class="menu-title">Home</span>
+                                        <i class="mdi mdi-home menu-icon"></i>
+                                    </a>
+                                </li>
+                                <li class="nav-item">
+                                    <a class="nav-link" href="#">
+                                        <span class="menu-title">Calendar</span>
+                                        <i class="mdi mdi-calendar menu-icon"></i>
+                                    </a>
+                                </li>
+                                <li class="nav-item">
+                                    <a class="nav-link" href="#">
+                                        <span class="menu-title">Work timeline</span>
+                                        <i class="mdi mdi-timeline menu-icon"></i>
+                                    </a>
+                                </li>
+                            </ul>
+                        </div>
+                    </li>
+
+                    <li class="nav-item">
+                        <a class="nav-link" data-bs-toggle="collapse" href="#profile-inner" aria-expanded="false"
+                            aria-controls="profile-inner">
+                            <span class="menu-title">Profile</span>
+                            <i class="menu-arrow"></i>
+                            <i class="mdi mdi-account menu-icon"></i>
+                        </a>
+                        <div class="collapse" id="profile-inner">
+                            <ul class="nav flex-column sub-menu">
+                                <li class="nav-item">
+                                    <a class="nav-link"
+                                        onclick="SetViewInMainPageUsingGet('User/GetUserDetails/',true,true)">
+                                        <span class="menu-title">View/Edit</span>
+                                        <i class="mdi mdi-account menu-icon"></i>
+                                    </a>
+                                </li>
+                                <li class="nav-item">
+                                    <a class="nav-link"
+                                        onclick="SetViewInMainPageUsingGet('User/ChangePassword/',true,true)">
+                                        <span class="menu-title">Password</span>
+                                        <i class="mdi mdi-key menu-icon"></i>
+                                    </a>
+                                </li>
+                            </ul>
+                        </div>
+                    </li>
+
+                    <li class="nav-item">
+                        <a class="nav-link" href="#">
+                            <span class="menu-title">Projects</span>
+                            <i class="mdi mdi-home-modern menu-icon"></i>
+                        </a>
+                    </li>
+
+                    <li class="nav-item">
+                        <a class="nav-link" data-bs-toggle="collapse" href="#team-inner" aria-expanded="false"
+                            aria-controls="team-inner">
+                            <span class="menu-title">Team</span>
+                            <i class="menu-arrow"></i>
+                            <i class="mdi mdi-account-multiple menu-icon"></i>
+                        </a>
+                        <div class="collapse" id="team-inner">
+                            <ul class="nav flex-column sub-menu">
+                                <li class="nav-item">
+                                    <a class="nav-link" href="#">
+                                        <span class="menu-title">My team</span>
+                                        <i class="mdi mdi-account-network menu-icon"></i>
+                                    </a>
+                                </li>
+                                <li class="nav-item">
+                                    <a class="nav-link" href="#">
+                                        <span class="menu-title">Team builder</span>
+                                        <i class="mdi mdi-account-box-multiple menu-icon"></i>
+                                    </a>
+                                </li>
+                                <li class="nav-item">
+                                    <a class="nav-link" href="#">
+                                        <span class="menu-title">Messages</span>
+                                        <i class="mdi mdi-mail menu-icon"></i>
+                                    </a>
+                                </li>
+                            </ul>
+                        </div>
+                    </li>
+
+                    <li class="nav-item">
+                        <a class="nav-link" data-bs-toggle="collapse" href="#performance-inner" aria-expanded="false"
+                            aria-controls="performance-inner">
+                            <span class="menu-title">Performances</span>
+                            <i class="menu-arrow"></i>
+                            <i class="mdi mdi-speedometer menu-icon"></i>
+                        </a>
+                        <div class="collapse" id="performance-inner">
+                            <ul class="nav flex-column sub-menu">
+                                <li class="nav-item">
+                                    <a class="nav-link" href="#">
+                                        <span class="menu-title">My</span>
+                                        <i class="mdi mdi-account menu-icon"></i>
+                                    </a>
+                                </li>
+                                <li class="nav-item">
+                                    <a class="nav-link" href="#">
+                                        <span class="menu-title">My team</span>
+                                        <i class="mdi mdi-account-multiple menu-icon"></i>
+                                    </a>
+                                </li>
+                            </ul>
+                        </div>
+                    </li>
+
+                    <li class="nav-item">
+                        <a class="nav-link" data-bs-toggle="collapse" href="#progress-inner" aria-expanded="false"
+                            aria-controls="progress-inner">
+                            <span class="menu-title">Progress</span>
+                            <i class="menu-arrow"></i>
+                            <i class="mdi mdi-chart-areaspline menu-icon"></i>
+                        </a>
+                        <div class="collapse" id="progress-inner">
+                            <ul class="nav flex-column sub-menu">
+                                <li class="nav-item">
+                                    <a class="nav-link" href="#">
+                                        <span class="menu-title">My</span>
+                                        <i class="mdi mdi-account menu-icon"></i>
+                                    </a>
+                                </li>
+                                <li class="nav-item">
+                                    <a class="nav-link" href="#">
+                                        <span class="menu-title">My projects</span>
+                                        <i class="mdi mdi-home-modern menu-icon"></i>
+                                    </a>
+                                </li>
+                                <li class="nav-item">
+                                    <a class="nav-link" href="#">
+                                        <span class="menu-title">My team</span>
+                                        <i class="mdi mdi-account-multiple menu-icon"></i>
+                                    </a>
+                                </li>
+                            </ul>
+                        </div>
+                    </li>
+                </ul>
+            </nav>
+            <div class="main-panel">
+
+                <div class="content-wrapper" id="divMainPage">
+                    {% block content %}
+                    {% endblock %}
+                </div>
+
+            </div>
+        </div>
+    </div>
+
+
+    <!-- Loader screen show this when important process is happening -->
+    <div id="loader-screen" style="display:none;">
+        <button role="button" class="loader-close-button mdi mdi-close-octagon" onclick="$('#loader-screen').hide()">
+        </button>
+        <img class="loader-gif col-4" src="static/Images/Lambda-Loading-Anim.gif" />
+        <h1 class="fade-in"><i>Please wait....</i> </h1>
+    </div>
+
+    <script src="static/assets/vendors/js/vendor.bundle.base.js"></script>
+    <script src="static/assets/js/off-canvas.js"></script>
+    <script src="static/assets/js/hoverable-collapse.js"></script>
+    <script src="static/assets/js/misc.js"></script>
+</body>
+
+</html>

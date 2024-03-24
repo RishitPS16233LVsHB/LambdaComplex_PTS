@@ -1,0 +1,14 @@
+{% extends 'Shared/_Layout.html' %}
+{% block content %}
+<script>
+    $(document).ready(function () {
+        debugger;
+        var userId = '{{ UserID }}';
+        var userName = '{{ UserName }}';
+        var role = '{{ Role }}';
+
+        InitializeHomeScreenForUser(userId, role, userName);
+    });
+
+</script>
+{% endblock %}
