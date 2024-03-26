@@ -99,3 +99,82 @@ function SetViewInMainPageUsingPost(url, data, isAsync, isLoader) {
         toastr.error("Error occured while fixing view in MainPage: " + e.message);
     }
 }
+
+function IsNullOrEmpty(item) {
+    if (item === undefined || item === null || item === '') {
+        return true;
+    }
+    return false;
+}
+
+
+function PromptAlert(control, inputLable, placeHolder, successCallback, inputOptions = []) {
+    Swal.fire({
+        input: control,
+        inputOptions: inputOptions,
+        inputLabel: inputLable,
+        inputPlaceholder: placeHolder,
+        showCancelButton: true
+    }).then((result) => {
+        if (result.value) {
+            successCallback(result.value);
+        }
+    });
+}
+
+
+// Success message
+function AlertSuccess(message) {
+    Swal.fire({
+        icon: 'success',
+        title: 'Success',
+        text: message
+    });
+}
+
+// Error message
+function AlertError(message) {
+    Swal.fire({
+        icon: 'error',
+        title: 'Error',
+        text: message
+    });
+}
+
+// Warning message
+function AlertWarning(message) {
+    Swal.fire({
+        icon: 'warning',
+        title: 'Warning',
+        text: message
+    });
+}
+
+// Info message
+function AlertInfo(message) {
+    Swal.fire({
+        icon: 'info',
+        title: 'Info',
+        text: message
+    });
+}
+
+function ConfirmationAlert(text, confirmationCallback) {
+    Swal.fire({
+        icon: 'info',
+        title: 'Confirmation',
+        text: text,
+        showCancelButton: true,
+        confirmButtonColor: '#3085d6',
+        cancelButtonColor: '#d33',
+        confirmButtonText: 'Yes',
+        cancelButtonText: 'No'
+    }).then((result) => {
+        if (result.isConfirmed) {
+            // If user confirms, execute the confirmationCallback function
+            if (typeof confirmationCallback === 'function') {
+                confirmationCallback();
+            }
+        }
+    });
+}

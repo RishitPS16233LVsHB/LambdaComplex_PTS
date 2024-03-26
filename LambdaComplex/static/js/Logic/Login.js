@@ -13,7 +13,6 @@ function CheckLogin() {
 
         var url = "Login/UserLogin";
         AjaxPOSTRequest(url, dataToSend, function (res) {
-            debugger;
             let recievedData = res;
 
             $("#loader-screen").show();
