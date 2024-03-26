@@ -4,10 +4,13 @@ let ids = {
     lastName: "#txtLastName",
     mobileNumber: "#nmMobileNumber",
     role: "#txtRole",
+    cmbRole: "#cmbRole",
     emailID: "#emEmailID",
     password: "#pswPassword",
     confirmPassword: "#pswConfirmPassword",
 };
+
+
 
 function GetUserDetails() {
     try {
@@ -41,54 +44,79 @@ function GetUserDetails() {
     }
 }
 
-function UpdateUserDetails() {
+function CreateUser() {
     try {
+        ConfirmationAlert('Create User!', 'Are you sure to create this user?', function () {
+            let userId = $(sessionIds.userId).val();
+            let url = "UserAPI/CreateUser";
 
-        Swal.fire({
-            title: 'Are you sure?',
-            text: "Do you want to update your profile?",
-            icon: 'warning',
-            showCancelButton: true,
-            confirmButtonColor: '#3085d6',
-            cancelButtonColor: '#d33',
-            confirmButtonText: 'Yes, Update it!'
-        }).then((result) => {
-            if (result.isConfirmed) {
-                let userId = $(sessionIds.userId).val();
-                let url = "UserAPI/UpdateUserDetails";
-
-                // Build JSON object with updated user details
-                let userDetails = {
-                    FirstName: $(ids.firstName).val(),
-                    LastName: $(ids.lastName).val(),
-                    UserName: $(ids.userName).val(),
-                    MobileNumber: $(ids.mobileNumber).val(),
-                    EmailID: $(ids.emailID).val(),
-                    Role: $(ids.role).val(),
-                    ID: userId,
-                };
-                AjaxPOSTRequest(url, userDetails,
-                    function (response) {
-                        if (response.WasSuccessful) {
-                            toastr.success("User details updated successfully");
-                            // reflect update changes
-                            InitializeHomeScreenForUser(userId, userDetails.Role, userDetails.UserName);
-                        } else {
-                            toastr.error(response.Message + " was the error");
-                        }
-                    },
-                    function (error) {
-                        toastr.error("Error occurred while updating user details");
-                    },
-                    true, true, true
-                );
-            }
+            // Build JSON object with updated user details
+            let userDetails = {
+                FirstName: $(ids.firstName).val(),
+                LastName: $(ids.lastName).val(),
+                UserName: $(ids.userName).val(),
+                MobileNumber: $(ids.mobileNumber).val(),
+                EmailID: $(ids.emailID).val(),
+                Role: $(ids.cmbRole).val(),
+                ID: userId,
+            };
+            AjaxPOSTRequest(url, userDetails,
+                function (response) {
+                    if (response.WasSuccessful) {
+                        toastr.success("User details updated successfully");
+                    } else {
+                        toastr.error(response.Message + " was the error");
+                    }
+                },
+                function (error) {
+                    toastr.error("Error occurred while updating user details");
+                },
+                true, true, true
+            );
         });
+
     } catch (e) {
         toastr.error("Error occurred in UpdateUserDetail: " + e.message);
     }
 }
 
+function UpdateUserDetails() {
+    try {
+        ConfirmationAlert('Update User!', 'Are you sure you update your profile?', function () {
+            let userId = $(sessionIds.userId).val();
+            let url = "UserAPI/UpdateUserDetails";
+
+            // Build JSON object with updated user details
+            let userDetails = {
+                FirstName: $(ids.firstName).val(),
+                LastName: $(ids.lastName).val(),
+                UserName: $(ids.userName).val(),
+                MobileNumber: $(ids.mobileNumber).val(),
+                EmailID: $(ids.emailID).val(),
+                Role: $(ids.role).val(),
+                ID: userId,
+            };
+            AjaxPOSTRequest(url, userDetails,
+                function (response) {
+                    if (response.WasSuccessful) {
+                        toastr.success("User details updated successfully");
+                        // reflect update changes
+                        InitializeHomeScreenForUser(userId, userDetails.Role, userDetails.UserName);
+                    } else {
+                        toastr.error(response.Message + " was the error");
+                    }
+                },
+                function (error) {
+                    toastr.error("Error occurred while updating user details");
+                },
+                true, true, true
+            );
+
+        });
+    } catch (e) {
+        toastr.error("Error occurred in UpdateUserDetail: " + e.message);
+    }
+}
 
 function CheckPasswords() {
     if ($(ids.confirmPassword).val() !== $(ids.password).val()) {

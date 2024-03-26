@@ -11,7 +11,11 @@ def SessionManagement(role='User'):
                 return redirect(url_for('Login.Sessioned'))
 
             user_role = session.get('Role')
-            if user_role not in role.split(','):
+            
+            user_role = user_role.lower()
+            roles = role.lower()
+
+            if user_role not in roles.split(','):
                 return redirect(url_for('Login.Forbidden'))
 
             return func(*args, **kwargs)

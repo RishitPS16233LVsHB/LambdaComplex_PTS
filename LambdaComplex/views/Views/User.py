@@ -13,3 +13,9 @@ def Index():
 @SessionManagement('Admin,Lead,Dev')
 def ChangePassword():
     return render_template('User/ChangePassword.html')
+
+@User.route('/CreateUser/')
+@SessionManagement('Admin')
+def CreateUser():
+    return render_template('User/CreateUser.html')
+

@@ -20,10 +20,40 @@ class UserModule:
                         [LastName] = '{userDetails["LastName"]}',
                         [UserName] = '{userDetails["UserName"]}',
                         [EmailID] = '{userDetails["EmailID"]}',
+                        [CreatedOn] = [CreatedOn],
                         [ModifiedOn] = getdate(),
                         [Role] = '{userDetails["Role"]}',
                         [MobileNumber] = '{userDetails["MobileNumber"]}'
                     WHERE [ID] = '{userDetails["ID"]}';
+                    """
+            
+            affectedRows = DatabaseUtilities.ExecuteNonQuery(query)
+            return affectedRows
+        except Exception:
+            raise
+
+    @staticmethod
+    def CreateUser(userDetails):
+        try:
+            query = f"""
+                    INSERT INTO {Tables.User}(
+                        [FirstName],
+                        [LastName],
+                        [UserName],
+                        [EmailID],
+                        [Role],
+                        [MobileNumber],
+                        [Password]
+                    )
+                    VALUES (
+                        '{userDetails["FirstName"]}',
+                        '{userDetails["LastName"]}',
+                        '{userDetails["UserName"]}',
+                        '{userDetails["EmailID"]}',
+                        '{userDetails["Role"]}',
+                        '{userDetails["MobileNumber"]}',
+                        HASHBYTES('SHA2_256','{userDetails["FirstName"]}.{userDetails["LastName"]}@LambdaCore')
+                    )
                     """
             
             affectedRows = DatabaseUtilities.ExecuteNonQuery(query)

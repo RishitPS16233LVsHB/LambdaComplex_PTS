@@ -159,10 +159,10 @@ function AlertInfo(message) {
     });
 }
 
-function ConfirmationAlert(text, confirmationCallback) {
+function ConfirmationAlert(title = 'Are you sure?', text, confirmationCallback) {
     Swal.fire({
         icon: 'info',
-        title: 'Confirmation',
+        title: title,
         text: text,
         showCancelButton: true,
         confirmButtonColor: '#3085d6',

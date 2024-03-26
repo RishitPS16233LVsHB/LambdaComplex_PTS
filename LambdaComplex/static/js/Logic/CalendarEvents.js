@@ -15,7 +15,7 @@ function InitCalendarEvents() {
                     for (var i = 0; i < eventLists.length; i++) {
                         events.push({
                             date: new Date(eventLists[i].EventDate),
-                            eventName: "<input type='hidden' eventID='" + eventLists[i].ID + "'> <p>" + eventLists[i].EventDescription + "</p>",
+                            eventName: "<input type='hidden' eventID='" + eventLists[i].ID + "'> <p style=\"word-wrap:break-word; font-size: 12px;\">" + eventLists[i].EventDescription + "</p>",
                             className: "badge bg-success",
                             dateColor: "green",
                             onclick: function (e) {

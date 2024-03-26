@@ -20,6 +20,20 @@ def GetUserDetails(userId):
 
     return jsonify(response.__dict__)
 
+@UserAPI.route('/CreateUser/', methods = ['POST'])
+@SessionManagement('Admin')
+def CreateUser():
+    try:
+        response = Response()        
+        userDetails = json.loads(request.data)
+        UserModule.CreateUser(userDetails)
+        response.Data  = None
+        response.WasSuccessful = True
+    except Exception as ex:
+        response.Message = str(ex)
+        response.WasSuccessful = False
+
+    return jsonify(response.__dict__)
 
 @UserAPI.route('/UpdateUserDetails/', methods = ['POST'])
 @SessionManagement('Admin,Lead,Dev')

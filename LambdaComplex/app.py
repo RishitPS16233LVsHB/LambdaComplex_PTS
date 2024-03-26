@@ -10,7 +10,7 @@ from views.APIs.UserAPI import UserAPI
 from views.APIs.CalendarEventAPI import CalendarEventAPI
 
 app = Flask(__name__)
-app.secret_key = 'HTV-TNJ-XYZ'
+app.secret_key = 'HTV-BDNWL-XYZ'
 app.config["SESSION_PERMANENT"] = True
 app.config["PERMANENT_SESSION_LIFETIME"] = 300
 app.config['SESSION_TYPE'] = 'filesystem'
@@ -24,7 +24,6 @@ app.register_blueprint(User, url_prefix='/User')
 #register APIs Views of APIs controllers here
 app.register_blueprint(UserAPI, url_prefix='/api/UserAPI/')
 app.register_blueprint(CalendarEventAPI, url_prefix='/api/CalendarEventAPI/')
-
 
 
 if(__name__ == "__main__"):
