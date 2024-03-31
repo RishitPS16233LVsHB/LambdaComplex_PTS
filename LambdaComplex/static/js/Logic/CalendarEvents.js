@@ -40,7 +40,7 @@ function InitCalendarEvents() {
                         if ($(e.currentTarget).parent().children().length > 1) {
 
                             var eventId = $($(e.currentTarget).parent().children()[1]).find('input[type="hidden"]').attr('eventid');
-                            ConfirmationAlert("Are you sure you want to remove this event?", function () {
+                            ConfirmationAlert("Are you sure you want to remove this event?", 'Remove this event?', function () {
                                 DeleteCalendarEvent(eventId);
                             });
                         }

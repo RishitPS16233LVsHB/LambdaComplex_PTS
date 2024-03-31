@@ -4,32 +4,30 @@
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-    <title>Shopping</title>
+    <title>Lambda Complex</title>
 
+    <link rel="shortcut icon" href="/static/favicon.ico" />
 
-
+    <!-- All common scripts and css here -->
+    <!-- css -->
     <link rel="stylesheet" href="/static/assets/vendors/mdi/css/materialdesignicons.min.css">
     <link rel="stylesheet" href="/static/assets/vendors/css/vendor.bundle.base.css">
     <link rel="stylesheet" href="/static/assets/css/style.css">
 
-    <link href="/static/css/loader.css" rel="stylesheet" />
-    <link rel="shortcut icon" href="/static/favicon.ico" />
+    <link rel="stylesheet" href="/static/css/loader.css" />
+
+    <link rel="stylesheet" href="/static/css/Controls/Toastr/toastr.min.css">
+    <link rel="stylesheet" href="/static/css/Controls/Swal/sweetalert2.min.css">
+
+    <!-- js -->
     <script src="/static/lib/jquery/dist/jquery.js"></script>
     <script src="/static/lib/jquery/dist/jquery.min.js"></script>
-    <!-- calendar css -->
-    <link rel="stylesheet" href="/static/css/Controls/calendar-gc/calendar-gc.css">
 
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.css">
+    <script src="/static/js/Controls/Swal/sweetalert2.all.min.js"></script>
+    <script src="/static/js/Controls/Toastr/toastr.min.js"></script>
 
-
-    <!-- calendar js -->
-    <script src="/static/js/Controls/calendar-gc/calendar-gc.js"></script>
-
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11.10.6/dist/sweetalert2.all.min.js"></script>
-    <link href="https://cdn.jsdelivr.net/npm/sweetalert2@11.10.6/dist/sweetalert2.min.css" rel="stylesheet">
-
-    <script src="/static/js/Logic/common.js"></script>
+    <!-- Logic js -->
+    <script src="   /static/js/Logic/common.js"></script>
     <script src="/static/js/Logic/home.js"></script>
     <script src="/static/js/Logic/user.js"></script>
     <script src="/static/js/Logic/CalendarEvents.js"></script>
@@ -52,7 +50,7 @@
             <div class="text-center navbar-brand-wrapper d-flex align-items-center justify-content-center">
                 <a class="navbar-brand brand-logo align-items-center">
                     <img src="static/Images/Lambda Logo.png" alt="logo" style="width:30px;height:30px" />
-                    <b style="color:#CB6CE6;font-size:20px">Shopping</b>
+                    <b style="color:#CB6CE6;font-size:20px">Lambda Complex</b>
                 </a>
                 <a class="navbar-brand brand-logo brand-logo-mini align-items-center">
                     <img src="static/Images/Lambda Logo.png" alt="logo" style="width:30px;height:30px" />
@@ -161,14 +159,14 @@
                         </div>
                     </li>
 
-                    <li class="nav-item" style="display: none;">
+                    <li class="nav-item">
                         <a class="nav-link" href="#">
                             <span class="menu-title">Projects</span>
                             <i class="mdi mdi-home-modern menu-icon"></i>
                         </a>
                     </li>
 
-                    <li class="nav-item" style="display: none;">
+                    <li class="nav-item">
                         <a class="nav-link" data-bs-toggle="collapse" href="#team-inner" aria-expanded="false"
                             aria-controls="team-inner">
                             <span class="menu-title">Team</span>
@@ -205,7 +203,7 @@
                         </div>
                     </li>
 
-                    <li class="nav-item" style="display: none;">
+                    <li class="nav-item">
                         <a class="nav-link" data-bs-toggle="collapse" href="#performance-inner" aria-expanded="false"
                             aria-controls="performance-inner">
                             <span class="menu-title">Performances</span>
@@ -230,7 +228,7 @@
                         </div>
                     </li>
 
-                    <li class="nav-item" style="display: none;">
+                    <li class="nav-item">
                         <a class="nav-link" data-bs-toggle="collapse" href="#progress-inner" aria-expanded="false"
                             aria-controls="progress-inner">
                             <span class="menu-title">Progress</span>
@@ -272,6 +270,19 @@
                             </ul>
                         </div>
                     </li>
+
+                    <li class="nav-item">
+                        <a class="nav-link" onclick="LoadListView('TestAPI/Resource/3')">
+                            <span class="menu-title">Test List</span>
+                        </a>
+                    </li>
+
+                    <li class="nav-item">
+                        <a class="nav-link" onclick="LoadGridView('TestAPI/Resource/3')">
+                            <span class="menu-title">Test</span>
+                        </a>
+                    </li>
+
                 </ul>
             </nav>
             <div class="main-panel">

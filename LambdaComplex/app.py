@@ -1,13 +1,18 @@
 from flask import Flask, session
 
 from flask_session import Session
+
 from views.Views.Home import Home
 from views.Views.CalendarEvent import CalendarEvent
 from views.Views.User import User
 from views.Views.Login import Login
+from views.Views.ChartView import ChartView
+from views.Views.DataView import DataView
 
 from views.APIs.UserAPI import UserAPI
 from views.APIs.CalendarEventAPI import CalendarEventAPI
+from views.APIs.TestAPI import TestAPI
+
 
 app = Flask(__name__)
 app.secret_key = 'HTV-BDNWL-XYZ'
@@ -21,10 +26,15 @@ app.register_blueprint(Home)
 app.register_blueprint(Login,url_prefix='/Login/')
 app.register_blueprint(CalendarEvent,url_prefix='/CalendarEvent/')
 app.register_blueprint(User, url_prefix='/User')
+app.register_blueprint(ChartView, url_prefix='/ChartView/')
+app.register_blueprint(DataView, url_prefix='/DataView/')
+
 #register APIs Views of APIs controllers here
 app.register_blueprint(UserAPI, url_prefix='/api/UserAPI/')
 app.register_blueprint(CalendarEventAPI, url_prefix='/api/CalendarEventAPI/')
 
+# temporary testing purpose API
+app.register_blueprint(TestAPI,url_prefix="/api/TestAPI/")
 
 if(__name__ == "__main__"):
     app.run(debug=True)

@@ -1,6 +1,5 @@
 import datetime
 
-
 class BaseEntity:
     def __init__(self):
         self.CreatedOn = datetime.now()

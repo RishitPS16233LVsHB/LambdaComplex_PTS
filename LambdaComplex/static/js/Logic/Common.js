@@ -74,7 +74,6 @@ function AjaxPOSTRequest(url, data, successCallback, errorCallback, isLoader, is
 
 function SetViewInMainPageUsingGet(url, isAsync, isLoader) {
     try {
-
         AjaxGETRequest(url, function (htmlResponse) {
 
             $("#divMainPage").html(htmlResponse);
@@ -86,6 +85,9 @@ function SetViewInMainPageUsingGet(url, isAsync, isLoader) {
         toastr.error("Error occured while fixing view in MainPage: " + e.message);
     }
 }
+
+
+
 
 function SetViewInMainPageUsingPost(url, data, isAsync, isLoader) {
     try {
@@ -99,6 +101,7 @@ function SetViewInMainPageUsingPost(url, data, isAsync, isLoader) {
         toastr.error("Error occured while fixing view in MainPage: " + e.message);
     }
 }
+
 
 function IsNullOrEmpty(item) {
     if (item === undefined || item === null || item === '') {
@@ -177,4 +180,26 @@ function ConfirmationAlert(title = 'Are you sure?', text, confirmationCallback) 
             }
         }
     });
+}
+
+function safeJSONparse(obj) {
+    if (typeof (obj) === 'string') return JSON.parse(obj);
+
+    return obj;
+}
+
+function LoadListView(resourceUrl, isAsync, isLoader) {
+    let dataToSend = {
+        ResourceUrl: resourceUrl,
+        RenderType: "list"
+    }
+    SetViewInMainPageUsingPost('DataView/Rendering/', dataToSend, isAsync, isLoader);
+}
+
+function LoadGridView(resourceUrl, isAsync, isLoader) {
+    let dataToSend = {
+        ResourceUrl: resourceUrl,
+        RenderType: "grid"
+    }
+    SetViewInMainPageUsingPost('DataView/Rendering/', dataToSend, isAsync, isLoader);
 }

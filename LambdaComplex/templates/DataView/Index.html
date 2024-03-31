@@ -1,0 +1,25 @@
+{% block content %}
+<link rel="stylesheet" href="/static/css/Controls/Kendo/kendo.default-v2.min.css" />
+<script src="/static/js/Controls/Kendo/kendo.all.min.js"></script>
+<script src="/static/js/Logic/DataView.js"></script>
+<script src="/static/js/Controls/JSZIP/jszip.min.js"></script>
+
+<input type="hidden" id="RESOURCE_URL" value="{{ ResourceUrl }}" />
+<input type="hidden" id="RENDER_TYPE" value="{{ RenderType }}" />
+
+<!-- List View of Grid View Rendering here -->
+<div id="dataView"></div>
+
+<!-- List view of Grid View Edit Page in Modal here -->
+<div class="modal" id="dataView-info">
+    dataView info here
+</div>
+
+
+<script>
+    $(document).ready(function () {
+        InitDataView();
+    });
+</script>
+
+{% endblock %}
