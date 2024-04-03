@@ -6,9 +6,9 @@ from LambdaComplex_Entities.Common import Response
 TestAPI = Blueprint("TestAPI",__name__)
 
 
-@TestAPI.route('/DataRead/<userId>')
+@TestAPI.route('/DataRead/')
 @SessionManagement('Admin,Lead,Dev')
-def DataRead(userId):
+def DataRead():
     data =  [
         {
             "ID": 1,
@@ -36,7 +36,8 @@ def DataRead(userId):
             "Progress": 90,
             "Rating": 4.5,
             "availability": 1
-        },        {
+        },        
+        {
             "ID": 4,
             "Name": "John Doe",
             "Age": 30,
@@ -145,9 +146,9 @@ def DataRead(userId):
     return jsonify(data)
 
 
-@TestAPI.route('/Resource/<userId>')
+@TestAPI.route('/Resource/')
 @SessionManagement('Admin,Lead,Dev')
-def TestResource(userId):
+def TestResource():    
     try:
         response = Response()
         resource = {} 
@@ -164,21 +165,38 @@ def TestResource(userId):
 
         resource["Columns"] = [
             {
+                "title" : "Delete",
+                "template": "<button class=\"btn btn-outline-danger\" onclick='DeleteRecord(#: ID #)'> <i class=\"mdi mdi-delete\"> </button>",
+                "excludeFromExport": True,
+                "width":200,
+            },
+            {
+                "title" : "Edit",
+                "template": "<button class=\"btn btn-outline-primary\" onclick='LoadUpdateView(#: ID #)'> <i class=\"mdi mdi-grease-pencil\"> </button>",
+                "excludeFromExport": True,
+                "width":200,
+            },
+            {
                 "field" : "ID",
                 "title" : "Employee ID",
+                "width": 200,
+                "groupable": False,
             },
             {
                 "field" : "Name",
                 "title" : "Employee Name",
+                "width":200,
             },
             {
                 "field" : "Age",
                 "title" : "Employee Age",
+                "width":200,            
             },
             {
                 "field" : "JoiningDate",
                 "title" : "Employee joining date",
-                "format" : "{0:dd-MM-yyyy}",
+                "format" : "{0:dd/MM/ yyyy}",
+                "width":200,            
             },
             {
                 "field": "Availability", 
@@ -190,7 +208,8 @@ def TestResource(userId):
                 "field": "Progress", 
                 "title": "Progress",
                 "template": "<div id=\"progressBar#: ID #\"></div>",
-                "width":200,
+                "width":200,                
+                "filterable":False,
             },
             {
                 "field": "Rating", 
@@ -200,9 +219,11 @@ def TestResource(userId):
             },
         ]
         
-        resource["ReadURL"] = "TestAPI/DataRead/" + userId
-        resource["EditURL"] = "TestAPI/DataRead/" + userId
-        resource["DeleteURL"] = "TestAPI/DataRead/" + userId
+        resource["ReadURL"] = "TestAPI/DataRead/"
+        resource["CreateViewUrl"] = "Test/CreateView/"
+        resource["UpdateViewUrl"] = "Test/UpdateView/"
+        resource["EditURL"] = "TestAPI/Edit/"
+        resource["DeleteURL"] = "TestAPI/Delete/"
         
         resource["Template"] = """
             <div class="list-item">
@@ -220,3 +241,4 @@ def TestResource(userId):
         
     jsonRes = jsonify(response.__dict__) 
     return jsonRes
+

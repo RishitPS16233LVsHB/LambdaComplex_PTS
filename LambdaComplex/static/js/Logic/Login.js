@@ -3,6 +3,7 @@
  */
 function CheckLogin() {
     try {
+
         var username = $("#txt-username").val();
         var password = $("#txt-password").val();
 

@@ -8,5 +8,7 @@ DataView = Blueprint("DataView",__name__)
 @SessionManagement('Admin,Lead,Dev')
 def Index():
     eventData = json.loads(request.data)
-    return render_template('DataView/Index.html',ResourceUrl = eventData["ResourceUrl"],RenderType = eventData["RenderType"])
+    resourceUrl = eventData["ResourceUrl"]
+    renderType = eventData["RenderType"]
+    return render_template('DataView/Index.html',ResourceUrl = resourceUrl,RenderType = renderType)
 

@@ -1,5 +1,4 @@
-from flask import Flask, session, render_template, redirect, url_for, Blueprint
-from LambdaComplex_DataAccess.UserModule import UserModule
+from flask import render_template, Blueprint
 from SessionManagement import SessionManagement
 
 User = Blueprint("User",__name__)

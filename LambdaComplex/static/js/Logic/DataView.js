@@ -1,11 +1,15 @@
 var dataViewIds = {
     ResourceURL: "#RESOURCE_URL",
     RenderType: "#RENDER_TYPE",
+    CreateView: "#CREATE_VIEW_URL",
+    UpdateView: "#UPDATE_VIEW_URL",
+    DeleteUrl: "#DELETE_URL",
 }
 
 
 function InitDataView() {
     try {
+
         let resourceURL = $(dataViewIds.ResourceURL).val();
         let renderType = $(dataViewIds.RenderType).val();
         switch (renderType.toLowerCase()) {
@@ -31,13 +35,23 @@ function InitGridView(resourceURL) {
         // to get resources
         AjaxGETRequest(resourceURL,
             function (response) {
+
                 if (response.WasSuccessful) {
 
                     var resourceData = response.Data;
-                    resourceData = safeJSONparse(resourceData);
+                    resourceData = SafeJSONparse(resourceData);
 
                     template = resourceData.Template;
                     readUrl = resourceData.ReadURL;
+
+
+                    createViewUrl = resourceData.CreateViewUrl;
+                    updateViewUrl = resourceData.UpdateViewUrl;
+                    deleteUrl = resourceData.DeleteUrl;
+
+                    $(dataViewIds.CreateView).val(createViewUrl);
+                    $(dataViewIds.UpdateView).val(updateViewUrl);
+                    $(dataViewIds.DeleteUrl).val(deleteUrl);
 
                     $("#dataView").kendoGrid({
                         dataSource: {
@@ -46,18 +60,20 @@ function InitGridView(resourceURL) {
                                     ReadData(readUrl, options);
                                 },
                             },
-                            pageSize: 10,
+                            pageSize: 3,
                             schema: {
                                 model: {
-                                    fields: safeJSONparse(resourceData.Fields),
+                                    fields: SafeJSONparse(resourceData.Fields),
                                 }
                             }
                         },
-                        height: "100%",
+                        height: "90%",
                         sortable: true,
                         pageable: true,
                         resizable: true,
                         groupable: true,
+                        filterable: true,
+                        searchable: true,
 
                         toolbar: ["excel", "pdf"],
 
@@ -68,7 +84,7 @@ function InitGridView(resourceURL) {
                             allPages: true,
                         },
 
-                        columns: safeJSONparse(resourceData.Columns),
+                        columns: SafeJSONparse(resourceData.Columns),
                         dataBound: function (e) {
                             var grid = this;
                             grid.tbody.find("[id^='progressBar']").each(function () {
@@ -123,10 +139,18 @@ function InitListView(resourceURL) {
             function (response) {
                 if (response.WasSuccessful) {
                     var resourceData = response.Data;
-                    resourceData = safeJSONparse(resourceData);
+                    resourceData = SafeJSONparse(resourceData);
 
                     template = resourceData.Template;
                     readUrl = resourceData.ReadURL;
+
+                    createViewUrl = resourceData.CreateViewUrl;
+                    updateViewUrl = resourceData.UpdateViewUrl;
+                    deleteUrl = resourceData.DeleteUrl;
+
+                    $(dataViewIds.CreateView).val(createViewUrl);
+                    $(dataViewIds.UpdateView).val(updateViewUrl);
+                    $(dataViewIds.DeleteUrl).val(deleteUrl);
 
                     $("#dataView").kendoListView({
                         dataSource: {
@@ -134,15 +158,15 @@ function InitListView(resourceURL) {
                                 read: function (options) {
                                     ReadData(readUrl, options);
                                 },
-                                pageSize: 10,
+                                pageSize: 3,
                                 schema: {
                                     model: {
-                                        fields: safeJSONparse(resourceData.Fields),
+                                        fields: SafeJSONparse(resourceData.Fields),
                                     }
                                 }
                             }
                         },
-                        height: "100%",
+                        height: "90%",
                         template: template,
                     });
                 }
@@ -166,9 +190,8 @@ function ReadData(readUrl, options) {
     try {
         AjaxGETRequest(readUrl,
             function (response) {
-
                 if (response) {
-                    response = safeJSONparse(response);
+                    response = SafeJSONparse(response);
                     options.success(response);
                 }
                 else {
@@ -182,5 +205,65 @@ function ReadData(readUrl, options) {
     }
     catch (e) {
         toastr.error("error reading data " + e.message);
+    }
+}
+
+function LoadCreateView() {
+    try {
+        let createView = $(dataViewIds.CreateView).val();
+        SetViewInMainPageUsingGet(createView, true, true, "#ModalBody");
+        $("#DataViewModal").modal('show');
+    }
+    catch (ex) {
+        toastr.error("Error while loading the Create view: " + ex.message);
+    }
+}
+
+function LoadUpdateView(id) {
+    try {
+        let updateView = $(dataViewIds.UpdateView).val() + "/" + id;
+        SetViewInMainPageUsingGet(updateView, true, true, "#ModalBody");
+        $("#DataViewModal").modal('show');
+    }
+    catch (ex) {
+        toastr.error("Error while loading the Create view: " + ex.message);
+    }
+}
+
+function DeleteRecord(id) {
+    try {
+        let deleteUrl = $(dataViewIds.DeleteUrl).val() + "/" + id;
+        AjaxGETRequest(deleteUrl, function (response) {
+            response = SafeJSONparse(response);
+            if (response.WasSuccessful) {
+                RefreshDataView();
+                AlertSuccess('Deleted successfully!');
+            }
+            else {
+                toastr.error("error occurred while deleting: " + response.Message);
+            }
+        }, function (err) {
+
+        }, true, true, true);
+    }
+    catch (ex) {
+        toastr.error("Error while loading the Create view: " + ex.message);
+    }
+}
+
+function RefreshDataView() {
+    try {
+        let renderType = $(dataViewIds.RenderType).val();
+        switch (renderType.toLowerCase()) {
+            case "list":
+                $("#dataView").data("kendoListView").dataSource.read();
+                break;
+            default:
+                $("#dataView").data("kendoGridView").dataSource.read();
+                break;
+        };
+    }
+    catch (ex) {
+        toastr.error("error refreshing data view: " + ex.message);
     }
 }

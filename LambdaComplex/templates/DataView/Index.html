@@ -7,19 +7,38 @@
 <input type="hidden" id="RESOURCE_URL" value="{{ ResourceUrl }}" />
 <input type="hidden" id="RENDER_TYPE" value="{{ RenderType }}" />
 
+<input type="hidden" id="CREATE_VIEW_URL" />
+<input type="hidden" id="UPDATE_VIEW_URL" />
+<input type="hidden" id="DELETE_URL" />
+
+<button id="btnCreate" class="btn btn-gradient-primary me-2" onclick="LoadCreateView()">Create</button>
 <!-- List View of Grid View Rendering here -->
 <div id="dataView"></div>
 
 <!-- List view of Grid View Edit Page in Modal here -->
-<div class="modal" id="dataView-info">
-    dataView info here
+<div class="modal" id="DataViewModal" tabindex="-1" role="dialog">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="ModalHeader">Dataview</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" id="btnCloseModal"
+                    aria-label="Close"></button>
+            </div>
+            <div class="modal-body" id="ModalBody">
+                <!-- your create form / update form / information page goes here -->
+            </div>
+        </div>
+    </div>
 </div>
-
 
 <script>
     $(document).ready(function () {
         InitDataView();
-    });
+
+        $('#btnCloseModal').on('click', function (e) {
+            $('#DataViewModal').modal('hide');
+        });
+    });    
 </script>
 
 {% endblock %}
