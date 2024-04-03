@@ -163,6 +163,7 @@ def TestResource():
             "Availability": {"type": "number"},
         }
 
+        # Grid View only
         resource["Columns"] = [
             {
                 "title" : "Delete",
@@ -173,6 +174,12 @@ def TestResource():
             {
                 "title" : "Edit",
                 "template": "<button class=\"btn btn-outline-primary\" onclick='LoadUpdateView(#: ID #)'> <i class=\"mdi mdi-grease-pencil\"> </button>",
+                "excludeFromExport": True,
+                "width":200,
+            },
+            {
+                "title" : "Info",
+                "template": "<button class=\"btn btn-outline-info\" onclick='LoadInformaticView(#: ID #)'> <i class=\"mdi mdi-information-outline\"> </button>",
                 "excludeFromExport": True,
                 "width":200,
             },
@@ -219,12 +226,15 @@ def TestResource():
             },
         ]
         
+        # essential to load CRUD Views and Delete API
         resource["ReadURL"] = "TestAPI/DataRead/"
         resource["CreateViewUrl"] = "Test/CreateView/"
         resource["UpdateViewUrl"] = "Test/UpdateView/"
-        resource["EditURL"] = "TestAPI/Edit/"
+        resource["InformaticView"] = "Test/InformaticView/"
+        # resource["EditURL"] = "TestAPI/Edit/" # not in this module
         resource["DeleteURL"] = "TestAPI/Delete/"
         
+        # List View only
         resource["Template"] = """
             <div class="list-item">
                 <span class="list-item__field"><strong>ID:</strong> #: ID #</span>

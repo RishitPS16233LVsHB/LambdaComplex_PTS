@@ -13,3 +13,9 @@ def CreateView():
 def UpdateView(itemId):
     return render_template('Test/Update.html')
 
+@Test.route('/InformaticView/<itemId>')
+@SessionManagement('Admin,Lead,Dev')
+def InformaticView(itemId):
+    return render_template('Test/Informatic.html')
+
+

@@ -3,6 +3,7 @@ var dataViewIds = {
     RenderType: "#RENDER_TYPE",
     CreateView: "#CREATE_VIEW_URL",
     UpdateView: "#UPDATE_VIEW_URL",
+    InformaticView: "#INFORMATIC_VIEW_URL",
     DeleteUrl: "#DELETE_URL",
 }
 
@@ -47,10 +48,12 @@ function InitGridView(resourceURL) {
 
                     createViewUrl = resourceData.CreateViewUrl;
                     updateViewUrl = resourceData.UpdateViewUrl;
+                    informaticView = resourceData.InformaticView;
                     deleteUrl = resourceData.DeleteUrl;
 
                     $(dataViewIds.CreateView).val(createViewUrl);
                     $(dataViewIds.UpdateView).val(updateViewUrl);
+                    $(dataViewIds.InformaticView).val(informaticView);
                     $(dataViewIds.DeleteUrl).val(deleteUrl);
 
                     $("#dataView").kendoGrid({
@@ -146,10 +149,12 @@ function InitListView(resourceURL) {
 
                     createViewUrl = resourceData.CreateViewUrl;
                     updateViewUrl = resourceData.UpdateViewUrl;
+                    informaticView = resourceData.InformaticView;
                     deleteUrl = resourceData.DeleteUrl;
 
                     $(dataViewIds.CreateView).val(createViewUrl);
                     $(dataViewIds.UpdateView).val(updateViewUrl);
+                    $(dataViewIds.InformaticView).val(informaticView);
                     $(dataViewIds.DeleteUrl).val(deleteUrl);
 
                     $("#dataView").kendoListView({
@@ -223,6 +228,17 @@ function LoadUpdateView(id) {
     try {
         let updateView = $(dataViewIds.UpdateView).val() + "/" + id;
         SetViewInMainPageUsingGet(updateView, true, true, "#ModalBody");
+        $("#DataViewModal").modal('show');
+    }
+    catch (ex) {
+        toastr.error("Error while loading the Create view: " + ex.message);
+    }
+}
+
+function LoadInformaticView(id) {
+    try {
+        let informaticView = $(dataViewIds.InformaticView).val() + "/" + id;
+        SetViewInMainPageUsingGet(informaticView, true, true, "#ModalBody");
         $("#DataViewModal").modal('show');
     }
     catch (ex) {
