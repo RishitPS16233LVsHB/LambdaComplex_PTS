@@ -12,6 +12,24 @@ class UserModule:
             raise
 
     @staticmethod
+    def GetDeveloperNamesAndIds():
+        try:
+            query = f"SELECT [ID], ([FirstName] + '.' + [LastName]) as [UserName] FROM {Tables.User} WHERE lower([Role]) = 'dev' AND IsDeleted = 0"
+            users = DatabaseUtilities.GetListOf(query)
+            return users
+        except Exception:
+            raise
+
+    @staticmethod
+    def GetLeadNamesAndIds():
+        try:
+            query = f"SELECT [ID], ([FirstName] + '.' + [LastName]) as [UserName] FROM {Tables.User} WHERE lower([Role]) = 'lead' AND IsDeleted = 0"
+            users = DatabaseUtilities.GetListOf(query)
+            return users
+        except Exception:
+            raise
+    
+    @staticmethod
     def UpdateUserDetails(userDetails):
         try:
             query = f"""
@@ -76,3 +94,6 @@ class UserModule:
             return affectedRows
         except Exception:
             raise
+
+
+    

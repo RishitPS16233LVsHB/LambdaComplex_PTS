@@ -1,0 +1,42 @@
+{% block content %}
+<div class="col-md-12 grid-margin stretch-card">
+    <div class="card">
+        <div class="card-body">
+            <h4 class="card-title">Team</h4>
+            <p class="card-description"> Team details </p>
+            <form class="forms-sample" id="FORM">
+                <input type="hidden" id="hdnID" value="{{ ID }}">
+
+                <div class="form-group row">
+                    <label for="txtTeamName" class="col-sm-3 col-form-label">Team name</label>
+                    <br>
+                    <input type="text" class="form-control col-sm-9" id="txtTeamName" placeholder=" Team name"
+                        value="{{ TeamName }}" readonly>
+
+                </div>
+                <div class="form-group row">
+                    <label for="txtTeamDescription" class="col-sm-3 col-form-label">Team description</label>
+                    <br>
+                    <textarea class="form-control col-sm-9" id="txtTeamDescription" rows="50" cols="80"
+                        placeholder="Team description" readonly>
+                        {{ TeamDescription }}
+                    </textarea>
+                </div>
+                <div class="form-group row">
+                    <label for="cmbLeader" class="col-sm-3 col-form-label">Leader</label>
+                    <br>
+                    <input id="cmbLeader" class="form-control col-sm-9" required value="{{ LeaderID }}" readonly>
+                </div>
+                <div class="form-group row">
+                    <label for="cmbProject" class="col-sm-3 col-form-label">Project</label>
+                    <br>
+                    <input id="cmbProject" class="form-control col-sm-9" required value="{{ ProjectID }}" readonly>
+                </div>
+            </form>
+            <hr>
+            <p class="card-description">Team members </p>
+            <div id="grdTeamMembers"></div>
+        </div>
+    </div>
+</div>
+{% endblock %}

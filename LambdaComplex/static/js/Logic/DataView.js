@@ -9,6 +9,7 @@ var dataViewIds = {
 
 
 function InitDataView() {
+
     try {
 
         let resourceURL = $(dataViewIds.ResourceURL).val();
@@ -30,7 +31,6 @@ function InitDataView() {
 
 function InitGridView(resourceURL) {
     try {
-        let template = "";
         let readUrl = "";
 
         // to get resources
@@ -70,14 +70,17 @@ function InitGridView(resourceURL) {
                                 }
                             }
                         },
-                        height: "90%",
+                        height: IsNullOrEmpty(resourceData.GridHeight) ? "90%" : resourceData.GridHeight,
                         sortable: true,
                         pageable: true,
                         resizable: true,
                         groupable: true,
                         filterable: true,
                         searchable: true,
-
+                        noRecords: true,
+                        messages: {
+                            noRecords: "There are no records..."
+                        },
                         toolbar: ["excel", "pdf"],
 
                         excel: {
@@ -195,12 +198,13 @@ function ReadData(readUrl, options) {
     try {
         AjaxGETRequest(readUrl,
             function (response) {
-                if (response) {
-                    response = SafeJSONparse(response);
-                    options.success(response);
+                response = SafeJSONparse(response);
+                if (response.WasSuccessful) {
+                    options.success(response.Data);
                 }
                 else {
-                    toastr.error("data not available");
+                    options.error(null);
+                    toastr.error("data not available " + response.Message);
                 }
             },
             function (error) {
@@ -224,9 +228,12 @@ function LoadCreateView() {
     }
 }
 
-function LoadUpdateView(id) {
+function LoadUpdateView(id = null) {
     try {
-        let updateView = $(dataViewIds.UpdateView).val() + "/" + id;
+        let updateView = $(dataViewIds.UpdateView).val();
+        if (!IsNullOrEmpty(id))
+            updateView += ("/" + id);
+
         SetViewInMainPageUsingGet(updateView, true, true, "#ModalBody");
         $("#DataViewModal").modal('show');
     }
@@ -235,9 +242,12 @@ function LoadUpdateView(id) {
     }
 }
 
-function LoadInformaticView(id) {
+function LoadInformaticView(id = null) {
     try {
-        let informaticView = $(dataViewIds.InformaticView).val() + "/" + id;
+        let informaticView = $(dataViewIds.InformaticView).val();
+        if (!IsNullOrEmpty(id))
+            informaticView += ("/" + id);
+
         SetViewInMainPageUsingGet(informaticView, true, true, "#ModalBody");
         $("#DataViewModal").modal('show');
     }
@@ -246,21 +256,26 @@ function LoadInformaticView(id) {
     }
 }
 
-function DeleteRecord(id) {
+function DeleteRecord(id = null) {
     try {
-        let deleteUrl = $(dataViewIds.DeleteUrl).val() + "/" + id;
-        AjaxGETRequest(deleteUrl, function (response) {
-            response = SafeJSONparse(response);
-            if (response.WasSuccessful) {
-                RefreshDataView();
-                AlertSuccess('Deleted successfully!');
-            }
-            else {
-                toastr.error("error occurred while deleting: " + response.Message);
-            }
-        }, function (err) {
+        ConfirmationAlert('Delete Record...', 'Are you sure you want to delete this record?', function (result) {
+            let deleteUrl = $(dataViewIds.DeleteUrl).val();
+            if (!IsNullOrEmpty(id))
+                deleteUrl += ("/" + id);
+            debugger;
+            AjaxGETRequest(deleteUrl, function (response) {
+                response = SafeJSONparse(response);
+                if (response.WasSuccessful) {
+                    RefreshDataView();
+                    AlertSuccess('Deleted successfully!');
+                }
+                else {
+                    toastr.error("error occurred while deleting: " + response.Message);
+                }
+            }, function (err) {
 
-        }, true, true, true);
+            }, true, true, true);
+        });
     }
     catch (ex) {
         toastr.error("Error while loading the Create view: " + ex.message);
@@ -269,13 +284,14 @@ function DeleteRecord(id) {
 
 function RefreshDataView() {
     try {
+        debugger;
         let renderType = $(dataViewIds.RenderType).val();
         switch (renderType.toLowerCase()) {
             case "list":
                 $("#dataView").data("kendoListView").dataSource.read();
                 break;
             default:
-                $("#dataView").data("kendoGridView").dataSource.read();
+                $("#dataView").data("kendoGrid").dataSource.read();
                 break;
         };
     }

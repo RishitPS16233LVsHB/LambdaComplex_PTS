@@ -32,6 +32,7 @@
     <script src="/static/js/Logic/home.js"></script>
     <script src="/static/js/Logic/user.js"></script>
     <script src="/static/js/Logic/CalendarEvents.js"></script>
+    <script src="/static/js/Logic/Team.js"></script>
 
     <script>
         $(document).ready(function () {
@@ -177,15 +178,9 @@
                         <div class="collapse" id="team-inner">
                             <ul class="nav flex-column sub-menu">
                                 <li class="nav-item">
-                                    <a class="nav-link" href="#">
-                                        <span class="menu-title">Team Allocation</span>
-                                        <i class="mdi mdi-account-network menu-icon"></i>
-                                    </a>
-                                </li>
-                                <li class="nav-item">
-                                    <a class="nav-link" href="#">
-                                        <span class="menu-title">Team builder</span>
-                                        <i class="mdi mdi-account-box-multiple menu-icon"></i>
+                                    <a class="nav-link" onclick="LoadGridView('TeamAPI/Resource')">
+                                        <span class="menu-title">Teams</span>
+                                        <i class="mdi mdi-account-multiple menu-icon"></i>
                                     </a>
                                 </li>
                                 <li class="nav-item">
@@ -288,7 +283,7 @@
             </nav>
             <div class="main-panel">
 
-                <div class="content-wrapper" id="divMainPage">
+                <div class="content-wrapper" style="overflow-y: auto;" id="divMainPage">
                     {% block content %}
                     {% endblock %}
                 </div>
@@ -302,7 +297,7 @@
     <div id="loader-screen" style="display:none;">
         <button role="button" class="loader-close-button mdi mdi-close-octagon" onclick="$('#loader-screen').hide()">
         </button>
-        <img class="loader-gif col-4" src="static/Images/Lambda-Loading-Anim.gif" />
+        <img class="loader-gif" src="static/Images/Lambda-Loading-Anim.gif" />
         <h1 class="fade-in"><i>Please wait....</i> </h1>
     </div>
 

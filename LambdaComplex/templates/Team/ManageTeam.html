@@ -1,0 +1,30 @@
+{% block content %}
+<div class="col-md-12 grid-margin stretch-card" style="height:800px">
+    <div class="card">
+        <div class="card-body">
+            <h4 class="card-title">Team</h4>
+            <p class="card-description">Member mangement</p>
+            <form class="forms-sample" id="FORM">
+                <input type="hidden" id="hdnTeamId" value="{{ TeamId }}">
+                <div class="form-group row">
+                    <label for="cmbDeveloper" class="col-sm-3 col-form-label">Developer</label><br>
+                    <hr>
+                    <div class="col-sm-9">
+                        <input id="cmbDeveloper" class="form-control" required>
+                    </div>
+                </div>
+                <button type="button" id="btnAddTeamMember" class="btn btn-gradient-primary me-2 col-12"
+                    onclick="AddMember()">Add Member</button>
+                <hr>
+                <div id="grdTeamMembers"></div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<script>
+    $(document).ready(function () {
+        InitMemberManagement();
+    });
+</script>
+{% endblock %}

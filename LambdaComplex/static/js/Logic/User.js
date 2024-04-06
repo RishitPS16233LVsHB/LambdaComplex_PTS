@@ -46,6 +46,8 @@ function GetUserDetails() {
 
 function CreateUser() {
     try {
+        if (!ValidateForm()) return;
+
         ConfirmationAlert('Create User!', 'Are you sure to create this user?', function () {
             let userId = $(sessionIds.userId).val();
             let url = "UserAPI/CreateUser";
@@ -82,6 +84,8 @@ function CreateUser() {
 
 function UpdateUserDetails() {
     try {
+        if (!ValidateForm()) return;
+
         ConfirmationAlert('Update User!', 'Are you sure you update your profile?', function () {
             let userId = $(sessionIds.userId).val();
             let url = "UserAPI/UpdateUserDetails";

@@ -28,6 +28,6 @@ def GetUserSessionDetails():
     user_role = session.get('Role')
     user_id = session.get('UserID')
     user_name = session.get('UserName')
-    return (user_id,user_name,user_role)
+    return {"USER_ID":user_id,"USER_NAME":user_name,"USER_ROLE":user_role}
 
 

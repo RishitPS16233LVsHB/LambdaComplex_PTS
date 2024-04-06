@@ -1,5 +1,5 @@
 import json
-from flask import jsonify, request ,Blueprint
+from flask import jsonify, Blueprint
 from SessionManagement import SessionManagement
 from LambdaComplex_Entities.Common import Response
 

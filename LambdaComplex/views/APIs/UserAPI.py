@@ -65,3 +65,32 @@ def ChangePassword():
         response.WasSuccessful = False
 
     return jsonify(response.__dict__)
+
+
+@UserAPI.route('/GetDevs/', methods = ['GET'])
+@SessionManagement('Admin')
+def GetDevs():
+    try:
+        response = Response()        
+        result = UserModule.GetDeveloperNamesAndIds()
+        response.Data  = result
+        response.WasSuccessful = True
+    except Exception as ex:
+        response.Message = str(ex)
+        response.WasSuccessful = False
+
+    return jsonify(response.__dict__)
+
+@UserAPI.route('/GetLeads/', methods = ['GET'])
+@SessionManagement('Admin')
+def GetLeads():
+    try:
+        response = Response()        
+        result = UserModule.GetLeadNamesAndIds()
+        response.Data  = result
+        response.WasSuccessful = True
+    except Exception as ex:
+        response.Message = str(ex)
+        response.WasSuccessful = False
+
+    return jsonify(response.__dict__)

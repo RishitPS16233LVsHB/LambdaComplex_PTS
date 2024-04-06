@@ -92,7 +92,6 @@ function AjaxPOSTRequest(url, data, successCallback, errorCallback, isLoader, is
 function SetViewInMainPageUsingGet(url, isAsync, isLoader, element = "#divMainPage") {
     try {
         AjaxGETRequest(url, function (htmlResponse) {
-
             $(element).html(htmlResponse);
         }, function (error) {
 
@@ -206,6 +205,13 @@ function AlertInfo(message) {
     });
 }
 
+function ShowLoadingScreen() {
+    $("#loader-screen").show();
+}
+function HideLoadingScreen() {
+    $("#loader-screen").hide();
+}
+
 /**
  * Displays a confirmation dialog and executes a callback function on confirmation.
  * @param {string} title The title of the confirmation dialog.
@@ -249,13 +255,13 @@ function SafeJSONparse(obj) {
  * @param {boolean} isAsync Indicates whether the request should be asynchronous.
  * @param {boolean} isLoader Indicates whether to display a loader while the request is being processed.
  */
-function LoadListView(resourceUrl, isAsync, isLoader) {
+function LoadListView(resourceUrl, isAsync, isLoader, element = "#divMainPage") {
     let dataToSend = {
         ResourceUrl: resourceUrl,
         RenderType: "list",
         UserId: $(sessionIds.userId).val(),
     }
-    SetViewInMainPageUsingPost('DataView/Rendering/', dataToSend, isAsync, isLoader);
+    SetViewInMainPageUsingPost('DataView/Rendering/', dataToSend, isAsync, isLoader, element);
 }
 
 /**
@@ -264,11 +270,46 @@ function LoadListView(resourceUrl, isAsync, isLoader) {
  * @param {boolean} isAsync Indicates whether the request should be asynchronous.
  * @param {boolean} isLoader Indicates whether to display a loader while the request is being processed.
  */
-function LoadGridView(resourceUrl, isAsync, isLoader) {
+function LoadGridView(resourceUrl, isAsync, isLoader, element = "#divMainPage") {
     let dataToSend = {
         ResourceUrl: resourceUrl,
         RenderType: "grid",
         UserId: $(sessionIds.userId).val(),
     }
-    SetViewInMainPageUsingPost('DataView/Rendering/', dataToSend, isAsync, isLoader);
+    SetViewInMainPageUsingPost('DataView/Rendering/', dataToSend, isAsync, isLoader, element);
+}
+
+
+function ValidateForm() {
+    if (!document.getElementById("FORM").checkValidity()) {
+        document.getElementById("FORM").reportValidity();
+        return false;
+    }
+    return true;
+}
+
+/**
+ * 
+ * @param {string} url GET request url only
+ * @returns JSON object on success or empty object on error returned from URL
+ */
+function QuickAPIRead(url) {
+    try {
+        var result = {};
+        AjaxGETRequest(url, function (response) {
+            response = SafeJSONparse(response);
+            if (response.WasSuccessful) {
+                result = response.Data;
+            }
+        },
+            function (error) {
+
+            }, false, false, true);
+
+        return result;
+    }
+    catch (ex) {
+        toastr.error("error while quick reading " + ex.message);
+    }
+    return result;
 }

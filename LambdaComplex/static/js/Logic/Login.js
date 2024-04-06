@@ -3,6 +3,7 @@
  */
 function CheckLogin() {
     try {
+        if (!ValidateForm()) return;
 
         var username = $("#txt-username").val();
         var password = $("#txt-password").val();

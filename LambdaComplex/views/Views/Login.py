@@ -54,6 +54,7 @@ def ResetSessionTimeout():
         response.WasSuccessful = False
     return jsonify(response.__dict__)
 
+
 @Login.route('/UserLogout')
 def UserLogout():
     session.clear()
