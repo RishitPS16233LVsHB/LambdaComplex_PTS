@@ -1,0 +1,92 @@
+{% block content %}
+
+<style>
+    /* Style for context menu */
+    .context-menu {
+        display: none;
+        position: fixed;
+        background: #fff;
+        border: 1px solid #ccc;
+        padding: 5px 0;
+        z-index: 1000;
+    }
+
+    .context-menu-item {
+        padding: 5px 20px;
+        cursor: pointer;
+    }
+
+    .context-menu-item:hover {
+        background: #f0f0f0;
+    }
+</style>
+
+<link rel="stylesheet" href="/static/css/Controls/Kendo/kendo.default-v2.min.css" />
+<script src="/static/js/Controls/Kendo/kendo.all.min.js"></script>
+<script src="/static/js/Logic/DataView.js"></script>
+<script src="/static/js/Controls/JSZIP/jszip.min.js"></script>
+
+
+<script src="/static/js/Controls/calendar-gc/calendar-gc.js"></script>
+<link rel="stylesheet" href="/static/css/Controls/calendar-gc/calendar-gc.css">
+
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/animatecss/3.5.2/animate.min.css" />
+<script src="/static/js/Controls/Timeline/jquery-albe-timeline.js"></script>
+
+<input type="hidden" id="TIME_RESOURCE_URL" value="{{ ResourceUrl }}" />
+<input type="hidden" id="TIME_RENDER_TYPE" value="{{ RenderType }}" />
+
+<input type="hidden" id="CALENDAR_SELECTED_DATE" />
+
+<!-- for calendar view -->
+<input type="hidden" id="CALENDAR_CREATE_VIEW_URL" />
+<input type="hidden" id="CALENDAR_GRIDVIEW_RESOURCE_URL" />
+<input type="hidden" id="CALENDAR_READ_URL">
+
+<!-- for time line view -->
+<input type="hidden" id="TIMELINE_READ_URL" />
+
+
+<!-- Context menu HTML -->
+<div class="context-menu" id="TimeLineContextMenu">
+    <div class="context-menu-item" id="createCalendar" onClick="CreateCalendar()">Create</div>
+    <div class="context-menu-item" id="GridViewCalendar" onClick="GridViewCalendarEvents()">View(Grid)</div>
+    <div class="context-menu-item" id="TimeLineViewCalendar" onClick="TimeLineViewCalendarEvents()">View(Timeline)</div>
+</div>
+
+
+<!-- for time line view -->
+<input type="hidden" id="TIMELINE_READ_URL">
+
+<!-- List View of Grid View Rendering here -->
+<div id="timeTrackingView"></div>
+
+<!-- List view of Grid View Edit Page in Modal here -->
+<div class="modal" id="TimeTrackingViewModal" tabindex="-1" role="dialog">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="ModalHeader">Time tracking</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" id="btnCloseModal"
+                    aria-label="Close"></button>
+            </div>
+            <div class="modal-body" id="ModalBody">
+                <!-- your create form / update form / information page goes here -->
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    $(document).ready(function () {
+
+        InitTimeTrackingView();
+
+        $('#TimeTrackingViewModal #btnCloseModal').on('click', function (e) {
+            $('#TimeTrackingViewModal').modal('hide');
+        });
+    });
+
+</script>
+
+{% endblock %}

@@ -1,91 +1,27 @@
-function InitCalendarEvents() {
-    try {
+var calendarEventIds = {
+    eventDate: "#dtEventDate",
+    eventTime: "#tmEventTime",
+    eventName: "#txtEventName",
+    eventDescription: "#txtEventDescription",
+    eventPriority: "#cmbEventPriority",
 
-        let userId = $(sessionIds.userId).val();
-        let url = "CalendarEventAPI/GetCalendarEvent/" + userId;
-        let events = [];
-
-        AjaxGETRequest(url,
-            function (response) {
-                var events = [];
-
-                if (response.WasSuccessful) {
-                    var eventLists = IsNullOrEmpty(response.Data) ? [] : response.Data;
-
-                    for (var i = 0; i < eventLists.length; i++) {
-                        events.push({
-                            date: new Date(eventLists[i].EventDate),
-                            eventName: "<input type='hidden' eventID='" + eventLists[i].ID + "'> <p style=\"word-wrap:break-word; font-size: 12px;\">" + eventLists[i].EventDescription + "</p>",
-                            className: "badge bg-success",
-                            dateColor: "green",
-                            onclick: function (e) {
-                            }
-                        });
-                    }
-                }
-                else {
-                    toastr.error(response.Message + " was the error");
-                }
-
-                var calendar = $("#calendar").calendarGC({
-                    dayBegin: 0,
-                    prevIcon: '&#x3c;',
-                    nextIcon: '&#x3e;',
-                    events: events,
-                    onclickDate: function (e, data) {
-                        var currentDate = new Date();
-                        var eventDate = new Date(data.datejs.toDateString());
-
-                        // if there is an event then prompt to delete the event
-                        if ($(e.currentTarget).parent().children().length > 1) {
-
-                            var eventId = $($(e.currentTarget).parent().children()[1]).find('input[type="hidden"]').attr('eventid');
-                            ConfirmationAlert("Are you sure you want to remove this event?", 'Remove this event?', function () {
-                                DeleteCalendarEvent(eventId);
-                            });
-                        }
-                        // else prompt to create an event
-                        else {
-                            if (eventDate.getTime() < currentDate.getTime()) {
-                                AlertError('Date is of past');
-                                return;
-                            }
-
-                            PromptAlert('textarea', 'Event for the day', 'Enter event', function (value) {
-                                var day = new Date(data.datejs.toDateString()).getDate();
-                                var month = new Date(data.datejs.toDateString()).getMonth() + 1;
-                                var year = new Date(data.datejs.toDateString()).getFullYear();
-                                var eventDate = `${year}-${month}-${day}`;
-                                CreateCalendarEvent(value, eventDate);
-                            });
-                        }
-                    }
-                });
-
-            },
-            function (error) {
-
-            },
-            true, true, true
-        );
-
-    }
-    catch (e) {
-        toastr.error("error occured while calendar init: " + e.message);
-    }
+    eventId: "#hdnEventId",
 }
 
-function CreateCalendarEvent(value, eventDate) {
+
+function CreateCalendarEvent() {
     try {
+        if (!ValidateForm()) return;
+
         let userId = $(sessionIds.userId).val();
-        let priority = 'LOW';
-        let eventDescription = value;
 
         let dataToSend = {
             UserId: userId,
-            EventPriority: priority,
-            EventDate: eventDate,
-            EventDescription: eventDescription,
+            EventPriority: $(calendarEventIds.eventPriority).val(),
+            EventDate: $(calendarEventIds.eventDate).val(),
+            EventTime: $(calendarEventIds.eventTime).val(),
+            EventDescription: $(calendarEventIds.eventDescription).val(),
+            EventName: $(calendarEventIds.eventName).val(),
         }
 
         let url = "CalendarEventAPI/CreateCalendarEvent/";
@@ -94,6 +30,48 @@ function CreateCalendarEvent(value, eventDate) {
                 try {
                     if (response.WasSuccessful) {
                         AlertSuccess('Event Created!');
+                        InitCalendarEvents();
+                    }
+                    else {
+                        toastr.error('Error occured due to: ' + response.Message);
+                    }
+                }
+                catch (e) {
+                    toastr.error('error occured due to : ' + e.message);
+                }
+            },
+            function (error) {
+                toastr.error('unexpected error occured due to : ' + error);
+            }, true, true, true);
+
+    }
+    catch (e) {
+        toastr.error("error occured while Getting User calendar events: " + e.message);
+    }
+}
+
+function UpdateCalendarEvent() {
+    try {
+        if (!ValidateForm()) return;
+
+        let userId = $(sessionIds.userId).val();
+
+        let dataToSend = {
+            EventId: $(calendarEventIds.eventId).val(),
+            UserId: userId,
+            EventPriority: $(calendarEventIds.eventPriority).val(),
+            EventDate: $(calendarEventIds.eventDate).val(),
+            EventTime: $(calendarEventIds.eventTime).val(),
+            EventDescription: $(calendarEventIds.eventDescription).val(),
+            EventName: $(calendarEventIds.eventName).val(),
+        }
+
+        let url = "CalendarEventAPI/UpdateCalendarEvent/";
+        AjaxPOSTRequest(url, dataToSend,
+            function (response) {
+                try {
+                    if (response.WasSuccessful) {
+                        AlertSuccess('Event Updated!');
                         InitCalendarEvents();
                     }
                     else {
@@ -148,5 +126,61 @@ function DeleteCalendarEvent(eventId) {
     }
     catch (e) {
         toastr.error(" error occured while deleting Calendar event: " + e.message);
+    }
+}
+
+
+function InitCalendarEventCreate() {
+    try {
+        var editor = $(calendarEventIds.eventDescription).kendoEditor({
+            encoded: true,
+            value: $(teamIds.teamDescription).val(),
+            tools: [
+                "bold", "italic", "underline", "undo", "redo", "justifyLeft", "justifyCenter", "justifyRight", "insertUnorderedList",
+                "createLink", "unlink", "tableWizard", "tableProperties", "tableCellProperties", "createTable",
+                "addRowAbove", "addRowBelow", "addColumnLeft", "addColumnRight", "deleteRow", "deleteColumn", "mergeCellsHorizontally",
+                "mergeCellsVertically", "splitCellHorizontally", "splitCellVertically", "tableAlignLeft", "tableAlignCenter",
+                "tableAlignRight", "formatting",
+                {
+                    name: "fontName",
+                    items: [
+                        { text: "Andale Mono", value: "\"Andale Mono\"" }, // Font-family names composed of several words should be wrapped in \" \"
+                        { text: "Arial", value: "Arial" },
+                        { text: "Arial Black", value: "\"Arial Black\"" },
+                        { text: "Book Antiqua", value: "\"Book Antiqua\"" },
+                        { text: "Comic Sans MS", value: "\"Comic Sans MS\"" },
+                        { text: "Courier New", value: "\"Courier New\"" },
+                        { text: "Georgia", value: "Georgia" },
+                        { text: "Helvetica", value: "Helvetica" },
+                        { text: "Impact", value: "Impact" },
+                        { text: "Symbol", value: "Symbol" },
+                        { text: "Tahoma", value: "Tahoma" },
+                        { text: "Terminal", value: "Terminal" },
+                        { text: "Times New Roman", value: "\"Times New Roman\"" },
+                        { text: "Trebuchet MS", value: "\"Trebuchet MS\"" },
+                        { text: "Verdana", value: "Verdana" },
+                    ]
+                },
+                "fontSize",
+                "foreColor",
+                "backColor",
+            ]
+        });
+
+        // Initialize Date Picker
+        var selectedDate = $(calendarEventIds.eventDate).kendoDatePicker();
+        var sd = new Date($(calendarEventIds.eventDate).attr("valueAttr"));
+        if (!IsNullOrEmpty($(calendarEventIds.eventDate).attr("valueAttr")))
+            selectedDate.data("kendoDatePicker").value(sd);
+
+        // Initialize Time Picker
+        var selectedTime = $(calendarEventIds.eventTime).kendoTimePicker();
+        if (!IsNullOrEmpty($(calendarEventIds.eventTime).attr("valueAttr")))
+            selectedTime.data("kendoTimePicker").value($(calendarEventIds.eventTime).attr("valueAttr"));
+
+
+    }
+    catch (ex) {
+        toastr.error("error while initing the calendar event create view: " + ex.message);
     }
 }

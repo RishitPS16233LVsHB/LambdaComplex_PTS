@@ -4,6 +4,7 @@ from flask_session import Session
 
 from views.Views.Home import Home
 from views.Views.CalendarEvent import CalendarEvent
+from views.Views.TimeTrackingView import TimeTrackingView
 from views.Views.User import User
 from views.Views.Login import Login
 from views.Views.ChartView import ChartView
@@ -35,6 +36,7 @@ app.register_blueprint(CalendarEvent,url_prefix='/CalendarEvent/')
 app.register_blueprint(User, url_prefix='/User')
 app.register_blueprint(ChartView, url_prefix='/ChartView/')
 app.register_blueprint(DataView, url_prefix='/DataView/')
+app.register_blueprint(TimeTrackingView, url_prefix='/TimeTrackingView/')
 app.register_blueprint(Team,url_prefix="/Team/")
 
 # register APIs Views of APIs controllers here

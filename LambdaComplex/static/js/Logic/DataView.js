@@ -262,7 +262,7 @@ function DeleteRecord(id = null) {
             let deleteUrl = $(dataViewIds.DeleteUrl).val();
             if (!IsNullOrEmpty(id))
                 deleteUrl += ("/" + id);
-            debugger;
+
             AjaxGETRequest(deleteUrl, function (response) {
                 response = SafeJSONparse(response);
                 if (response.WasSuccessful) {
@@ -284,7 +284,7 @@ function DeleteRecord(id = null) {
 
 function RefreshDataView() {
     try {
-        debugger;
+
         let renderType = $(dataViewIds.RenderType).val();
         switch (renderType.toLowerCase()) {
             case "list":

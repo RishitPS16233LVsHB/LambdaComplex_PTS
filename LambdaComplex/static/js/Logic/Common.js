@@ -129,7 +129,7 @@ function SetViewInMainPageUsingPost(url, data, isAsync, isLoader, element = "#di
  * @returns {boolean} True if the item is null, undefined, or empty; otherwise, false.
  */
 function IsNullOrEmpty(item) {
-    if (item === undefined || item === null || item === '') {
+    if (item === undefined || item === null || item === '' || item == 'None' || item == 'null') {
         return true;
     }
     return false;
@@ -280,6 +280,37 @@ function LoadGridView(resourceUrl, isAsync, isLoader, element = "#divMainPage") 
 }
 
 
+/**
+ * Loads a calendar view using a POST request.
+ * @param {string} resourceUrl The URL of the resource to load.
+ * @param {boolean} isAsync Indicates whether the request should be asynchronous.
+ * @param {boolean} isLoader Indicates whether to display a loader while the request is being processed.
+ */
+function LoadCalendarView(resourceUrl, isAsync, isLoader, element = "#divMainPage") {
+    let dataToSend = {
+        ResourceUrl: resourceUrl,
+        RenderType: "calendar",
+        UserId: $(sessionIds.userId).val(),
+    }
+    SetViewInMainPageUsingPost('TimeTrackingView/Rendering/', dataToSend, isAsync, isLoader, element);
+}
+
+/**
+ * Loads a timeline view using a POST request.
+ * @param {string} resourceUrl The URL of the resource to load.
+ * @param {boolean} isAsync Indicates whether the request should be asynchronous.
+ * @param {boolean} isLoader Indicates whether to display a loader while the request is being processed.
+ */
+function LoadTimeLineView(resourceUrl, isAsync, isLoader, element = "#divMainPage") {
+    let dataToSend = {
+        ResourceUrl: resourceUrl,
+        RenderType: "timeline",
+        UserId: $(sessionIds.userId).val(),
+    }
+    SetViewInMainPageUsingPost('TimeTrackingView/Rendering/', dataToSend, isAsync, isLoader, element);
+}
+
+
 function ValidateForm() {
     if (!document.getElementById("FORM").checkValidity()) {
         document.getElementById("FORM").reportValidity();
@@ -312,4 +343,10 @@ function QuickAPIRead(url) {
         toastr.error("error while quick reading " + ex.message);
     }
     return result;
+}
+
+function DecodeHtmlEntities(htmlString) {
+    var textarea = document.createElement("textarea");
+    textarea.innerHTML = htmlString;
+    return textarea.value;
 }

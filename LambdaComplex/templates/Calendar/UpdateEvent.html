@@ -1,0 +1,62 @@
+{% block content %}
+<div class="col-md-12 grid-margin stretch-card">
+    <div class="card">
+        <div class="card-body">
+            <h4 class="card-title">Calendar</h4>
+            <p class="card-description">Update Event</p>
+            <form class="forms-sample" id="FORM">
+                <input type="hidden" id="hdnEventId" value="{{ id }}">
+                <div class="form-group row">
+                    <label for="dtEventDate" class="col-sm-3 col-form-label">Event Date</label><br>
+                    <div class="col-sm-9">
+                        <input type="date" class="form-control" id="dtEventDate" placeholder="Event date"
+                            valueAttr="{{ eventDate }}" required readonly>
+                    </div>
+                </div>
+                <div class="form-group row">
+                    <label for="tmEventTime" class="col-sm-3 col-form-label">Event time</label><br>
+                    <div class="col-sm-9">
+                        <input type="time" class="form-control" id="tmEventTime" placeholder="Event time"
+                            valueAttr="{{ eventTime }}" required>
+                    </div>
+                </div>
+                <div class="form-group row">
+                    <label for="txtTeamName" class="col-sm-3 col-form-label">Event name</label><br>
+                    <div class="col-sm-9">
+                        <input type="text" class="form-control" id="txtEventName" placeholder="Event name"
+                            value="{{ eventName }}" required>
+                    </div>
+                </div>
+                <div class="form-group row">
+                    <label for="txtTeamDescription" class="col-sm-3 col-form-label">Event description</label><br>
+                    <div class="col-sm-9">
+                        <textarea class="form-control" id="txtEventDescription" rows="50" cols="80"
+                            placeholder="Event description" required>
+                            {{ eventDescription }}
+                        </textarea>
+                    </div>
+                </div>
+                <div class="form-group row">
+                    <label for="cmbEventPriority" class="col-sm-3 col-form-label">Event priority</label>
+                    <div class="col-sm-9">
+                        <select class="form-control" id="cmbEventPriority" placeholder="Role"
+                            value="{{ eventPriority }}" required>
+                            <option value="HIGH" selected>High</option>
+                            <option value="MID">Mid</option>
+                            <option value="LOW">Low</option>
+                        </select>
+                    </div>
+                </div>
+                <button type="button" class="btn btn-gradient-primary me-2" onclick="UpdateCalendarEvent()">Update
+                    Event</button>
+            </form>
+        </div>
+    </div>
+</div>
+
+<script>
+    $(document).ready(function () {
+        InitCalendarEventCreate();
+    });
+</script>
+{% endblock %}

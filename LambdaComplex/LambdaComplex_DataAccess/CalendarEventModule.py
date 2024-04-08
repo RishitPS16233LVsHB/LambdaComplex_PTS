@@ -18,8 +18,71 @@ class CalendarEventModule:
                 ,[EventPriority]
                 FROM {Tables.CalendarEvent} Where CreatedBy = '{userId}' and IsDeleted = 0;
             """
-            events = DatabaseUtilities.GetListOf(query)
-            return events if events else None
+            return DatabaseUtilities.GetListOf(query)            
+        except Exception:
+            raise
+
+    @staticmethod
+    def GetGroupedCalendarEvent(userId):
+        try:
+            # already expire out of date events
+            CalendarEventModule.ExpireOutOfDateEvents()
+
+            query = f"""
+                SELECT
+                cast(Format([EventDate],'yyyy-MM-dd') as varchar(30)) as [date]
+                ,cast(count(*) as varchar(10)) + ' Event(s)' as [eventName]
+                ,'badge bg-success' as [className]
+                ,'green' as [dateColor]
+                FROM {Tables.CalendarEvent} Where CreatedBy = '{userId}'
+                GROUP BY [EventDate];
+            """
+            return DatabaseUtilities.GetListOf(query)
+        except Exception:
+            raise
+
+    @staticmethod
+    def GetCalendarEventsForEventDate(userId,eventDate):
+        try:
+            # already expire out of date events
+            CalendarEventModule.ExpireOutOfDateEvents()
+
+            query = f"""
+                SELECT
+                [ID]
+                ,[EventName]
+                ,[EventDescription]
+                ,cast(Format([EventDate],'yyyy-MM-dd') as varchar(30)) as [EventDate]
+                ,cast(Format([CreatedOn],'yyyy-MM-dd') as varchar(30)) as [CreatedOn]
+                ,[EventPriority]
+                ,[EventTime]
+                ,[IsExpired]
+                FROM {Tables.CalendarEvent} 
+                WHERE [CreatedBy] = '{userId}' and [EventDate] = CAST('{eventDate}' as datetime) And IsDeleted = 0
+            """
+            return DatabaseUtilities.GetListOf(query)
+        except Exception:
+            raise
+
+    @staticmethod
+    def GetEventData(recordId):
+        try:
+            # already expire out of date events
+            CalendarEventModule.ExpireOutOfDateEvents()
+
+            query = f"""
+                SELECT
+                [ID]
+                ,[EventName]
+                ,[EventDescription]
+                ,[EventDate]
+                ,[CreatedOn]
+                ,[EventPriority]
+                ,[EventTime]
+                FROM {Tables.CalendarEvent} 
+                WHERE [ID] = '{recordId}' AND [IsDeleted] = 0
+            """
+            return DatabaseUtilities.GetListOf(query)
         except Exception:
             raise
 
@@ -31,8 +94,7 @@ class CalendarEventModule:
                 COUNT(*) PriorityEvents
                 FROM {Tables.CalendarEvent} Where CreatedBy = '{userId}' and EventPriority = 'HIGH' and IsDeleted = 0;
             """
-            events = DatabaseUtilities.GetListOf(query)
-            return events if events else 0
+            return DatabaseUtilities.GetListOf(query)
         except Exception:
             raise
 
@@ -43,14 +105,13 @@ class CalendarEventModule:
             query = f"""
             UPDATE {Tables.CalendarEvent}
             SET 
-                [IsDeleted] = 1,
+                [IsExpired] = 1,
                 [ModifiedOn] = getdate(),
+                [CreatedOn] = [CreatedOn],
                 [ModifiedBy] = 'SYSTEM'
             WHERE [EventDate] < GetDate()
             """
-
-            rowsAffected = DatabaseUtilities.ExecuteNonQuery(query)
-            return rowsAffected
+            return DatabaseUtilities.ExecuteNonQuery(query)
         except Exception:
             raise
 
@@ -63,34 +124,54 @@ class CalendarEventModule:
            ,[EventDate]
            ,[CreatedBy]
            ,[ModifiedBy]
-           ,[EventPriority])
+           ,[EventPriority]
+           ,[EventTime]
+           ,[EventName])
             VALUES
            ('{eventDetails["EventDescription"]}'
            ,'{eventDetails["EventDate"]}'           
            ,'{eventDetails["UserId"]}'           
            ,'{eventDetails["UserId"]}'
-           ,'{eventDetails["EventPriority"]}')
+           ,'{eventDetails["EventPriority"]}'
+           ,'{eventDetails["EventTime"]}'
+           ,'{eventDetails["EventName"]}')
             """
+            return DatabaseUtilities.ExecuteNonQuery(query)            
+        except Exception:
+            raise
+            
 
-            rowsAffected = DatabaseUtilities.ExecuteNonQuery(query)
-            return True if rowsAffected == 1 else False
+    @staticmethod
+    def UpdateCalendarEvent(eventDetails):
+        try:
+            query = f"""
+            UPDATE {Tables.CalendarEvent}
+            SET [EventDescription] = '{eventDetails["EventDescription"]}',
+                [EventDate] = '{eventDetails["EventDate"]}',
+                [ModifiedBy] = '{eventDetails["UserId"]}',
+                [EventPriority] = '{eventDetails["EventPriority"]}',
+                [EventTime] = '{eventDetails["EventTime"]}',
+                [EventName] = '{eventDetails["EventName"]}'
+            WHERE [ID] = '{eventDetails["EventId"]}' AND [IsDeleted] = 0
+            """
+            return DatabaseUtilities.ExecuteNonQuery(query)
         except Exception:
             raise
 
+
     @staticmethod
-    def DeleteCalendarEvent(eventDetails):
+    def DeleteCalendarEvent(userId,recordId):
         try:
             query = f"""
             UPDATE {Tables.CalendarEvent}
             SET 
                 [IsDeleted] = 1,
                 [ModifiedOn] = getdate(),
-                [ModifiedBy] = '{eventDetails["UserId"]}'
-            WHERE [ID] = '{eventDetails["EventId"]}'
+                [ModifiedBy] = '{userId}',
+                [CreatedOn] = [CreatedOn]
+            WHERE [ID] = '{recordId}'
             """
-
-            rowsAffected = DatabaseUtilities.ExecuteNonQuery(query)
-            return True if rowsAffected == 1 else False
+            return DatabaseUtilities.ExecuteNonQuery(query)            
         except Exception:
             raise
 

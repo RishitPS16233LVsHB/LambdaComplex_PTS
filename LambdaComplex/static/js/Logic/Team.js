@@ -106,7 +106,7 @@ function InitTeamCreate() {
             value: $(teamIds.teamDescription).val(),
             tools: [
                 "bold", "italic", "underline", "undo", "redo", "justifyLeft", "justifyCenter", "justifyRight", "insertUnorderedList",
-                "createLink", "unlink", "insertImage", "tableWizard", "tableProperties", "tableCellProperties", "createTable",
+                "createLink", "unlink", "tableWizard", "tableProperties", "tableCellProperties", "createTable",
                 "addRowAbove", "addRowBelow", "addColumnLeft", "addColumnRight", "deleteRow", "deleteColumn", "mergeCellsHorizontally",
                 "mergeCellsVertically", "splitCellHorizontally", "splitCellVertically", "tableAlignLeft", "tableAlignCenter",
                 "tableAlignRight", "formatting",

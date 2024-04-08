@@ -17,6 +17,7 @@
     <link rel="stylesheet" href="/static/css/loader.css" />
 
     <link rel="stylesheet" href="/static/lib/bootstrap/dist/css/bootstrap.css">
+    <link rel="stylesheet" href="/static/css/Controls/Timeline/style-albe-timeline.css">
 
     <!-- js -->
     <script src="/static/lib/jquery/dist/jquery.js"></script>
@@ -32,6 +33,7 @@
     <script src="/static/js/Logic/home.js"></script>
     <script src="/static/js/Logic/user.js"></script>
     <script src="/static/js/Logic/CalendarEvents.js"></script>
+    <script src="/static/js/Logic/TimeTrackingView.js"></script>
     <script src="/static/js/Logic/Team.js"></script>
 
     <script>
@@ -55,11 +57,13 @@
                     <b style="color:#CB6CE6;font-size:20px">Lambda Complex</b>
                 </a>
                 <a class="navbar-brand brand-logo brand-logo-mini align-items-center">
-                    <img src="static/Images/Lambda Logo.png" alt="logo" style="width:30px;height:30px" />
+                    <img src="static/Images/Lambda Logo.png" alt="logo"
+                        style="width:35px;height:35px;margin-left:23px;" />
                 </a>
             </div>
             <div class="navbar-menu-wrapper d-flex align-items-stretch">
-                <button class="navbar-toggler navbar-toggler align-self-center" type="button" data-toggle="minimize">
+                <button class="navbar-toggler navbar-toggler align-self-center" id="minimize-sidebar" type="button"
+                    data-toggle="minimize">
                     <span class="mdi mdi-menu"></span>
                 </button>
 
@@ -96,7 +100,7 @@
                 <ul class="nav">
 
                     <li class="nav-item">
-                        <a class="nav-link" data-bs-toggle="collapse" href="#home-inner" aria-expanded="false"
+                        <a class="nav-link collapsed" data-bs-toggle="collapse" href="#home-inner" aria-expanded="false"
                             aria-controls="home-inner">
                             <span class="menu-title">Home</span>
                             <i class="menu-arrow"></i>
@@ -112,7 +116,7 @@
                                 </li>
                                 <li class="nav-item">
                                     <a class="nav-link"
-                                        onclick="SetViewInMainPageUsingGet('CalendarEvent/GetCalendarEvent',true,true)">
+                                        onclick="LoadCalendarView('CalendarEventAPI/CalendarViewResource',true,true)">
                                         <span class="menu-title">Calendar</span>
                                         <i class="mdi mdi-calendar menu-icon"></i>
                                     </a>
@@ -135,8 +139,8 @@
                     </li>
 
                     <li class="nav-item">
-                        <a class="nav-link" data-bs-toggle="collapse" href="#profile-inner" aria-expanded="false"
-                            aria-controls="profile-inner">
+                        <a class="nav-link collapsed" data-bs-toggle="collapse" href="#profile-inner"
+                            aria-expanded="false" aria-controls="profile-inner">
                             <span class="menu-title">Profile</span>
                             <i class="menu-arrow"></i>
                             <i class="mdi mdi-account menu-icon"></i>
@@ -169,7 +173,7 @@
                     </li>
 
                     <li class="nav-item">
-                        <a class="nav-link" data-bs-toggle="collapse" href="#team-inner" aria-expanded="false"
+                        <a class="nav-link collapsed" data-bs-toggle="collapse" href="#team-inner" aria-expanded="false"
                             aria-controls="team-inner">
                             <span class="menu-title">Team</span>
                             <i class="menu-arrow"></i>
@@ -200,8 +204,8 @@
                     </li>
 
                     <li class="nav-item">
-                        <a class="nav-link" data-bs-toggle="collapse" href="#performance-inner" aria-expanded="false"
-                            aria-controls="performance-inner">
+                        <a class="nav-link collapsed" data-bs-toggle="collapse" href="#performance-inner"
+                            aria-expanded="false" aria-controls="performance-inner">
                             <span class="menu-title">Performances</span>
                             <i class="menu-arrow"></i>
                             <i class="mdi mdi-speedometer menu-icon"></i>
@@ -225,8 +229,8 @@
                     </li>
 
                     <li class="nav-item">
-                        <a class="nav-link" data-bs-toggle="collapse" href="#progress-inner" aria-expanded="false"
-                            aria-controls="progress-inner">
+                        <a class="nav-link collapsed" data-bs-toggle="collapse" href="#progress-inner"
+                            aria-expanded="false" aria-controls="progress-inner">
                             <span class="menu-title">Progress</span>
                             <i class="menu-arrow"></i>
                             <i class="mdi mdi-chart-areaspline menu-icon"></i>
@@ -283,7 +287,7 @@
             </nav>
             <div class="main-panel">
 
-                <div class="content-wrapper" style="overflow-y: auto;" id="divMainPage">
+                <div class="content-wrapper" style="overflow-y: auto;overflow-x: auto;" id="divMainPage">
                     {% block content %}
                     {% endblock %}
                 </div>
@@ -305,6 +309,20 @@
     <script src="/static/assets/js/off-canvas.js"></script>
     <script src="/static/assets/js/hoverable-collapse.js"></script>
     <script src="/static/assets/js/misc.js"></script>
+
+    <script>
+        $(document).ready(function () {
+
+            $("#minimize-sidebar").click(function () {
+                if (!$("body").hasClass("sidebar-icon-only"))
+                    $("body").addClass("sidebar-icon-only");
+                else
+                    $("body").removeClass("sidebar-icon-only");
+            })
+
+        });
+    </script>
+
 </body>
 
 </html>
