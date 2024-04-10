@@ -9,6 +9,7 @@ class TeamModule:
             SELECT 
             TM.[ID],
             TM.[TeamName],
+            cast(TM.[TeamDescription] as xml).value('.[1]','nvarchar(max)') as [TeamDescription],
             UM.[FirstName] as LeaderFirstName,
             UM.[LastName] as LeaderLastName,
             UM1.[FirstName] as AdminFirstName,
@@ -35,6 +36,7 @@ class TeamModule:
             SELECT 
             TM.[ID] as TeamId,
             TM.[TeamName],
+            cast(TM.[TeamDescription] as xml).value('.[1]','nvarchar(max)') as [TeamDescription],
             UM.[FirstName] as LeaderFirstName,
             UM.[LastName] as LeaderLastName,
             UM1.[FirstName] as AdminFirstName,
@@ -62,6 +64,7 @@ class TeamModule:
             SELECT 
             TM.[ID] as TeamId,
             TM.[TeamName],
+            cast(TM.[TeamDescription] as xml).value('.[1]','nvarchar(max)') as [TeamDescription],
             UM.[FirstName] as LeaderFirstName,
             UM.[LastName] as LeaderLastName,
             UM1.[FirstName] as AdminFirstName,

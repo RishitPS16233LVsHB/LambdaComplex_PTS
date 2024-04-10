@@ -312,11 +312,14 @@ function LoadTimeLineView(resourceUrl, isAsync, isLoader, element = "#divMainPag
 
 
 function ValidateForm() {
-    if (!document.getElementById("FORM").checkValidity()) {
-        document.getElementById("FORM").reportValidity();
-        return false;
+    var validator = $("#FORM").kendoValidator().data("kendoValidator");
+
+    var form = document.getElementById("FORM");
+    if (!form.checkValidity()) {
+        form.reportValidity();
     }
-    return true;
+
+    return validator.validate() || form.checkValidity();
 }
 
 /**

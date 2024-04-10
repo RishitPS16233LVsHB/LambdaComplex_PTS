@@ -4,71 +4,44 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Custom Context Menu</title>
-    <style>
-        /* Style for context menu */
-        .context-menu {
-            display: none;
-            position: fixed;
-            background: #fff;
-            border: 1px solid #ccc;
-            padding: 5px 0;
-            z-index: 1000;
-        }
-
-        .context-menu-item {
-            padding: 5px 20px;
-            cursor: pointer;
-        }
-
-        .context-menu-item:hover {
-            background: #f0f0f0;
-        }
-    </style>
+    <title>Kendo Grid HTML Content</title>
+    <link rel="stylesheet" href="https://kendo.cdn.telerik.com/2022.1.119/styles/kendo.default-v2.min.css">
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="https://kendo.cdn.telerik.com/2022.1.119/js/kendo.all.min.js"></script>
 </head>
 
 <body>
 
-    <!-- Context menu HTML -->
-    <div class="context-menu" id="context-menu">
-        <div class="context-menu-item" id="option1">Option 1</div>
-        <div class="context-menu-item" id="option2">Option 2</div>
-        <div class="context-menu-item" id="option3">Option 3</div>
-    </div>
+    <div id="grid"></div>
 
     <script>
-        // Function to show the context menu
-        function showContextMenu(event) {
-            event.preventDefault();
-            const contextMenu = document.getElementById('context-menu');
-            contextMenu.style.display = 'block';
-            contextMenu.style.left = event.clientX + 'px';
-            contextMenu.style.top = event.clientY + 'px';
-        }
-
-        // Function to hide the context menu
-        function hideContextMenu() {
-            const contextMenu = document.getElementById('context-menu');
-            contextMenu.style.display = 'none';
-        }
-
-        // Attach event listener to the document to show context menu on right-click
-        document.addEventListener('contextmenu', showContextMenu);
-
-        // Attach event listener to the document to hide context menu on click outside
-        document.addEventListener('click', hideContextMenu);
-
-        // You can add event listeners to context menu items for specific actions
-        document.getElementById('option1').addEventListener('click', function () {
-            alert('Option 1 clicked');
-        });
-
-        document.getElementById('option2').addEventListener('click', function () {
-            alert('Option 2 clicked');
-        });
-
-        document.getElementById('option3').addEventListener('click', function () {
-            alert('Option 3 clicked');
+        $(document).ready(function () {
+            $("#grid").kendoGrid({
+                columns: [
+                    { field: "id", title: "ID" },
+                    { field: "name", title: "Name" },
+                    {
+                        field: "htmlContent",
+                        title: "HTML Content",
+                        encoded: false  // This option renders HTML content
+                    }
+                ],
+                dataSource: {
+                    data: [
+                        { id: 1, name: "John", htmlContent: "<strong>This is bold text</strong>" },
+                        { id: 2, name: "Jane", htmlContent: "<em>This is italic text</em>" }
+                    ],
+                    schema: {
+                        model: {
+                            fields: {
+                                id: { type: "number" },
+                                name: { type: "string" },
+                                htmlContent: { type: "string" }
+                            }
+                        }
+                    }
+                }
+            });
         });
     </script>
 

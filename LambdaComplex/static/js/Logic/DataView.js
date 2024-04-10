@@ -44,7 +44,7 @@ function InitGridView(resourceURL) {
 
                     template = resourceData.Template;
                     readUrl = resourceData.ReadURL;
-
+                    debugger;
 
                     createViewUrl = resourceData.CreateViewUrl;
                     updateViewUrl = resourceData.UpdateViewUrl;

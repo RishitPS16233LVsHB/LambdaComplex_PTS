@@ -28,7 +28,6 @@ def CalendarResource():
 
     return jsonify(response.__dict__)
 
-
 @CalendarEventAPI.route('/CalendarTimeLineReadUrl/<calendarDate>')
 @SessionManagement('Admin,Lead,Dev')
 def CalendarTimeLineReadUrl(calendarDate):
@@ -69,6 +68,7 @@ def CalendarGridViewResource(calendarDate):
                     "EventDate" : {"type" : "date"},
                     "CreatedOn" : {"type": "date"},
                     "EventPriotity": {"type": "string"},
+                    "EventDescription" : {"type" : "string"},
                 }
 
         resource["Columns"] = [
@@ -93,6 +93,12 @@ def CalendarGridViewResource(calendarDate):
             {
                 "field" : "EventName",
                 "title" : "Event Name",
+                "width": 200,
+            },
+            {
+                "field" : "EventDescription",
+                "title" : "Event description",
+                "encoded": False,
                 "width": 200,
             },
             {

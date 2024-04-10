@@ -127,7 +127,8 @@ def ResourcesForDev(userId):
 
     resource["Fields"] = {
             "ID" : {"type" : "string"},
-            "TeamName" : {"type" : "string"},
+            "TeamName" : {"type" : "string"},                
+            "TeamDescription" : {"type" : "string"},
             "LeaderFirstName" : {"type" : "string"},
             "LeaderLastName" : {"type": "string"},
             "AdminFirstName": {"type": "string"},
@@ -152,6 +153,12 @@ def ResourcesForDev(userId):
             "title" : "Team creation date",
             "format" : "{0:dd/MM/ yyyy}",
             "width": 200,            
+        },
+        {
+            "field" : "TeamDescriptiom",
+            "title" : "Team description",
+            "width":200,
+            "encoded": False,
         },
         {
             "field" : "LeaderFirstName",
@@ -185,7 +192,8 @@ def ResourcesForLead(userId):
     resource["Fields"] = {
             "ID" : {"type" : "string"},
             "CreatedBy" : {"type" : "string"},
-            "TeamName" : {"type" : "string"},
+            "TeamName" : {"type" : "string"},            
+            "TeamDescription" : {"type" : "string"},
             "LeaderFirstName" : {"type" : "string"},
             "LeaderLastName" : {"type": "string"},
             "AdminFirstName": {"type": "string"},
@@ -216,6 +224,12 @@ def ResourcesForLead(userId):
             "title" : "Team creation date",
             "format" : "{0:dd/MM/ yyyy}",
             "width":200,            
+        },        
+        {
+            "field" : "TeamDescriptiom",
+            "title" : "Team description",
+            "width":200,
+            "encoded": False,
         },
         {
             "field" : "LeaderFirstName",
@@ -255,6 +269,7 @@ def ResourcesForAdmin(userId):
     resource["Fields"] = {
             "ID" : {"type" : "string"},
             "TeamName" : {"type" : "string"},
+            "TeamDescription" : {"type" : "string"},
             "LeaderFirstName" : {"type" : "string"},
             "LeaderLastName" : {"type": "string"},
             "AdminFirstName": {"type": "string"},
@@ -286,6 +301,12 @@ def ResourcesForAdmin(userId):
             "field" : "TeamName",
             "title" : "Team Name",
             "width":200,
+        },
+        {
+            "field" : "TeamDescription",
+            "title" : "Team description",
+            "width":200,
+            "encoded": False,
         },
         {
             "title" : "Manage Team",

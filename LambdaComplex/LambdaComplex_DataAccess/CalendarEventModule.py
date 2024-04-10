@@ -51,7 +51,7 @@ class CalendarEventModule:
                 SELECT
                 [ID]
                 ,[EventName]
-                ,[EventDescription]
+                ,cast([EventDescription] as xml).value('.[1]','nvarchar(max)') as [EventDescription]
                 ,cast(Format([EventDate],'yyyy-MM-dd') as varchar(30)) as [EventDate]
                 ,cast(Format([CreatedOn],'yyyy-MM-dd') as varchar(30)) as [CreatedOn]
                 ,[EventPriority]

@@ -30,7 +30,7 @@ function CreateCalendarEvent() {
                 try {
                     if (response.WasSuccessful) {
                         AlertSuccess('Event Created!');
-                        InitCalendarEvents();
+                        LoadCalendarView('CalendarEventAPI/CalendarViewResource', true, true)
                     }
                     else {
                         toastr.error('Error occured due to: ' + response.Message);
@@ -72,7 +72,7 @@ function UpdateCalendarEvent() {
                 try {
                     if (response.WasSuccessful) {
                         AlertSuccess('Event Updated!');
-                        InitCalendarEvents();
+                        LoadCalendarView('CalendarEventAPI/CalendarViewResource', true, true)
                     }
                     else {
                         toastr.error('Error occured due to: ' + response.Message);
@@ -107,7 +107,7 @@ function DeleteCalendarEvent(eventId) {
                 try {
                     if (response.WasSuccessful) {
                         AlertSuccess('Event Deleted!');
-                        InitCalendarEvents();
+                        LoadCalendarView('CalendarEventAPI/CalendarViewResource', true, true)
                     }
                     else {
                         toastr.error('Error occured due to: ' + response.Message);
@@ -128,7 +128,6 @@ function DeleteCalendarEvent(eventId) {
         toastr.error(" error occured while deleting Calendar event: " + e.message);
     }
 }
-
 
 function InitCalendarEventCreate() {
     try {
@@ -177,8 +176,6 @@ function InitCalendarEventCreate() {
         var selectedTime = $(calendarEventIds.eventTime).kendoTimePicker();
         if (!IsNullOrEmpty($(calendarEventIds.eventTime).attr("valueAttr")))
             selectedTime.data("kendoTimePicker").value($(calendarEventIds.eventTime).attr("valueAttr"));
-
-
     }
     catch (ex) {
         toastr.error("error while initing the calendar event create view: " + ex.message);

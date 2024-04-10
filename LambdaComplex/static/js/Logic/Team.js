@@ -201,6 +201,8 @@ function InitMemberManagement() {
 
 function CreateTeam() {
     try {
+        if (!ValidateForm()) return;
+
         ConfirmationAlert("Creat team...", "Are you sure you want to create new team?", function (value) {
 
             var dataToSend = {
@@ -235,6 +237,7 @@ function CreateTeam() {
 
 function UpdateTeam() {
     try {
+        if (!ValidateForm()) return;
         ConfirmationAlert("Update team...", "Are you sure you want to update this team?", function (value) {
 
             var dataToSend = {
@@ -270,6 +273,7 @@ function UpdateTeam() {
 
 function AddMember() {
     try {
+        if (!ValidateForm()) return;
         if (IsNullOrEmpty($(teamIds.developer).val())) return;
 
         ConfirmationAlert('Team management', 'Are you sure you want to add this user to team?',

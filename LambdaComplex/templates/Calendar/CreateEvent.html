@@ -9,33 +9,37 @@
                     <label for="dtEventDate" class="col-sm-3 col-form-label">Event Date</label><br>
                     <div class="col-sm-9">
                         <input type="date" class="form-control" id="dtEventDate" placeholder="Event date"
-                            valueAttr="{{ selectedCalendarDate }}" required readonly>
+                            valueAttr="{{ selectedCalendarDate }}" required validationMessage="event date is required"
+                            readonly>
                     </div>
                 </div>
                 <div class="form-group row">
                     <label for="tmEventTime" class="col-sm-3 col-form-label">Event time</label><br>
                     <div class="col-sm-9">
-                        <input type="time" class="form-control" id="tmEventTime" placeholder="Event time" required>
+                        <input type="time" class="form-control" id="tmEventTime"
+                            validationMessage="event time is required" placeholder="Event time" required>
                     </div>
                 </div>
                 <div class="form-group row">
                     <label for="txtTeamName" class="col-sm-3 col-form-label">Event name</label><br>
                     <div class="col-sm-9">
-                        <input type="text" class="form-control" id="txtEventName" placeholder="Event name" required>
+                        <input type="text" class="form-control" id="txtEventName" placeholder="Event name"
+                            validationMessage="event name is required" required>
                     </div>
                 </div>
                 <div class="form-group row">
                     <label for="txtTeamDescription" class="col-sm-3 col-form-label">Event description</label><br>
                     <div class="col-sm-9">
                         <textarea class="form-control" id="txtEventDescription" rows="50" cols="80"
-                            placeholder="Event description" required>
+                            placeholder="Event description">
                         </textarea>
                     </div>
                 </div>
                 <div class="form-group row">
                     <label for="cmbEventPriority" class="col-sm-3 col-form-label">Event priority</label>
                     <div class="col-sm-9">
-                        <select class="form-control" id="cmbEventPriority" placeholder="Role" required>
+                        <select class="form-control" id="cmbEventPriority" placeholder="Role"
+                            validationMessage="Priority is required" required>
                             <option value="HIGH" selected>High</option>
                             <option value="MID">Mid</option>
                             <option value="LOW">Low</option>

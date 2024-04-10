@@ -3,7 +3,13 @@
  */
 function CheckLogin() {
     try {
-        if (!ValidateForm()) return;
+
+        var form = document.getElementById("FORM");
+        if (!form.checkValidity()) {
+            form.reportValidity();
+            return;
+        };
+
 
         var username = $("#txt-username").val();
         var password = $("#txt-password").val();
