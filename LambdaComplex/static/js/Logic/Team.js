@@ -190,9 +190,6 @@ function InitMemberManagement() {
         });
 
         LoadGridView('TeamAPI/MemberManagementResource/' + $(teamIds.teamId).val(), false, true, teamIds.memberList);
-
-        // remove the grid record creation button
-        $("#btnCreate").remove();
     }
     catch (ex) {
         toastr.error("Error while initing team management form: " + ex.message);

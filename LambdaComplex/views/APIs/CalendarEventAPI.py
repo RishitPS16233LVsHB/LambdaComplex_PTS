@@ -107,6 +107,12 @@ def CalendarGridViewResource(calendarDate):
                 "width": 200,
             },
             {
+                "title" : "File submissions",
+                "template": "<button class=\"btn btn-outline-warning\" onclick='LoadFileSubmissionView(\"#: ID #\",true,true,divMainPage)'> <i class=\"mdi mdi-file-multiple\"> </button>",
+                "excludeFromExport": True,
+                "width":80,
+            },
+            {
                 "field" : "EventTime",
                 "title" : "Event time",
                 "width": 200,            

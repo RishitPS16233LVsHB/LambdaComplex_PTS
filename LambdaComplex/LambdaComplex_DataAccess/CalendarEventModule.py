@@ -30,11 +30,14 @@ class CalendarEventModule:
 
             query = f"""
                 SELECT
-                cast(Format([EventDate],'yyyy-MM-dd') as varchar(30)) as [date]
-                ,cast(count(*) as varchar(10)) + ' Event(s)' as [eventName]
-                ,'badge bg-success' as [className]
-                ,'green' as [dateColor]
-                FROM {Tables.CalendarEvent} Where CreatedBy = '{userId}'
+                CAST(Format([EventDate],'yyyy-MM-dd') as varchar(30)) as [date],
+                CAST(count(*) as varchar(10)) + ' Event(s)' as [eventName],
+                'badge bg-success' as [className],
+                'green' as [dateColor]
+                FROM {Tables.CalendarEvent} 
+                WHERE 
+                    [CreatedBy] = '{userId}' AND
+                    [IsDeleted] = 0
                 GROUP BY [EventDate];
             """
             return DatabaseUtilities.GetListOf(query)
@@ -134,13 +137,12 @@ class CalendarEventModule:
            ,'{eventDetails["UserId"]}'
            ,'{eventDetails["EventPriority"]}'
            ,'{eventDetails["EventTime"]}'
-           ,'{eventDetails["EventName"]}')
+           ,'{eventDetails["EventName"]}');
             """
             return DatabaseUtilities.ExecuteNonQuery(query)            
         except Exception:
             raise
             
-
     @staticmethod
     def UpdateCalendarEvent(eventDetails):
         try:
@@ -157,7 +159,6 @@ class CalendarEventModule:
             return DatabaseUtilities.ExecuteNonQuery(query)
         except Exception:
             raise
-
 
     @staticmethod
     def DeleteCalendarEvent(userId,recordId):

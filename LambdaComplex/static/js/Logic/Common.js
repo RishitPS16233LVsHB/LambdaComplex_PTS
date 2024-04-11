@@ -3,7 +3,9 @@
  */
 const apiHost = "http://127.0.0.1:5000/api/"
 const mvcHost = "http://127.0.0.1:5000/"
+const uploadUrl = "FileUploadAPI/Upload"
 
+const divMainPage = "#divMainPage"
 const sessionIds = {
     userId: "#USER_ID",
     role: "#ROLE",
@@ -67,6 +69,45 @@ function AjaxPOSTRequest(url, data, successCallback, errorCallback, isLoader, is
         contentType: 'application/json',
         async: isAsync,
         data: JSON.stringify(data),
+        success: function (responseData) {
+            $("#loader-screen").hide();
+            if (successCallback) {
+                successCallback(responseData);
+            }
+        },
+        error: function (xhr, status, error) {
+            toastr.error("error occured in AJAX POST: " + error);
+            $("#loader-screen").hide();
+            if (errorCallback) {
+                errorCallback(error);
+            }
+        }
+    });
+}
+
+/**
+ * Makes an HTTP POST request to submit form data and it is API only
+ * @param {*} url 
+ * @param {*} formData 
+ * @param {*} successCallback 
+ * @param {*} errorCallback 
+ * @param {*} isLoader 
+ * @param {*} isAsync 
+ */
+function AjaxFormDataRequest(url, formData, successCallback, errorCallback, isLoader, isAsync) {
+    url = apiHost + url;
+
+    if (isLoader)
+        $("#loader-screen").show();
+
+    $.ajax({
+        url: url,
+        method: "POST",
+        contentType: false,
+        cache: false,
+        processData: false,
+        async: isAsync,
+        data: formData,
         success: function (responseData) {
             $("#loader-screen").hide();
             if (successCallback) {
@@ -310,7 +351,21 @@ function LoadTimeLineView(resourceUrl, isAsync, isLoader, element = "#divMainPag
     SetViewInMainPageUsingPost('TimeTrackingView/Rendering/', dataToSend, isAsync, isLoader, element);
 }
 
+/**
+ * Loads File Upload view
+ * @param {*} recordId 
+ * @param {*} isAsync 
+ * @param {*} isLoader 
+ * @param {*} element 
+ */
+function LoadFileSubmissionView(recordId, isAsync, isLoader, element = "#divMainPage") {
+    SetViewInMainPageUsingGet('FileUpload/Upload/' + recordId, isAsync, isLoader, element);
+}
 
+/**
+ * validates the form and reports validity and return boolean
+ * @returns 
+ */
 function ValidateForm() {
     var validator = $("#FORM").kendoValidator().data("kendoValidator");
 
@@ -348,8 +403,35 @@ function QuickAPIRead(url) {
     return result;
 }
 
+/**
+ * tries to convert escaped html string to html string
+ * @param {*} htmlString 
+ * @returns 
+ */
 function DecodeHtmlEntities(htmlString) {
     var textarea = document.createElement("textarea");
     textarea.innerHTML = htmlString;
     return textarea.value;
+}
+
+function DownloadFile(fileName) {
+    debugger;
+    // Static URL
+    var url = `/static/Uploads/` + fileName;
+
+    // Create a new anchor element
+    var a = document.createElement('a');
+    // Set the href attribute to the static URL
+    a.href = url;
+    // Set the download attribute to the desired file name
+    a.download = fileName;
+
+    // Append the anchor element to the body
+    document.body.appendChild(a);
+
+    // Trigger a click event on the anchor element
+    a.click();
+
+    // Clean up: remove the anchor element from the DOM
+    document.body.removeChild(a);
 }

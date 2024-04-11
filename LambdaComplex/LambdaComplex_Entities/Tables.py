@@ -5,6 +5,9 @@ class Tables:
     # File
     File = "[LambdaComplex].[dbo].[LambdaComplex_File_Trn_Tbl]"
 
+    # WorkTimeline
+    WorkTimeLine = "[LambdaComplex].[dbo].[LambdaComplex_WorkTimeLine_Trn_Tbl]"
+
     # Calendar event
     CalendarEvent = "[LambdaComplex].[dbo].[LambdaComplex_CalendarEvent_Trn_Tbl]"
 
@@ -16,3 +19,14 @@ class Tables:
     Project = "[LambdaComplex].[dbo].[LambdaComplex_Project_Mst_Tbl]"
     ProjectChanges = "[LambdaComplex].[dbo].[LambdaComplex_Project_Changes_Trn_Tbl]"
          
+    # Milestones 
+    Milestone = "[LambdaComplex].[dbo].[LambdaComplex_Milestone_Mst_Tbl]"
+    MilestoneChanges = "[LambdaComplex].[dbo].[LambdaComplex_Milestone_Changes_Trn_Tbl]"
+
+    # Goals 
+    Goal = "[LambdaComplex].[dbo].[LambdaComplex_Goal_Mst_Tbl]"
+    GoalChanges = "[LambdaComplex].[dbo].[LambdaComplex_Goal_Changes_Trn_Tbl]"
+
+    # Task 
+    Task = "[LambdaComplex].[dbo].[LambdaComplex_Task_Mst_Tbl]"
+    TaskChanges = "[LambdaComplex].[dbo].[LambdaComplex_Task_Changes_Trn_Tbl]"

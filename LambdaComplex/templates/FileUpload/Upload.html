@@ -1,0 +1,32 @@
+{% block content %}
+<div class="col-md-12 grid-margin stretch-card">
+    <div class="card">
+        <div class="card-body">
+            <h4 class="card-title">File</h4>
+            <p class="card-description">Upload files</p>
+            <form class="forms-sample" id="FORM" enctype="multipart/form-data">
+                <div class="form-group row">
+                    <input type="hidden" id="hdnRecordId" value="{{recordId }}" />
+                    <label class="col-sm-3 col-form-label">File Submissions</label>
+                    <div class="col-sm-9">
+                        <input type="file" id="flSubmissions" multiple="multiple">
+                    </div>
+                </div>
+                <button type="button" class="btn btn-gradient-primary me-2"
+                    onclick="UploadFilesToServer()">Upload</button>
+            </form>
+            <hr>
+            <p class="card-description">Uploaded files</p>
+            <div id="grdFileList">
+
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    $(document).ready(function () {
+        InitFileUpload();
+    });
+</script>
+{% endblock %}

@@ -10,14 +10,14 @@
                     <label for="dtEventDate" class="col-sm-3 col-form-label">Event Date</label><br>
                     <div class="col-sm-9">
                         <input type="date" class="form-control" id="dtEventDate" placeholder="Event date"
-                            valueAttr="{{ eventDate }}" required readonly>
+                            valueAttr="{{ eventDate }}" value="{{ selectedCalendarDate }}" required readonly>
                     </div>
                 </div>
                 <div class="form-group row">
                     <label for="tmEventTime" class="col-sm-3 col-form-label">Event time</label><br>
                     <div class="col-sm-9">
                         <input type="time" class="form-control" id="tmEventTime" placeholder="Event time"
-                            valueAttr="{{ eventTime }}" required>
+                            valueAttr="{{ eventTime }}" value="{{ eventTime }}" required>
                     </div>
                 </div>
                 <div class="form-group row">
@@ -45,6 +45,12 @@
                             <option value="MID">Mid</option>
                             <option value="LOW">Low</option>
                         </select>
+                    </div>
+                </div>
+                <div class="form-group row">
+                    <label for="cmbEventPriority" class="col-sm-3 col-form-label">Submissions</label>
+                    <div class="col-sm-9">
+                        <input type="file" id="flSubmissions" multiple="multiple">
                     </div>
                 </div>
                 <button type="button" class="btn btn-gradient-primary me-2" onclick="UpdateCalendarEvent()">Update

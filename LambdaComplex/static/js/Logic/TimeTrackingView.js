@@ -50,7 +50,7 @@ function InitCalendarView(resourceURL) {
                     $(timeTrackingViewIds.timeLineViewReadUrl).val(resourceData.TimeLineViewReadUrl);
 
                     var eventCount = QuickAPIRead(calendarReadUrl);
-
+                    debugger;
                     // init blank calendar incase of data read failure
                     if (eventCount.length == 0 || IsNullOrEmpty(eventCount)) {
                         var calendar = $("#timeTrackingView").calendarGC({
@@ -145,6 +145,7 @@ function InitTimeLineView(readUrl) {
                     $("#divMainPage").albeTimeline(processedEvents, {
                         effect: "zoomIn",
                         showMenu: true,
+                        sortDesc: true,
                     });
 
                 }
@@ -229,7 +230,6 @@ function GridViewCalendarEvents() {
 
 function TimeLineViewCalendarEvents() {
     try {
-        debugger;
         HideCalendarContextMenu();
         ShowLoadingScreen();
         let calendarGridView = $(timeTrackingViewIds.timeLineViewReadUrl).val();

@@ -10,10 +10,13 @@ from views.Views.Login import Login
 from views.Views.ChartView import ChartView
 from views.Views.DataView import DataView
 from views.Views.Team import Team
+from views.Views.FileUpload import FileUpload
 
 from views.APIs.UserAPI import UserAPI
 from views.APIs.CalendarEventAPI import CalendarEventAPI
 from views.APIs.TeamAPI import TeamAPI
+from views.APIs.FileUploadAPI import FileUploadAPI
+from views.APIs.WorkTimeLineAPI import WorkTimeLineAPI
 
 
 # non functional for testing new controls only 
@@ -21,32 +24,35 @@ from views.Views.Test import Test
 from views.APIs.TestAPI import TestAPI
 
 
-
-app = Flask(__name__)
-app.secret_key = 'HTV-BDNWL-XYZ'
-app.config["SESSION_PERMANENT"] = True
-app.config["PERMANENT_SESSION_LIFETIME"] = 300
-app.config['SESSION_TYPE'] = 'filesystem'
-Session(app)
+App = Flask(__name__)
+App.secret_key = 'HTV-BDNWL-XYZ'
+App.config["SESSION_PERMANENT"] = True
+App.config["PERMANENT_SESSION_LIFETIME"] = 300
+App.config['SESSION_TYPE'] = 'filesystem'
+Session(App)
 
 # register views or controllers here 
-app.register_blueprint(Home)
-app.register_blueprint(Login,url_prefix='/Login/')
-app.register_blueprint(CalendarEvent,url_prefix='/CalendarEvent/')
-app.register_blueprint(User, url_prefix='/User')
-app.register_blueprint(ChartView, url_prefix='/ChartView/')
-app.register_blueprint(DataView, url_prefix='/DataView/')
-app.register_blueprint(TimeTrackingView, url_prefix='/TimeTrackingView/')
-app.register_blueprint(Team,url_prefix="/Team/")
+App.register_blueprint(Home)
+App.register_blueprint(Login,url_prefix='/Login/')
+App.register_blueprint(CalendarEvent,url_prefix='/CalendarEvent/')
+App.register_blueprint(User, url_prefix='/User')
+App.register_blueprint(ChartView, url_prefix='/ChartView/')
+App.register_blueprint(DataView, url_prefix='/DataView/')
+App.register_blueprint(TimeTrackingView, url_prefix='/TimeTrackingView/')
+App.register_blueprint(Team,url_prefix="/Team/")
+App.register_blueprint(FileUpload,url_prefix="/FileUpload/")
 
 # register APIs Views of APIs controllers here
-app.register_blueprint(UserAPI, url_prefix='/api/UserAPI/')
-app.register_blueprint(CalendarEventAPI, url_prefix='/api/CalendarEventAPI/')
-app.register_blueprint(TeamAPI,url_prefix="/api/TeamAPI/")
+App.register_blueprint(UserAPI, url_prefix='/api/UserAPI/')
+App.register_blueprint(CalendarEventAPI, url_prefix='/api/CalendarEventAPI/')
+App.register_blueprint(TeamAPI,url_prefix="/api/TeamAPI/")
+App.register_blueprint(FileUploadAPI, url_prefix='/api/FileUploadAPI/')
+App.register_blueprint(WorkTimeLineAPI, url_prefix='/api/WorkTimeLineAPI/')
+
 
 # temporary testing purpose API
-app.register_blueprint(Test, url_prefix='/Test/')
-app.register_blueprint(TestAPI,url_prefix="/api/TestAPI/")
+App.register_blueprint(Test, url_prefix='/Test/')
+App.register_blueprint(TestAPI,url_prefix="/api/TestAPI/")
 
 if(__name__ == "__main__"):
-    app.run(debug=True)
+    App.run(debug=True)

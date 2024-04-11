@@ -9,7 +9,7 @@ class DatabaseUtilities:
             with pyodbc.connect(connection_string) as conn:
                 return True
         except Exception:
-            raise Exception
+            raise
 
     @staticmethod
     def GetConnection():
@@ -17,7 +17,7 @@ class DatabaseUtilities:
             connection_string = Credentials.ConnectionString
             return pyodbc.connect(connection_string)
         except Exception:
-            raise Exception
+            raise
 
     @staticmethod
     def GetDataTable(query):
@@ -27,7 +27,7 @@ class DatabaseUtilities:
                     return connection.execute(query).fetchall()
                 return []
         except Exception:
-            raise Exception
+            raise
 
     @staticmethod
     def GetListOf(query):
@@ -41,9 +41,10 @@ class DatabaseUtilities:
                     columns = [column[0] for column in cursor.description]
                     for row in dt:
                         results.append(dict(zip(columns, row)))
+                    cursor.close()
                 return results
         except Exception:
-            raise Exception
+            raise
         
     @staticmethod
     def ExecuteNonQuery(query):
@@ -53,6 +54,20 @@ class DatabaseUtilities:
                     cursor = connection.cursor()
                     cursor.execute(query)
                     result = cursor.rowcount
+                    cursor.close()
                     return result
         except Exception:
-            raise Exception
+            raise
+
+    @staticmethod
+    def ExecuteScalar(query):
+        try:
+            with DatabaseUtilities.GetConnection() as connection:   
+                if connection:
+                    cursor = connection.cursor()
+                    cursor.execute(query)
+                    result = cursor.fetchone()[0]
+                    cursor.close()
+                    return result
+        except Exception:
+            raise

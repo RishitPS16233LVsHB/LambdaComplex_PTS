@@ -1,5 +1,7 @@
+from LambdaComplex_DataAccess import UserModule
 from LambdaComplex_DataAccess.DatabaseUtilities import DatabaseUtilities  
 from LambdaComplex_Entities.Tables import Tables
+from LambdaComplex_DataAccess.WorkTimeLineModule import WorkTimeLineModule
 
 class TeamModule:
     @staticmethod
@@ -125,11 +127,15 @@ class TeamModule:
             return result
         except Exception:
             raise
-            
+
+
+
     @staticmethod
     def CreateTeam(teamData):
         try:
             query = f"""
+            SET NOCOUNT ON;
+            DECLARE @InsertedID table(ID varchar(36));
             INSERT INTO {Tables.Team}
             ([TeamName]
             ,[TeamDescription]
@@ -137,6 +143,7 @@ class TeamModule:
             ,[ProjectID]
             ,[CreatedBy]
             ,[ModifiedBy])
+                OUTPUT inserted.ID into @InsertedID
                 VALUES
             (
             '{teamData["TeamName"]}'
@@ -146,8 +153,14 @@ class TeamModule:
             ,'{teamData["UserId"]}'
             ,'{teamData["UserId"]}'
                 )
+            SELECT ID FROM @InsertedID;
             """
-            return DatabaseUtilities.ExecuteNonQuery(query)
+            InsertedID = DatabaseUtilities.ExecuteScalar(query)
+            message = f'Created a new Team named {teamData["TeamName"]}' 
+            UserID = teamData["UserId"]
+            WorkTimeLineModule.CreateWorkTimeLineEntry(message,UserID,InsertedID)
+
+            return 1 
         except Exception:
             raise
 
@@ -164,29 +177,60 @@ class TeamModule:
                 ,[CreatedOn] = [CreatedOn]
             WHERE ID = '{teamData["Id"]}' AND IsDeleted = 0
             """
+
+            UpdateID = teamData["Id"]
+            message = f'Updated Team named {teamData["TeamName"]}' 
+            UserID = teamData["UserId"]
+            WorkTimeLineModule.CreateWorkTimeLineEntry(message,UserID,UpdateID)
+
             return DatabaseUtilities.ExecuteNonQuery(query)
         except Exception:
             raise
 
     @staticmethod
-    def RemoveTeam(teamId):
+    def RemoveTeam(userId,teamId):
         try:
             query = f"""            
             UPDATE {Tables.Team}
-            SET [IsDeleted] = 1
+            SET [IsDeleted] = 1,
+            [ModifiedBy] = '{userId}',
+            [ModifiedOn] = getdate(),
+            [CreatedOn] = [CreatedOn]
             WHERE ID = '{teamId}' AND IsDeleted = 0;
 
             -- to remove team members too 
 
             UPDATE {Tables.TeamMember}
-            SET [IsDeleted] = 1
-            WHERE TeamID = '{teamId}' AND IsDeleted = 0;
+            SET [IsDeleted] = 1,
+            [ModifiedBy] = '{userId}',
+            [ModifiedOn] = getdate(),
+            [CreatedOn] = [CreatedOn]
+            WHERE TeamID = '{teamId}' AND IsDeleted = 0;            
             """
-            return DatabaseUtilities.ExecuteNonQuery(query)
+            DatabaseUtilities.ExecuteNonQuery(query)
+            
+            team = TeamModule.GetTeamData(teamId)
+            teamMembers = TeamModule.GetTeamMemberList(teamId)
+            teamName = team["TeamName"]
+
+            # create Work time line event for main user
+            message = 'Disbanded a team: ' + teamName
+            WorkTimeLineModule.CreateWorkTimeLineEntry(message,userId,teamId)
+            userDetails = UserModule.GetUserDetails(userId)
+            firstName = userDetails["FirstName"]
+            lastName = userDetails["LastName"]
+            fullName = (firstName + "." + lastName)
+
+            # then add to team members timeline
+            for tm in teamMembers:
+                message = f"You were forcefully exited from team {teamName} by Admin {fullName}"
+                teamMemberID = tm["ID"]
+                WorkTimeLineModule.CreateWorkTimeLineEntry(message,teamMemberID,teamId)
+
+            return 1
         except Exception:
             raise
     
-
     @staticmethod
     def AddTeamMember(teamId, teamMemberId, userId):
         try:
@@ -202,18 +246,81 @@ class TeamModule:
                     ,'{userId}'
                     ,'{userId}')
             """
-            return DatabaseUtilities.ExecuteNonQuery(query)
+            DatabaseUtilities.ExecuteNonQuery(query)
+
+            # from Main user perspective                       
+            teamName = TeamModule.GetTeamData(teamId)["TeamName"]
+
+            userDetails = UserModule.GetUserDetails(teamMemberId);
+            firstName = userDetails["FirstName"]
+            lastName = userDetails["LastName"]
+            fullName = (firstName + "." + lastName)            
+
+            WorkTimeLineModule.CreateWorkTimeLineEntry(f'You made changes to team: "{teamName}" by adding a member',userId,teamId)
+            WorkTimeLineModule.CreateWorkTimeLineEntry(f'{fullName} was added as Team member into {teamName}',userId,teamMemberId)
+
+            userDetails = UserModule.GetUserDetails(userId);
+            firstName = userDetails["FirstName"]
+            lastName = userDetails["LastName"]
+            fullName = (firstName + "." + lastName)
+
+            # from team member's perspective
+            WorkTimeLineModule.CreateWorkTimeLineEntry(f'You were added to team {teamName} By Admin: {fullName}',teamMemberId,teamId)
+
+            return 1
+        except Exception:
+            raise
+    
+    @staticmethod
+    def GetTeamMemberRecord(recordId):
+        try:
+            query = f"""            
+            SELECT 
+                [TeamID]
+                ,[TeamMemberID]
+                ,[CreatedBy]
+            FROM {Tables.TeamMember} 
+            WHERE ID = '{recordId}'
+            """
+            return DatabaseUtilities.GetListOf(query)
         except Exception:
             raise
 
     @staticmethod
-    def RemoveTeamMember(recordId):
+    def RemoveTeamMember(userId,recordId):
         try:
             query = f"""            
             UPDATE {Tables.TeamMember}
-            SET [IsDeleted] = 1
+            SET [IsDeleted] = 1,
+            [ModifiedBy] = '{userId}',
+            [ModifiedOn] = getdate(),
+            [CreatedOn] = [CreatedOn]
             WHERE ID = '{recordId}' AND IsDeleted = 0;
             """
-            return DatabaseUtilities.ExecuteNonQuery(query)
+            DatabaseUtilities.ExecuteNonQuery(query)
+
+            teamMemberRecord = TeamModule.GetTeamMemberRecord(recordId)
+            teamId = teamMemberRecord["TeamID"]
+            teamMemberId = teamMemberRecord["TeamMemberID"]
+            
+            userDetails = UserModule.GetUserDetails(teamMemberId);
+            firstName = userDetails["FirstName"]
+            lastName = userDetails["LastName"]
+            fullName = (firstName + "." + lastName)
+            teamName = TeamModule.GetTeamData(teamId)["TeamName"]
+
+            # from Main user perspective            
+            WorkTimeLineModule.CreateWorkTimeLineEntry(f'You made changes to team {teamName} by removing a member {fullName}',userId,teamId)
+            WorkTimeLineModule.CreateWorkTimeLineEntry(f'{fullName} was removed from the team {teamName}',userId,teamMemberId)
+
+            userDetails = UserModule.GetUserDetails(userId)
+            firstName = userDetails["FirstName"]
+            lastName = userDetails["LastName"]
+            fullName = (firstName + "." + lastName)
+
+            # from team member's perspective
+            WorkTimeLineModule.CreateWorkTimeLineEntry(f'You were removed from a team {teamName} By Admin {fullName}',teamMemberId,teamId)
+
+            return 1
         except Exception:
             raise

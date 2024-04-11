@@ -32,7 +32,7 @@ function InitDataView() {
 function InitGridView(resourceURL) {
     try {
         let readUrl = "";
-
+        debugger;
         // to get resources
         AjaxGETRequest(resourceURL,
             function (response) {
@@ -44,7 +44,9 @@ function InitGridView(resourceURL) {
 
                     template = resourceData.Template;
                     readUrl = resourceData.ReadURL;
-                    debugger;
+
+                    if (IsNullOrEmpty(resourceData.CreateViewUrl))
+                        $("#btnCreate").remove();
 
                     createViewUrl = resourceData.CreateViewUrl;
                     updateViewUrl = resourceData.UpdateViewUrl;
@@ -199,6 +201,7 @@ function ReadData(readUrl, options) {
         AjaxGETRequest(readUrl,
             function (response) {
                 response = SafeJSONparse(response);
+                debugger;
                 if (response.WasSuccessful) {
                     options.success(response.Data);
                 }

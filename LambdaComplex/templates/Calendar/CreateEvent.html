@@ -4,13 +4,13 @@
         <div class="card-body">
             <h4 class="card-title">Calendar</h4>
             <p class="card-description">Create Event</p>
-            <form class="forms-sample" id="FORM">
+            <form class="forms-sample" id="FORM" enctype="multipart/form-data">
                 <div class="form-group row">
                     <label for="dtEventDate" class="col-sm-3 col-form-label">Event Date</label><br>
                     <div class="col-sm-9">
                         <input type="date" class="form-control" id="dtEventDate" placeholder="Event date"
-                            valueAttr="{{ selectedCalendarDate }}" required validationMessage="event date is required"
-                            readonly>
+                            valueAttr="{{ selectedCalendarDate }}" value="{{ selectedCalendarDate }}" required
+                            validationMessage="event date is required" readonly>
                     </div>
                 </div>
                 <div class="form-group row">

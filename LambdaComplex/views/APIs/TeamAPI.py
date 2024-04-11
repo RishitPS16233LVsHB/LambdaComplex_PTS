@@ -121,7 +121,6 @@ def InformaticsMemberManagementResource(teamId):
     return jsonify(response.__dict__)
 
 
-
 def ResourcesForDev(userId):
     resource = {};
 
@@ -433,7 +432,8 @@ def CreateTeam():
 def RemoveTeam(teamId):
     try:
         response = Response()
-        result = TeamModule.RemoveTeam(teamId)
+        userId = GetUserSessionDetails()["USER_ID"]
+        result = TeamModule.RemoveTeam(userId,teamId)
         response.Data = result
         response.WasSuccessful = True
     except Exception as ex:
@@ -463,7 +463,8 @@ def AddTeamMember():
 def RemoveTeamMember(recordId):
     try:
         response = Response()
-        result = TeamModule.RemoveTeamMember(recordId)
+        userId = GetUserSessionDetails()["USER_ID"]
+        result = TeamModule.RemoveTeamMember(userId,recordId)
         response.Data = result
         response.WasSuccessful = True
     except Exception as ex:
