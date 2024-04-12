@@ -1,5 +1,6 @@
 import os
 from LambdaComplex_DataAccess.DatabaseUtilities import DatabaseUtilities
+from LambdaComplex_Entities import Credentials
 from LambdaComplex_Entities.Tables import Tables
 
 class FileUploadModule:
@@ -36,7 +37,7 @@ class FileUploadModule:
                         SELECT @InsertID + '-{f["filename"]}' as [FileName]
                 """
                 fileName = DatabaseUtilities.ExecuteScalar(query)
-                f['file'].save("D:\\LambdaComplex\\LambdaComplex\\static\\Uploads" + "\\" + fileName)
+                f['file'].save(Credentials.RootPath.replace('/','\\') + "\\static\\Uploads\\" + fileName)
         except Exception:
             raise
 

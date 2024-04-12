@@ -415,7 +415,6 @@ function DecodeHtmlEntities(htmlString) {
 }
 
 function DownloadFile(fileName) {
-    debugger;
     // Static URL
     var url = `/static/Uploads/` + fileName;
 

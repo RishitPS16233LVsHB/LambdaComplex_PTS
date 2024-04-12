@@ -2,6 +2,7 @@ from flask import Flask, session
 
 from flask_session import Session
 
+from LambdaComplex_Entities import Credentials
 from views.Views.Home import Home
 from views.Views.CalendarEvent import CalendarEvent
 from views.Views.TimeTrackingView import TimeTrackingView
@@ -30,6 +31,8 @@ App.config["SESSION_PERMANENT"] = True
 App.config["PERMANENT_SESSION_LIFETIME"] = 300
 App.config['SESSION_TYPE'] = 'filesystem'
 Session(App)
+
+Credentials.RootPath = App.root_path
 
 # register views or controllers here 
 App.register_blueprint(Home)

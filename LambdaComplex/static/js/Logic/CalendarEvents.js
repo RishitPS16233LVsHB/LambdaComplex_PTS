@@ -166,16 +166,8 @@ function InitCalendarEventCreate() {
             ]
         });
 
-        // // Initialize Date Picker
-        // var selectedDate = $(calendarEventIds.eventDate).kendoDatePicker();
-        // var sd = new Date($(calendarEventIds.eventDate).attr("valueAttr"));
-        // if (!IsNullOrEmpty($(calendarEventIds.eventDate).attr("valueAttr")))
-        //     selectedDate.data("kendoDatePicker").value(sd);
-
-        // // Initialize Time Picker
-        // var selectedTime = $(calendarEventIds.eventTime).kendoTimePicker();
-        // if (!IsNullOrEmpty($(calendarEventIds.eventTime).attr("valueAttr")))
-        //     selectedTime.data("kendoTimePicker").value($(calendarEventIds.eventTime).attr("valueAttr"));
+        var dateString = new Date($(calendarEventIds.eventDate).attr('valueAttr')).toISOString().slice(0, 10);
+        $(calendarEventIds.eventDate).val(dateString);
     }
     catch (ex) {
         toastr.error("error while initing the calendar event create view: " + ex.message);

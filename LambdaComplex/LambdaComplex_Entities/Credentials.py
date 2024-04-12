@@ -1,4 +1,6 @@
 class Credentials:
+    RootPath = ""
+
     # Database Credentials
     DBUserName = "Server_Admin"
     DBPassword = "root"
