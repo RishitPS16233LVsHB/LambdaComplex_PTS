@@ -1,0 +1,31 @@
+{% block content %}
+<div class="col-md-12 grid-margin stretch-card">
+    <div class="card">
+        <div class="card-body">
+            <h4 class="card-title">Projects <i class="mdi mdi-account-key"></i></h4>
+            <p class="card-description">Create project</p>
+            <form class="forms-sample" id="FORM">
+                <div class="form-group row">
+                    <label for="txtProjectName" class="col-sm-3 col-form-label">Project Name:</label>
+                    <div class="col-sm-9">
+                        <input type="text" class="form-control" id="txtProjectName" placeholder="Project Name" >
+                    </div>                                        
+                </div>
+                <div class="form-group row">
+                    <label for="txtProjectDescription" class="col-sm-3 col-form-label">Project Description:</label>                    
+                    <br>                    
+                    <div class="col-sm-9">
+                        <textarea class="form-control" id="txtProjectDescription" placeholder="" rows="10" >
+                        </textarea>                                        
+                    </div>                                                            
+                </div>                
+                <button type="button" class="btn btn-gradient-primary me-2" onclick="">Create Project</button>
+            </form>
+        </div>
+    </div>
+</div>
+<script>
+$(document).ready(function () {
+    $("#txtProjectDescription").kendoEditor();
+});
+</script>
