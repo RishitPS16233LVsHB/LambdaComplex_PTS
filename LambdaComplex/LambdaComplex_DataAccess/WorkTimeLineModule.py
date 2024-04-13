@@ -40,7 +40,7 @@ class WorkTimeLineModule:
                 MDT.[AffectedModule],
                 UM.[ID] as [ActionDoneByID],
                 UM.[FirstName] + '.' + UM.[LastName] as [ActionDoneBy]
-            FROM [LambdaComplex].[dbo].[LambdaComplex_WorkTimeline_Trn_Tbl] WT
+            FROM {Tables.WorkTimeLine} WT
             INNER JOIN
             (
                 SELECT 

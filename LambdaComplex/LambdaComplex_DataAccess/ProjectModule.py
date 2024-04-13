@@ -60,44 +60,105 @@ class ProjectModule:
             raise
     
     @staticmethod
-    def UpdateProject(projectData):    
+    def ChildCRUpdateProject(projectData):       
         try:
             query = f"""
-            UPDATE {Tables.Project} SET
-            [Name] = '{projectData["ProjectName"]}'
-            ,[Description] = '{projectData["ProjectDescription"]}'
-            ,[RunningStatus] = -1
-            ,[ModifiedBy] = '{projectData["UserId"]}'
-            ,[IsStable] = 0
-            ,[Version] = [Version]
-            ,[ReportingStatus] = '{projectData["ReportingStatus"]}'
-            ,[Deadline] = cast('{projectData["Deadline"]}' as datetime)
-            WHERE [ID] = '{projectData["ID"]}' AND [IsDeleted] = 0;
-             
-             INSERT INTO {Tables.ProjectChanges}
-            ([RecordID]
-            ,[Name]
-            ,[Description]
-            ,[RunningStatus]
-            ,[CreatedBy]
-            ,[ModifiedBy]
-            ,[IsStable]
-            ,[Version]
-            ,[ReportingStatus]
-            ,[Deadline])
-        VALUES
-            ('{projectData["ID"]}'
-            ,'{projectData["ProjectName"]}'
-            ,'{projectData["ProjectDescription"]}'
-            ,-1   
-            ,'{projectData["UserId"]}'
-            ,'{projectData["UserId"]}'
-            ,0
-            ,1
-            ,'{projectData["ReportingStatus"]}'
-            ,cast('{projectData["Deadline"]}' as datetime));
+                INSERT INTO {Tables.ProjectChanges}
+                ([RecordID]
+                ,[Name]
+                ,[Description]
+                ,[RunningStatus]
+                ,[CreatedBy]
+                ,[ModifiedBy]
+                ,[IsStable]
+                ,[Version]
+                ,[ReportingStatus]
+                ,[Deadline])
+                 VALUES
+                ('{projectData["ID"]}'
+                ,'{projectData["ProjectName"]}'
+                ,'{projectData["ProjectDescription"]}'
+                ,-1   
+                ,'{projectData["UserId"]}'
+                ,'{projectData["UserId"]}'
+                ,0
+                ,1
+                ,'CR'
+                ,cast('{projectData["Deadline"]}' as datetime));
             """
             
             DatabaseUtilities.ExecuteNonQuery(query)
         except Exception:
             raise
+
+    @staticmethod
+    def ChildPRUpdateProject(projectData):       
+        try:
+            query = f"""
+                INSERT INTO {Tables.ProjectChanges}
+                ([RecordID]
+                ,[Name]
+                ,[Description]
+                ,[RunningStatus]
+                ,[CreatedBy]
+                ,[ModifiedBy]
+                ,[IsStable]
+                ,[Version]
+                ,[ReportingStatus]
+                ,[Deadline])
+                 VALUES
+                ('{projectData["ID"]}'
+                ,'{projectData["ProjectName"]}'
+                ,'{projectData["ProjectDescription"]}'
+                ,-1   
+                ,'{projectData["UserId"]}'
+                ,'{projectData["UserId"]}'
+                ,0
+                ,1
+                ,'PR'
+                ,cast('{projectData["Deadline"]}' as datetime));
+            """
+            
+            DatabaseUtilities.ExecuteNonQuery(query)
+        except Exception:
+            raise
+
+    @staticmethod
+    def ParentUpdateProject(projectData):       
+        try:
+            query = f"""
+                INSERT INTO {Tables.ProjectChanges}
+                ([RecordID]
+                ,[Name]
+                ,[Description]
+                ,[RunningStatus]
+                ,[CreatedBy]
+                ,[ModifiedBy]
+                ,[IsStable]
+                ,[Version]
+                ,[ReportingStatus]
+                ,[Deadline])
+                 VALUES
+                ('{projectData["ID"]}'
+                ,'{projectData["ProjectName"]}'
+                ,'{projectData["ProjectDescription"]}'
+                ,-1   
+                ,'{projectData["UserId"]}'
+                ,'{projectData["UserId"]}'
+                ,1
+                ,1
+                ,'PAR'
+                ,cast('{projectData["Deadline"]}' as datetime));
+            """
+            
+            DatabaseUtilities.ExecuteNonQuery(query)
+        except Exception:
+            raise
+
+    # @staticmethod
+    # def GetProjectDetails(projectID):
+    #     try:
+
+
+    #     except Exception:
+    #         raise
