@@ -1,0 +1,46 @@
+{% block content %}
+<div class="content-wrapper" style="overflow-y: auto;overflow-x: auto;" id="divMainPage">
+    <!-- paste your testing forms here -->
+    <div class="col-md-12 grid-margin stretch-card">
+        <div class="card">
+            <div class="card-body">
+                <h1>Compose Email</h1>
+                <form class="forms-sample">
+                    <div class="form-group row">
+                        <div class="col-sm-12">
+                            <input type="email" class="form-control" id="txtTo" placeholder="Recipient email" required>
+                        </div>
+                    </div>
+                    <div class="form-group row">
+                        <div class="col-sm-10">
+                            <input type="text" class="form-control" id="txtSubject" placeholder="Subject" required>
+                        </div>
+                        
+                        <div class="col-sm-2">
+                            <button type="button" class="btn btn-outline-danger"><i class="mdi mdi-delete"></i></button>
+                            <button type="button" class="btn btn-outline-warning"><i class="mdi mdi-attachment"></i></button>
+                        </div>
+                    </div>
+                    <div class="form-group row">
+                        <div class="col-sm-12">
+                            <div class="form-group row">
+                                <textarea id="txtBody" rows="15" placeholder="message" name="txtBody"></textarea>
+                            </div>                                        
+                        </div>                                            
+                    </div>
+                    <div class="form-group row">
+                        <div class="col-sm-12">
+                            <button type="submit" class="btn btn-gradient-primary me-2">Send</button>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+    <script>
+        $(document).ready(function () {
+            $("#txtBody").kendoEditor();            
+        });
+    </script>
+
+{% endblock %}
