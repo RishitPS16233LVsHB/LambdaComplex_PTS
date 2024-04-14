@@ -36,6 +36,7 @@
     <script src="/static/js/Logic/TimeTrackingView.js"></script>
     <script src="/static/js/Logic/Team.js"></script>
     <script src="/static/js/Logic/FileUpload.js"></script>
+    <script src="/static/js/Logic/Project.js"></script>
 
     <script>
         $(document).ready(function () {
@@ -76,7 +77,7 @@
                     </li>
 
                     <li class="nav-item dropdown">
-                        <a class="nav-link count-indicator"">
+                        <a class="nav-link count-indicator">
                             <i class=" mdi mdi-email-outline"></i>
                             <span class="count-symbol bg-warning"></span>
                         </a>
@@ -168,7 +169,7 @@
                     </li>
 
                     <li class="nav-item">
-                        <a class="nav-link" href="#">
+                        <a class="nav-link" onclick="LoadGridView('ProjectAPI/Resource/')">
                             <span class="menu-title">Projects</span>
                             <i class="mdi mdi-home-modern menu-icon"></i>
                         </a>

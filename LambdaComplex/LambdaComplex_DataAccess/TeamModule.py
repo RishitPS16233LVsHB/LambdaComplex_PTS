@@ -207,9 +207,10 @@ class TeamModule:
             [CreatedOn] = [CreatedOn]
             WHERE TeamID = '{teamId}' AND IsDeleted = 0;            
             """
-            DatabaseUtilities.ExecuteNonQuery(query)
+            if DatabaseUtilities.ExecuteNonQuery(query) == 0:
+                return
             
-            team = TeamModule.GetTeamData(teamId)
+            team = TeamModule.GetTeamData(teamId)[0]
             teamMembers = TeamModule.GetTeamMemberList(teamId)
             teamName = team["TeamName"]
 
@@ -297,7 +298,9 @@ class TeamModule:
             [CreatedOn] = [CreatedOn]
             WHERE ID = '{recordId}' AND IsDeleted = 0;
             """
-            DatabaseUtilities.ExecuteNonQuery(query)
+            if DatabaseUtilities.ExecuteNonQuery(query) == 0:
+                return
+
 
             teamMemberRecord = TeamModule.GetTeamMemberRecord(recordId)
             teamId = teamMemberRecord["TeamID"]

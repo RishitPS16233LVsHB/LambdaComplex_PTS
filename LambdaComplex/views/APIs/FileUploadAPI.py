@@ -124,3 +124,54 @@ def FileListResource(recordId):
         response.WasSuccessful = False
 
     return jsonify(response.__dict__)
+
+
+@FileUploadAPI.route('/ReadOnlyFileListResource/<recordId>',methods=['GET'])
+@SessionManagement('Admin,Lead,Dev')
+def ReadOnlyFileListResource(recordId):
+    try:
+        response = Response()
+        resource = {};
+
+        resource["Fields"] = {
+                "ID" : {"type" : "string"},
+                "FileName" : {"type" : "string"},                
+                "FileType" : {"type" : "string"},
+                "CreatedOn" : {"type" : "string"},
+                "StoredFileName" : {"type" : "string"},
+            }
+        resource["GridHeight"] = "500px"
+        resource["Columns"] = [
+            {
+                "title" : "Download",
+                "template": "<button class=\"btn btn-outline-warning\" onclick='DownloadFile(\"#: StoredFileName #\")'> <i class=\"mdi mdi-file-multiple\"> </button>",
+                "excludeFromExport": True,
+                "width":80,
+            },
+            {
+                "field" : "FileName",
+                "title" : "Filename",
+                "width":200,
+            },
+            {
+                "field" : "FileType",
+                "title" : "Filetype",
+                "width":200,
+            },
+            {
+                "field" : "CreatedOn",
+                "title" : "Upload date",
+                "format" : "{0:dd/MM/ yyyy}",
+                "width": 200,            
+            },  
+        ]
+
+        resource["ReadURL"] = "FileUploadAPI/FileList/"+recordId
+        response.Data = resource
+        response.WasSuccessful = True
+
+    except Exception as ex:
+        response.Message = str(ex)
+        response.WasSuccessful = False
+
+    return jsonify(response.__dict__)

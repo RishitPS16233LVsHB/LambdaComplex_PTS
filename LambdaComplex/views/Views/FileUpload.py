@@ -7,3 +7,8 @@ FileUpload = Blueprint("FileUpload",__name__)
 @SessionManagement('Admin,Lead,Dev')
 def Index(recordId):
     return render_template('FileUpload/Upload.html', recordId = recordId)
+
+@FileUpload.route('/FileReadOnly/<recordId>')
+@SessionManagement('Admin,Lead,Dev')
+def ReadOnly(recordId):
+    return render_template('FileUpload/ReadOnly.html', recordId = recordId)

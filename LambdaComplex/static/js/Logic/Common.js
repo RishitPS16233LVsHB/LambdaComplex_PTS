@@ -11,6 +11,44 @@ const sessionIds = {
     role: "#ROLE",
     userName: "#USERNAME",
 };
+
+function kendoEditorConfig(value) {
+    return {
+        encoded: true,
+        value: value,
+        tools: [
+            "bold", "italic", "underline", "undo", "redo", "justifyLeft", "justifyCenter", "justifyRight", "insertUnorderedList",
+            "createLink", "unlink", "tableWizard", "tableProperties", "tableCellProperties", "createTable",
+            "addRowAbove", "addRowBelow", "addColumnLeft", "addColumnRight", "deleteRow", "deleteColumn", "mergeCellsHorizontally",
+            "mergeCellsVertically", "splitCellHorizontally", "splitCellVertically", "tableAlignLeft", "tableAlignCenter",
+            "tableAlignRight", "formatting",
+            {
+                name: "fontName",
+                items: [
+                    { text: "Andale Mono", value: "\"Andale Mono\"" }, // Font-family names composed of several words should be wrapped in \" \"
+                    { text: "Arial", value: "Arial" },
+                    { text: "Arial Black", value: "\"Arial Black\"" },
+                    { text: "Book Antiqua", value: "\"Book Antiqua\"" },
+                    { text: "Comic Sans MS", value: "\"Comic Sans MS\"" },
+                    { text: "Courier New", value: "\"Courier New\"" },
+                    { text: "Georgia", value: "Georgia" },
+                    { text: "Helvetica", value: "Helvetica" },
+                    { text: "Impact", value: "Impact" },
+                    { text: "Symbol", value: "Symbol" },
+                    { text: "Tahoma", value: "Tahoma" },
+                    { text: "Terminal", value: "Terminal" },
+                    { text: "Times New Roman", value: "\"Times New Roman\"" },
+                    { text: "Trebuchet MS", value: "\"Trebuchet MS\"" },
+                    { text: "Verdana", value: "Verdana" },
+                ]
+            },
+            "fontSize",
+            "foreColor",
+            "backColor",
+        ]
+    };
+}
+
 /**
  * Makes an HTTP GET request to the provided URL.
  * @param {string} url The URL to make the GET request to.
@@ -360,6 +398,10 @@ function LoadTimeLineView(resourceUrl, isAsync, isLoader, element = "#divMainPag
  */
 function LoadFileSubmissionView(recordId, isAsync, isLoader, element = "#divMainPage") {
     SetViewInMainPageUsingGet('FileUpload/Upload/' + recordId, isAsync, isLoader, element);
+}
+
+function LoadReadOnlyFileView(recordId, isAsync, isLoader, element = "#divMainPage") {
+    SetViewInMainPageUsingGet('FileUpload/FileReadOnly/' + recordId, isAsync, isLoader, element);
 }
 
 /**

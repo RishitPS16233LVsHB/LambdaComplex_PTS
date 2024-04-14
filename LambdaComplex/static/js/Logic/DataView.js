@@ -32,11 +32,11 @@ function InitDataView() {
 function InitGridView(resourceURL) {
     try {
         let readUrl = "";
-        debugger;
         // to get resources
+        debugger;
         AjaxGETRequest(resourceURL,
             function (response) {
-
+                debugger;
                 if (response.WasSuccessful) {
 
                     var resourceData = response.Data;
@@ -107,15 +107,6 @@ function InitGridView(resourceURL) {
                                 var id = $(this).attr("id").replace("ratingBar", "");
                                 $(this).kendoRating({
                                     value: grid.dataItem("tr").Rating
-                                });
-                            });
-
-                            grid.tbody.find("[id^='badge']").each(function () {
-                                var id = $(this).attr("id").replace("badge", "");
-                                var availability = grid.dataItem("tr").availability;
-                                $(this).kendoBadge({
-                                    themeColor: availability ? "success" : "error",
-                                    text: availability ? "available" : "not available   "
                                 });
                             });
                         },
@@ -195,15 +186,17 @@ function InitListView(resourceURL) {
     }
 }
 
-
 function ReadData(readUrl, options) {
     try {
         AjaxGETRequest(readUrl,
             function (response) {
                 response = SafeJSONparse(response);
-                debugger;
                 if (response.WasSuccessful) {
-                    options.success(response.Data);
+
+                    if (!IsNullOrEmpty(response.Data))
+                        options.success(response.Data);
+                    else
+                        options.error(null);
                 }
                 else {
                     options.error(null);

@@ -3,19 +3,21 @@
     <div class="card">
         <div class="card-body">
             <h4 class="card-title">Projects</h4>
-            <p class="card-description">Create project</p>
+            <p class="card-description">Update project</p>
             <form class="forms-sample" id="FORM">
+                <input type="hidden" id="hdnProjectId" value="{{ recordID }}">
                 <div class="form-group row">
                     <label for="txtProjectName" class="col-sm-3 col-form-label">Project Name:</label>
                     <div class="col-sm-9">
-                        <input type="text" class="form-control" id="txtProjectName" placeholder="Project Name" required>
+                        <input type="text" class="form-control" id="txtProjectName" placeholder="Project Name" required
+                            value="{{ projectName }}" readonly>
                     </div>
                 </div>
                 <div class="form-group row">
                     <label for="txtProjectName" class="col-sm-3 col-form-label">Expected Deadline:</label>
                     <div class="col-sm-9">
                         <input type="date" class="form-control" id="dtExpectedDeadLine" placeholder="Expected deadline"
-                            required>
+                            valueAttr="{{ expectedDeadline }}" required>
                     </div>
                 </div>
                 <div class="form-group row">
@@ -23,6 +25,7 @@
                     <br>
                     <div class="col-sm-9">
                         <textarea class="form-control" id="txtProjectDescription" placeholder="" rows="10" required>
+                            {{ projectDescription }}
                         </textarea>
                     </div>
                 </div>
@@ -31,7 +34,7 @@
                     <br>
                     <div class="col-sm-9">
                         <input type="text" class="form-control" id="txtProjectRemarks" placeholder="Project remarks"
-                            required>
+                            value="{{ projectRemarks }}" required>
                     </div>
                 </div>
                 <div class="form-group row">
@@ -39,10 +42,10 @@
                     <br>
                     <div class="col-sm-9">
                         <input type="text" class="form-control" id="rtProjectRating" placeholder="Project rating"
-                            required>
+                            value="{{ projectRating }}" valueAttr="{{ projectRating }}" required>
                     </div>
                 </div>
-                <button type="button" class="btn btn-gradient-primary me-2" onclick="CreateProject()">Create
+                <button type="button" class="btn btn-gradient-primary me-2" onclick="UpdateProject()">Update
                 </button>
             </form>
         </div>
@@ -50,7 +53,7 @@
 </div>
 <script>
     $(document).ready(function () {
-        InitProjectCreate();
+        InitProjectUpdate();
     });
 </script>
 {% endblock %}

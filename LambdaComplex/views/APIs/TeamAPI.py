@@ -154,7 +154,7 @@ def ResourcesForDev(userId):
             "width": 200,            
         },
         {
-            "field" : "TeamDescriptiom",
+            "field" : "TeamDescription",
             "title" : "Team description",
             "width":200,
             "encoded": False,
@@ -225,7 +225,7 @@ def ResourcesForLead(userId):
             "width":200,            
         },        
         {
-            "field" : "TeamDescriptiom",
+            "field" : "TeamDescription",
             "title" : "Team description",
             "width":200,
             "encoded": False,
@@ -316,7 +316,7 @@ def ResourcesForAdmin(userId):
         {
             "field" : "CreatedOn",
             "title" : "Team creation date",
-            "format" : "{0:dd/MM/ yyyy}",
+            "format" : "{0:dd/MM/yyyy}",
             "width":200,            
         },
         {

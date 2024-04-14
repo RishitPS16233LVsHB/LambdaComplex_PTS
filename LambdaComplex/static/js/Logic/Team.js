@@ -101,40 +101,7 @@ function LoadTeamManagementView(teamId) {
 function InitTeamCreate() {
     try {
 
-        var editor = $(teamIds.teamDescription).kendoEditor({
-            encoded: true,
-            value: $(teamIds.teamDescription).val(),
-            tools: [
-                "bold", "italic", "underline", "undo", "redo", "justifyLeft", "justifyCenter", "justifyRight", "insertUnorderedList",
-                "createLink", "unlink", "tableWizard", "tableProperties", "tableCellProperties", "createTable",
-                "addRowAbove", "addRowBelow", "addColumnLeft", "addColumnRight", "deleteRow", "deleteColumn", "mergeCellsHorizontally",
-                "mergeCellsVertically", "splitCellHorizontally", "splitCellVertically", "tableAlignLeft", "tableAlignCenter",
-                "tableAlignRight", "formatting",
-                {
-                    name: "fontName",
-                    items: [
-                        { text: "Andale Mono", value: "\"Andale Mono\"" }, // Font-family names composed of several words should be wrapped in \" \"
-                        { text: "Arial", value: "Arial" },
-                        { text: "Arial Black", value: "\"Arial Black\"" },
-                        { text: "Book Antiqua", value: "\"Book Antiqua\"" },
-                        { text: "Comic Sans MS", value: "\"Comic Sans MS\"" },
-                        { text: "Courier New", value: "\"Courier New\"" },
-                        { text: "Georgia", value: "Georgia" },
-                        { text: "Helvetica", value: "Helvetica" },
-                        { text: "Impact", value: "Impact" },
-                        { text: "Symbol", value: "Symbol" },
-                        { text: "Tahoma", value: "Tahoma" },
-                        { text: "Terminal", value: "Terminal" },
-                        { text: "Times New Roman", value: "\"Times New Roman\"" },
-                        { text: "Trebuchet MS", value: "\"Trebuchet MS\"" },
-                        { text: "Verdana", value: "Verdana" },
-                    ]
-                },
-                "fontSize",
-                "foreColor",
-                "backColor",
-            ]
-        });
+        var editor = $(teamIds.teamDescription).kendoEditor(kendoEditorConfig);
 
         $(teamIds.leader).kendoComboBox({
             placeholder: "Select Leader...",
@@ -144,6 +111,27 @@ function InitTeamCreate() {
                 transport: {
                     read: function (options) {
                         var result = QuickAPIRead('UserAPI/GetLeads');
+                        if (result)
+                            options.success(result);
+                    }
+                }
+            },
+            filter: "contains",
+            suggest: true,
+            separator: ", ",
+            change: function (e) {
+
+            }
+        });
+
+        $(teamIds.project).kendoComboBox({
+            placeholder: "Select Project...",
+            dataTextField: "Name",
+            dataValueField: "ID",
+            dataSource: {
+                transport: {
+                    read: function (options) {
+                        var result = QuickAPIRead('ProjectAPI/GetProjects');
                         if (result)
                             options.success(result);
                     }

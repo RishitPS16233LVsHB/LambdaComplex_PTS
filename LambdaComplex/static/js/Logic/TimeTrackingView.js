@@ -9,6 +9,11 @@ var timeTrackingViewIds = {
     calendarSelectedDate: "#CALENDAR_SELECTED_DATE",
     // timeline view
     timeLineViewReadUrl: "#TIMELINE_READ_URL",
+
+    // context buttons
+    contextCreate: "#CreateCalendar",
+    contextGridView: "#GridViewCalendar",
+    contextTimeLineView: "#TimeLineViewCalendar",
 };
 
 
@@ -45,12 +50,23 @@ function InitCalendarView(resourceURL) {
 
                     var calendarReadUrl = resourceData.CalendarReadUrl
                     $(timeTrackingViewIds.calendarReadUrl).val(calendarReadUrl);
-                    $(timeTrackingViewIds.calendarCreateViewUrl).val(resourceData.CreateViewUrl);
-                    $(timeTrackingViewIds.calendarGridViewResourceUrl).val(resourceData.GridViewResourceUrl);
-                    $(timeTrackingViewIds.timeLineViewReadUrl).val(resourceData.TimeLineViewReadUrl);
+
+                    if (!IsNullOrEmpty(resourceData.CreateViewUrl))
+                        $(timeTrackingViewIds.calendarCreateViewUrl).val(resourceData.CreateViewUrl);
+                    else
+                        $(timeTrackingViewIds.contextCreate).remove();
+
+                    if (!IsNullOrEmpty(resourceData.GridViewResourceUrl))
+                        $(timeTrackingViewIds.calendarGridViewResourceUrl).val(resourceData.GridViewResourceUrl);
+                    else
+                        $(timeTrackingViewIds.contextGridView).remove();
+
+                    if (!IsNullOrEmpty(resourceData.TimeLineViewReadUrl))
+                        $(timeTrackingViewIds.timeLineViewReadUrl).val(resourceData.TimeLineViewReadUrl);
+                    else
+                        $(timeTrackingViewIds.contextTimeLineView).remove();
 
                     var eventCount = QuickAPIRead(calendarReadUrl);
-                    debugger;
                     // init blank calendar incase of data read failure
                     if (eventCount.length == 0 || IsNullOrEmpty(eventCount)) {
                         var calendar = $("#timeTrackingView").calendarGC({
@@ -67,8 +83,6 @@ function InitCalendarView(resourceURL) {
                         });
                         return;
                     }
-
-
                     var events = [];
                     for (var i = 0; i < eventCount.length; i++) {
                         events.push({
@@ -186,7 +200,6 @@ function HideCalendarContextMenu() {
     contextMenu.style.display = 'none';
 }
 
-
 function CreateCalendar() {
     try {
         HideCalendarContextMenu();
@@ -244,8 +257,6 @@ function TimeLineViewCalendarEvents() {
         toastr.error("Error while loading the Create view: " + ex.message);
     }
 }
-
-
 
 function OtherWay() {
     try {

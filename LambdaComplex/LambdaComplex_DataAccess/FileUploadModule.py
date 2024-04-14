@@ -59,7 +59,6 @@ class FileUploadModule:
         except Exception:
             raise
 
-
     @staticmethod
     def GetFileSubmission(recordId):
         try:

@@ -1,0 +1,22 @@
+{% block content %}
+<div class="col-md-12 grid-margin stretch-card">
+    <div class="card">
+        <div class="card-body">
+            <h4 class="card-title">File</h4>
+            <p class="card-description">List Uploaded files</p>
+            <form class="forms-sample" id="FORM" enctype="multipart/form-data">
+                <input type="hidden" id="hdnRecordId" value="{{recordId}}" />
+            </form>
+            <div id="grdFileList">
+
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    $(document).ready(function () {
+        InitReadOnlyFile();
+    });
+</script>
+{% endblock %}

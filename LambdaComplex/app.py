@@ -5,6 +5,7 @@ from flask_session import Session
 from LambdaComplex_Entities import Credentials
 from views.Views.Home import Home
 from views.Views.CalendarEvent import CalendarEvent
+from views.Views.Project import Project
 from views.Views.TimeTrackingView import TimeTrackingView
 from views.Views.User import User
 from views.Views.Login import Login
@@ -18,6 +19,7 @@ from views.APIs.CalendarEventAPI import CalendarEventAPI
 from views.APIs.TeamAPI import TeamAPI
 from views.APIs.FileUploadAPI import FileUploadAPI
 from views.APIs.WorkTimeLineAPI import WorkTimeLineAPI
+from views.APIs.ProjectAPI import ProjectAPI
 
 
 # non functional for testing new controls only 
@@ -44,6 +46,7 @@ App.register_blueprint(DataView, url_prefix='/DataView/')
 App.register_blueprint(TimeTrackingView, url_prefix='/TimeTrackingView/')
 App.register_blueprint(Team,url_prefix="/Team/")
 App.register_blueprint(FileUpload,url_prefix="/FileUpload/")
+App.register_blueprint(Project,url_prefix="/Project/")
 
 # register APIs Views of APIs controllers here
 App.register_blueprint(UserAPI, url_prefix='/api/UserAPI/')
@@ -51,7 +54,7 @@ App.register_blueprint(CalendarEventAPI, url_prefix='/api/CalendarEventAPI/')
 App.register_blueprint(TeamAPI,url_prefix="/api/TeamAPI/")
 App.register_blueprint(FileUploadAPI, url_prefix='/api/FileUploadAPI/')
 App.register_blueprint(WorkTimeLineAPI, url_prefix='/api/WorkTimeLineAPI/')
-
+App.register_blueprint(ProjectAPI, url_prefix='/api/ProjectAPI/')
 
 # temporary testing purpose API
 App.register_blueprint(Test, url_prefix='/Test/')

@@ -14,6 +14,16 @@ function InitFileUpload() {
     }
 }
 
+function InitReadOnlyFile() {
+    try {
+        var recordId = $(fileUploadIds.recordId).val();
+        LoadGridView('FileUploadAPI/ReadOnlyFileListResource/' + recordId, true, true, fileUploadIds.fileList);
+    }
+    catch (ex) {
+        toastr.error("Error while initing File Upload: " + ex.message);
+    }
+}
+
 function UploadFilesToServer() {
     try {
         var recordId = $(fileUploadIds.recordId).val();
