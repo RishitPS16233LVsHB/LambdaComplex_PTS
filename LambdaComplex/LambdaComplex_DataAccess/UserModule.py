@@ -28,6 +28,29 @@ class UserModule:
             return users
         except Exception:
             raise
+
+    @staticmethod
+    def GetLeadNamesAndIdsOfTeamInProject(projectId):
+        try:
+            query = f"""
+            SELECT 
+                [ID], 
+                ([FirstName] + '.' + [LastName]) as [UserName] 
+                FROM {Tables.User} 
+                WHERE 
+                    lower([Role]) = 'lead' AND 
+                    IsDeleted = 0 AND
+                    ID in 
+                    (
+                        SELECT [LeaderID] 
+                        FROM {Tables.Team}
+                        WHERE ProjectID = '{projectId}'
+                    )
+                """
+            users = DatabaseUtilities.GetListOf(query)
+            return users
+        except Exception:
+            raise
     
     @staticmethod
     def UpdateUserDetails(userDetails):

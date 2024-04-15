@@ -33,10 +33,8 @@ function InitGridView(resourceURL) {
     try {
         let readUrl = "";
         // to get resources
-        debugger;
         AjaxGETRequest(resourceURL,
             function (response) {
-                debugger;
                 if (response.WasSuccessful) {
 
                     var resourceData = response.Data;

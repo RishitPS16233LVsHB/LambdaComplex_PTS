@@ -66,7 +66,6 @@ def ChangePassword():
 
     return jsonify(response.__dict__)
 
-
 @UserAPI.route('/GetDevs/', methods = ['GET'])
 @SessionManagement('Admin')
 def GetDevs():
@@ -87,6 +86,20 @@ def GetLeads():
     try:
         response = Response()        
         result = UserModule.GetLeadNamesAndIds()
+        response.Data  = result
+        response.WasSuccessful = True
+    except Exception as ex:
+        response.Message = str(ex)
+        response.WasSuccessful = False
+
+    return jsonify(response.__dict__)
+
+@UserAPI.route('/GetLeadsOfProject/<projectId>', methods = ['GET'])
+@SessionManagement('Admin,Lead')
+def GetLeadsOfProject(projectId):
+    try:
+        response = Response()        
+        result = UserModule.GetLeadNamesAndIdsOfTeamInProject(projectId)
         response.Data  = result
         response.WasSuccessful = True
     except Exception as ex:

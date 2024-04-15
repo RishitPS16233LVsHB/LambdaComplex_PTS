@@ -206,8 +206,8 @@ class ProjectModule:
                     PCT.[IsDeleted] = 0 AND
                     PCT.[RecordID] in (
                         SELECT 
-                            PM.[ProjectID]
-                        FROM {Tables.Team}
+                            TM.[ProjectID]
+                        FROM {Tables.Team} TM
                         WHERE 
                             [IsDeleted] = 0 AND
                             [LeaderID] = '{userId}'

@@ -45,7 +45,7 @@ def MemberManagementResource(teamId):
                 "ID" : {"type" : "string"},
                 "FirstName" : {"type" : "string"},
                 "LastName" : {"type": "string"},
-                "EmailId": {"type": "string"}, 
+                "EmailID": {"type": "string"}, 
             }
 
         # Grid View only
@@ -67,7 +67,48 @@ def MemberManagementResource(teamId):
                 "width":200,
             },
             {
-                "field" : "EmailId",
+                "field" : "EmailID",
+                "title" : "Email Id",
+                "width":200,
+            },        
+        ]
+        response.Data = resource
+        response.WasSuccessful = True
+    except Exception as ex:
+        response.message = str(ex)
+        response.WasSuccessful = False 
+    return jsonify(response.__dict__)
+
+@TeamAPI.route('/ListMemberResource/<teamId>')
+@SessionManagement('Admin,Lead,Dev')
+def ListMemberResource(teamId):
+    try:
+        response = Response()
+        resource = {}
+        resource["ReadURL"] = "TeamAPI/GetTeamMemberList/" + teamId
+        resource["GridHeight"] = "500px"
+        resource["Fields"] = {
+                "RecordID" : {"type" : "string"},
+                "ID" : {"type" : "string"},
+                "FirstName" : {"type" : "string"},
+                "LastName" : {"type": "string"},
+                "EmailID": {"type": "string"}, 
+            }
+
+        # Grid View only
+        resource["Columns"] = [            
+            {
+                "field" : "FirstName",
+                "title" : "First name",
+                "width":200,
+            },
+            {
+                "field" : "LastName",
+                "title" : "Last name",
+                "width":200,
+            },
+            {
+                "field" : "EmailID",
                 "title" : "Email Id",
                 "width":200,
             },        
@@ -143,6 +184,12 @@ def ResourcesForDev(userId):
             "width":80,
         },
         {
+            "title" : "View Team",
+            "template": "<button class=\"btn btn-outline-warning\" onclick='LoadTeamMemberListView(\"#: ID #\")'> <i class=\"mdi mdi-account-multiple-outline\"> </button>",
+            "excludeFromExport": True,
+            "width":80,
+        },
+        {
             "field" : "TeamName",
             "title" : "Team Name",
             "width": 200,
@@ -204,6 +251,12 @@ def ResourcesForLead(userId):
         {
             "title" : "Info",
             "template": "<button class=\"btn btn-outline-info\" onclick='LoadTeamInformaticsView(\"#: ID #\")'> <i class=\"mdi mdi-information-outline\"> </button>",
+            "excludeFromExport": True,
+            "width":80,
+        },
+        {
+            "title" : "View Team",
+            "template": "<button class=\"btn btn-outline-warning\" onclick='LoadTeamMemberListView(\"#: ID #\")'> <i class=\"mdi mdi-account-multiple-outline\"> </button>",
             "excludeFromExport": True,
             "width":80,
         },
@@ -344,8 +397,6 @@ def ResourcesForAdmin(userId):
 
     return resource
 
-
-
 @TeamAPI.route('/DataRead/Dev/<userId>')
 @SessionManagement('Dev')
 def DataReadDev(userId):
@@ -386,7 +437,7 @@ def DataReadAdmin(userId):
     return jsonify(response.__dict__)
 
 @TeamAPI.route('/GetTeamMemberList/<teamId>')
-@SessionManagement('Admin')
+@SessionManagement('Admin,Lead,Dev')
 def GetTeamMemberList(teamId):
     try:
         response = Response()

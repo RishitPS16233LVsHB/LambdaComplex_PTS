@@ -284,9 +284,42 @@ function AlertInfo(message) {
     });
 }
 
+/**
+ * To display yes no cancel dialog and call its callbacks
+ * @param {*} title
+ * @param {*} yesButtonText 
+ * @param {*} noButtonText 
+ * @param {*} yesCallback 
+ * @param {*} noCallback 
+ */
+function YesNoCancelAlert(title, yesButtonText, noButtonText, yesCallback, noCallback) {
+
+    Swal.fire({
+        title: title,
+        showDenyButton: true,
+        showCancelButton: true,
+        confirmButtonText: yesButtonText,
+        denyButtonText: noButtonText
+    }).then((result) => {
+        /* Read more about isConfirmed, isDenied below */
+        if (result.isConfirmed) {
+            yesCallback();
+        } else if (result.isDenied) {
+            noCallback();
+        }
+    });
+}
+
+
+/**
+ * Show loading screen
+ */
 function ShowLoadingScreen() {
     $("#loader-screen").show();
 }
+/**
+ * Hide loading screen
+ */
 function HideLoadingScreen() {
     $("#loader-screen").hide();
 }

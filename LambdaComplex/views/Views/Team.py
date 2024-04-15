@@ -15,6 +15,11 @@ def CreateView():
 def TeamMemberManagement(teamId):
     return render_template('Team/ManageTeam.html', TeamId = teamId)
 
+@Team.route('/LisTeamMembers/<teamId>')
+@SessionManagement('Admin,Lead,Dev')
+def LisTeamMembers(teamId):
+    return render_template('Team/ListMembers.html', TeamId = teamId)
+
 @Team.route('/UpdateView/<teamId>')
 @SessionManagement('Admin')
 def UpdateView(teamId):

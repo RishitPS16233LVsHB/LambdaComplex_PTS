@@ -1,0 +1,20 @@
+{% block content %}
+<div class="col-md-12 grid-margin stretch-card" style="height:800px">
+    <div class="card">
+        <div class="card-body">
+            <h4 class="card-title">Team</h4>
+            <p class="card-description">Members</p>
+            <form class="forms-sample" id="FORM">
+                <input type="hidden" id="hdnTeamId" value="{{ TeamId }}">
+                <div id="grdTeamMembers"></div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<script>
+    $(document).ready(function () {
+        InitListMember();
+    });
+</script>
+{% endblock %}

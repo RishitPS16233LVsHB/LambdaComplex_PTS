@@ -36,7 +36,7 @@ class TeamModule:
         try:
             query = f"""
             SELECT 
-            TM.[ID] as TeamId,
+            TM.[ID],
             TM.[TeamName],
             cast(TM.[TeamDescription] as xml).value('.[1]','nvarchar(max)') as [TeamDescription],
             UM.[FirstName] as LeaderFirstName,
@@ -64,7 +64,7 @@ class TeamModule:
         try:
             query = f"""
             SELECT 
-            TM.[ID] as TeamId,
+            TM.[ID],
             TM.[TeamName],
             cast(TM.[TeamDescription] as xml).value('.[1]','nvarchar(max)') as [TeamDescription],
             UM.[FirstName] as LeaderFirstName,
@@ -97,7 +97,7 @@ class TeamModule:
             UM.[EmailID]
             FROM {Tables.TeamMember} TM 
             INNER JOIN {Tables.User} UM ON UM.[ID] = TM.[TeamMemberID] 
-            WHERE [TeamID] = '{teamId}' AND 
+            WHERE TM.[ID] = '{teamId}' AND 
             UM.[IsDeleted] = 0 AND
             TM.[IsDeleted] = 0
             """

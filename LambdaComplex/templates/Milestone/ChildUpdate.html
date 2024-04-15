@@ -1,0 +1,67 @@
+{% block content %}
+<div class="col-md-12 grid-margin stretch-card">
+    <div class="card">
+        <div class="card-body">
+            <h4 class="card-title">Milestones</h4>
+            <p class="card-description">Create milestone</p>
+            <form class="forms-sample" id="FORM">
+                <input type="hidden" id="hdnParentId" value="{{ parentID }}">
+                <input type="hidden" id="hdnMilestoneId" value="{{ recordID }}">
+                <input type="hidden" id="hdnMilestoneCreatedBy" value="{{ milestoneCreatedBy }}">
+                <div class="form-group row">
+                    <label for="txtMilestoneName" class="col-sm-3 col-form-label">Milestone Name:</label>
+                    <div class="col-sm-9">
+                        <input type="text" class="form-control" id="txtMilestoneName" placeholder="Milestone Name"
+                            required value="{{ milestoneName }}" readonly>
+                    </div>
+                </div>
+                <div class="form-group row">
+                    <label for="txtMilestoneName" class="col-sm-3 col-form-label">Expected Deadline:</label>
+                    <div class="col-sm-9">
+                        <input type="date" class="form-control" id="dtExpectedDeadLine" placeholder="Expected deadline"
+                            required valueAttr="{{ expectedDeadline }}" readonly>
+                    </div>
+                </div>
+                <div class="form-group row">
+                    <label for="txtMilestoneDescription" class="col-sm-3 col-form-label">Milestone Description:</label>
+                    <br>
+                    <div class="col-sm-9">
+                        <textarea class="form-control" id="txtMilestoneDescription" placeholder="" rows="10" required>
+                            {{ milestoneDescription }}
+                        </textarea>
+                    </div>
+                </div>
+                <div class="form-group row">
+                    <label for="cmbLeader" class="col-sm-3 col-form-label">Leader</label><br>
+                    <div class="col-sm-9">
+                        <input id="cmbLeader" class="form-control" required readonly value="{{ milestoneAssignedTo }}">
+                    </div>
+                </div>
+                <div class="form-group row">
+                    <label for="txtMilestoneRemarks" class="col-sm-3 col-form-label">Milestone Remarks:</label>
+                    <br>
+                    <div class="col-sm-9">
+                        <input type="text" class="form-control" id="txtMilestoneRemarks" placeholder="Milestone remarks"
+                            required value="{{ milestoneRemarks }}">
+                    </div>
+                </div>
+                <div class="form-group row">
+                    <label for="rtMilestoneRating" class="col-sm-3 col-form-label">Milestone ratings:</label>
+                    <br>
+                    <div class="col-sm-9">
+                        <input type="text" class="form-control" id="rtMilestoneRating" placeholder="Milestone rating"
+                            required value="{{ milestoneRating }}" readonly>
+                    </div>
+                </div>
+                <button type="button" class="btn btn-gradient-primary me-2" onclick="ChildUpdateMilestone()">Update
+                </button>
+            </form>
+        </div>
+    </div>
+</div>
+<script>
+    $(document).ready(function () {
+        InitMilestoneUpdate();
+    });
+</script>
+{% endblock %}

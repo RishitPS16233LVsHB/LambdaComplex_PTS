@@ -52,7 +52,7 @@ function CreateProject() {
                     RefreshDataView();
                 }
                 else {
-                    AlertError("Team creation error: " + response.Message);
+                    AlertError("Project creation error: " + response.Message);
                 }
             }, function (error) {
                 Toastr.error(str(error));
@@ -87,7 +87,7 @@ function UpdateProject() {
                     RefreshDataView();
                 }
                 else {
-                    AlertError("Team updation error: " + response.Message);
+                    AlertError("Project updation error: " + response.Message);
                 }
             }, function (error) {
                 Toastr.error(str(error));
@@ -172,5 +172,15 @@ function DisplayMacroTrackingForProjectInTimeLine(recordID = null) {
     }
     catch (ex) {
         toastr.error('Error while displaying Macro Tracking for the project in timeline: ' + ex.message);
+    }
+}
+
+function LoadMileStones(recordId = null) {
+    try {
+        if (IsNullOrEmpty(recordId)) return;
+        LoadGridView("MilestoneAPI/Resource/" + recordId);
+    }
+    catch (ex) {
+        toastr.error("Error while loading list of milestones: " + ex.message);
     }
 }

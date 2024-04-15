@@ -19,41 +19,7 @@ function LoadTeamInformaticsView(teamId) {
         SetViewInMainPageUsingGet("Team/InformaticView/" + teamId, false, false, "#divMainPage");
 
         // init editor for team description
-        var editor = $(teamIds.teamDescription).kendoEditor({
-            encoded: true,
-            readonly: true,
-            value: $(teamIds.teamDescription).val(),
-            tools: [
-                "bold", "italic", "underline", "undo", "redo", "justifyLeft", "justifyCenter", "justifyRight", "insertUnorderedList",
-                "createLink", "unlink", "insertImage", "tableWizard", "tableProperties", "tableCellProperties", "createTable",
-                "addRowAbove", "addRowBelow", "addColumnLeft", "addColumnRight", "deleteRow", "deleteColumn", "mergeCellsHorizontally",
-                "mergeCellsVertically", "splitCellHorizontally", "splitCellVertically", "tableAlignLeft", "tableAlignCenter",
-                "tableAlignRight", "formatting",
-                {
-                    name: "fontName",
-                    items: [
-                        { text: "Andale Mono", value: "\"Andale Mono\"" }, // Font-family names composed of several words should be wrapped in \" \"
-                        { text: "Arial", value: "Arial" },
-                        { text: "Arial Black", value: "\"Arial Black\"" },
-                        { text: "Book Antiqua", value: "\"Book Antiqua\"" },
-                        { text: "Comic Sans MS", value: "\"Comic Sans MS\"" },
-                        { text: "Courier New", value: "\"Courier New\"" },
-                        { text: "Georgia", value: "Georgia" },
-                        { text: "Helvetica", value: "Helvetica" },
-                        { text: "Impact", value: "Impact" },
-                        { text: "Symbol", value: "Symbol" },
-                        { text: "Tahoma", value: "Tahoma" },
-                        { text: "Terminal", value: "Terminal" },
-                        { text: "Times New Roman", value: "\"Times New Roman\"" },
-                        { text: "Trebuchet MS", value: "\"Trebuchet MS\"" },
-                        { text: "Verdana", value: "Verdana" },
-                    ]
-                },
-                "fontSize",
-                "foreColor",
-                "backColor",
-            ],
-        });
+        var editor = $(teamIds.teamDescription).kendoEditor(kendoEditorConfig($(teamIds.teamDescription).val()));
         // load leader in kendo box
         $(teamIds.leader).kendoComboBox({
             placeholder: "Select Leader...",
@@ -92,6 +58,15 @@ function LoadTeamInformaticsView(teamId) {
 function LoadTeamManagementView(teamId) {
     try {
         SetViewInMainPageUsingGet('Team/TeamMemberManagement/' + teamId, true, true, "#divMainPage");
+    }
+    catch (ex) {
+        toastr.error("error while loading team management view: " + ex.message);
+    }
+}
+
+function LoadTeamMemberListView(teamId) {
+    try {
+        SetViewInMainPageUsingGet('Team/LisTeamMembers/' + teamId, true, true, "#divMainPage");
     }
     catch (ex) {
         toastr.error("error while loading team management view: " + ex.message);
@@ -177,7 +152,16 @@ function InitMemberManagement() {
             }
         });
 
-        LoadGridView('TeamAPI/MemberManagementResource/' + $(teamIds.teamId).val(), false, true, teamIds.memberList);
+        LoadGridView('TeamAPI/MemberManagementResource/' + $(teamIds.teamId).val(), true, true, teamIds.memberList);
+    }
+    catch (ex) {
+        toastr.error("Error while initing team management form: " + ex.message);
+    }
+}
+
+function InitListMember() {
+    try {
+        LoadGridView('TeamAPI/ListMemberResource/' + $(teamIds.teamId).val(), true, true, teamIds.memberList);
     }
     catch (ex) {
         toastr.error("Error while initing team management form: " + ex.message);

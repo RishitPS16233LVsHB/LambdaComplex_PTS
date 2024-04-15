@@ -232,9 +232,15 @@ def ResourcesForDev(userId):
         },
         {
             "field" : "Description",
-            "title" : "Team description",
+            "title" : "Project description",
             "width":200,
             "encoded": False,
+        },
+        {
+            "title" : "Milestones",
+            "template": "# if(data.ReportingStatus != 'ABD' && data.ReportingStatus != 'CMP') { # <button class=\"btn btn-outline-primary\" onclick='LoadMileStones(\"#: RecordID #\")'> <i class=\"mdi mdi-flag-checkered\"></i> </button> # } else { var color = (ReportingStatus == 'CMP') ? 'green' : 'red' # <p style=\"color:#: color #\"> #: data.ReportingStatus #</p> # } #",
+            "excludeFromExport": True,
+            "width":80,
         },
         {
             "title" : "Macro Tracking",
@@ -250,7 +256,7 @@ def ResourcesForDev(userId):
         }, 
         {
             "title" : "File submissions",
-            "template": "<button class=\"btn btn-outline-secondary\" onclick='DisplayMacroTrackingForProjectInTimeLine(\"#: Record5ID #\",true,true,divMainPage)'> <i class=\"mdi mdi-file-multiple\"> </button>",
+            "template": "<button class=\"btn btn-outline-secondary\" onclick='DisplayMacroTrackingForProjectInTimeLine(\"#: RecordID #\",true,true,divMainPage)'> <i class=\"mdi mdi-file-multiple\"> </button>",
             "excludeFromExport": True,
             "width":80,
         }, 
@@ -265,12 +271,6 @@ def ResourcesForDev(userId):
             "title" : "Project deadline",
             "format" : "{0:dd/MM/yyyy}",
             "width": 200,            
-        },
-        {
-            "field" : "Descriptiom",
-            "title" : "Project description",
-            "width":200,
-            "encoded": False,
         },
         {
             "field" : "Rating",
@@ -318,9 +318,15 @@ def ResourcesForLead(userId):
         },
         {
             "field" : "Description",
-            "title" : "Team description",
+            "title" : "Project description",
             "width":200,
             "encoded": False,
+        },
+        {
+            "title" : "Milestones",
+            "template": "# if(data.ReportingStatus != 'ABD' && data.ReportingStatus != 'CMP') { # <button class=\"btn btn-outline-primary\" onclick='LoadMileStones(\"#: RecordID #\")'> <i class=\"mdi mdi-flag-checkered\"></i> </button> # } else { var color = (ReportingStatus == 'CMP') ? 'green' : 'red' # <p style=\"color:#: color #\"> #: data.ReportingStatus #</p> # } #",
+            "excludeFromExport": True,
+            "width":80,
         },
         {
             "title" : "Macro Tracking",
@@ -351,12 +357,6 @@ def ResourcesForLead(userId):
             "title" : "Project deadline",
             "format" : "{0:dd/MM/yyyy}",
             "width": 200,            
-        },
-        {
-            "field" : "Descriptiom",
-            "title" : "Project description",
-            "width":200,
-            "encoded": False,
         },
         {
             "field" : "Rating",
@@ -402,6 +402,12 @@ def ResourcesForAdmin(userId):
             {
                 "title" : "Edit",
                 "template": "# if(data.ReportingStatus != 'ABD' && data.ReportingStatus != 'CMP') { # <button class=\"btn btn-outline-primary\" onclick='LoadUpdateView(\"#: RecordID #\")'> <i class=\"mdi mdi-grease-pencil\"></i> </button> # } else { var color = (ReportingStatus == 'CMP') ? 'green' : 'red' # <p style=\"color:#: color #\"> #: data.ReportingStatus #</p> # } #",
+                "excludeFromExport": True,
+                "width":80,
+            },
+            {
+                "title" : "Milestones",
+                "template": "# if(data.ReportingStatus != 'ABD' && data.ReportingStatus != 'CMP') { # <button class=\"btn btn-outline-primary\" onclick='LoadMileStones(\"#: RecordID #\")'> <i class=\"mdi mdi-flag-checkered\"></i> </button> # } else { var color = (ReportingStatus == 'CMP') ? 'green' : 'red' # <p style=\"color:#: color #\"> #: data.ReportingStatus #</p> # } #",
                 "excludeFromExport": True,
                 "width":80,
             },
