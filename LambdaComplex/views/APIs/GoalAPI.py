@@ -1,19 +1,19 @@
 import json
 from flask import jsonify, Blueprint, request
-from LambdaComplex_DataAccess.ProjectModule import ProjectModule
+from LambdaComplex_DataAccess.GoalModule import GoalModule
 from SessionManagement import SessionManagement
 from LambdaComplex_Entities.Common import Response
 from SessionManagement import SessionManagement,GetUserSessionDetails
 
-ProjectAPI = Blueprint("ProjectAPI",__name__)
+GoalAPI = Blueprint("GoalAPI",__name__)
 
-@ProjectAPI.route('/GetProjects/', methods = ['GET'])
-@SessionManagement('Admin')
-def GetProjects():
+@GoalAPI.route('/GetGoals/', methods = ['GET'])
+@SessionManagement('Lead')
+def GetGoals():
     try:
         userId = GetUserSessionDetails()["USER_ID"]
         response = Response()        
-        result = ProjectModule.GetProjectNameID(userId)
+        result = GoalModule.GetGoalNameID(userId)
         response.Data  = result
         response.WasSuccessful = True
     except Exception as ex:
@@ -22,13 +22,13 @@ def GetProjects():
 
     return jsonify(response.__dict__)
 
-@ProjectAPI.route('/MacroTrackingGridResource/<projectId>')
+@GoalAPI.route('/MacroTrackingGridResource/<goalId>')
 @SessionManagement('Admin,Lead,Dev')
-def MacroTrackingGridResource(projectId):
+def MacroTrackingGridResource(goalId):
     try:
         response = Response()
         resource = {}
-        resource["ReadURL"] = "ProjectAPI/MacroTrackingGridViewRead/" + projectId
+        resource["ReadURL"] = "GoalAPI/MacroTrackingGridViewRead/" + goalId
         
         resource["Fields"] = {
                 "ID" : {"type" : "string"},
@@ -48,29 +48,29 @@ def MacroTrackingGridResource(projectId):
         resource["Columns"] = [
             {
                 "field" : "Name",
-                "title" : "Project Name",
+                "title" : "Goal Name",
                 "width": 200,
             },
             {
                 "field" : "ReportingStatus",
-                "title" : "Project status",
+                "title" : "Goal status",
                 "width": 200,
             },
             {
                 "field" : "CreatedOn",
-                "title" : "Project creation date",
+                "title" : "Goal creation date",
                 "format" : "{0:dd/MM/yyyy}",
                 "width": 200,            
             },
             {
                 "field" : "Deadline",
-                "title" : "Project deadline",
+                "title" : "Goal deadline",
                 "format" : "{0:dd/MM/yyyy}",
                 "width": 200,            
             },
             {
                 "field" : "Description",
-                "title" : "Project description",
+                "title" : "Goal description",
                 "width":200,
                 "encoded": False,
             },
@@ -82,18 +82,18 @@ def MacroTrackingGridResource(projectId):
             },
             {
                 "field" : "Rating",
-                "title" : "Project rating",
+                "title" : "Goal rating",
                 "template": "<div id=\"ratingBar#: ID #\"></div>",
                 "width":200,
             },
             {
                 "field" : "Remarks",
-                "title" : "Project remarks",
+                "title" : "Goal remarks",
                 "width":200,
             },
             {
                 "field" : "CreatedByName",
-                "title" : "Project Created by",
+                "title" : "Goal Created by",
                 "width":200,
             }        
         ]
@@ -104,12 +104,12 @@ def MacroTrackingGridResource(projectId):
         response.WasSuccessful = False 
     return jsonify(response.__dict__)
 
-@ProjectAPI.route('/MacroTrackingGridViewRead/<projectId>', methods = ['GET'])
+@GoalAPI.route('/MacroTrackingGridViewRead/<goalId>', methods = ['GET'])
 @SessionManagement('Admin,Lead,Dev')
-def MacroTrackingGridViewRead(projectId):
+def MacroTrackingGridViewRead(goalId):
     try:
         response = Response()        
-        result = ProjectModule.GetMacroHistory(projectId)
+        result = GoalModule.GetMacroHistory(goalId)
         response.Data  = result
         response.WasSuccessful = True
     except Exception as ex:
@@ -118,13 +118,13 @@ def MacroTrackingGridViewRead(projectId):
 
     return jsonify(response.__dict__)
 
-@ProjectAPI.route('/MacroTrackingTimeLineRead/<projectId>')
+@GoalAPI.route('/MacroTrackingTimeLineRead/<goalId>')
 @SessionManagement('Admin,Lead,Dev')
-def MacroTrackingTimeLineRead(projectId):
+def MacroTrackingTimeLineRead(goalId):
     try:
         response = Response()
         resource = {}
-        resource["Data"] = ProjectModule.GetMacroHistory(projectId)
+        resource["Data"] = GoalModule.GetMacroHistory(goalId)
         resource["Mappings"] = {
             "time" : "CreatedOn",
             "header" : "ReportingStatus",
@@ -140,12 +140,12 @@ def MacroTrackingTimeLineRead(projectId):
 
     return jsonify(response.__dict__)
 
-@ProjectAPI.route('/DataRead/Dev/<userId>', methods = ['GET'])
+@GoalAPI.route('/DataRead/Dev/<userId>/<parentId>', methods = ['GET'])
 @SessionManagement('Dev')
-def DataReadForDevs(userId):
+def DataReadForDevs(userId,parentId):
     try:
         response = Response()        
-        result = ProjectModule.GetLatestProjectForDev(userId)
+        result = GoalModule.GetLatestGoalForDev(parentId,userId)
         response.Data  = result
         response.WasSuccessful = True
     except Exception as ex:
@@ -154,12 +154,12 @@ def DataReadForDevs(userId):
 
     return jsonify(response.__dict__)
 
-@ProjectAPI.route('/DataRead/Lead/<userId>', methods = ['GET'])
+@GoalAPI.route('/DataRead/Lead/<userId>/<parentId>', methods = ['GET'])
 @SessionManagement('Lead')
-def DataReadForLead(userId):
+def DataReadForLead(userId,parentId):
     try:
         response = Response()        
-        result = ProjectModule.GetLatestProjectForLead(userId)
+        result = GoalModule.GetLatestGoalForLead(parentId,userId)
         response.Data  = result
         response.WasSuccessful = True
     except Exception as ex:
@@ -168,12 +168,13 @@ def DataReadForLead(userId):
 
     return jsonify(response.__dict__)
 
-@ProjectAPI.route('/DataRead/Admin/<userId>', methods = ['GET'])
+@GoalAPI.route('/DataRead/Admin/<userId>/<parentId>', methods = ['GET'])
 @SessionManagement('Admin')
-def DataReadForAdmin(userId):
+def DataReadForAdmin(userId,parentId):
     try:
-        response = Response()        
-        result = ProjectModule.GetLatestProjectsForAdmins(userId)
+        response = Response()  
+        "" + userId # totally not functional      
+        result = GoalModule.GetLatestGoalsForAdmins(parentId)
         response.Data  = result
         response.WasSuccessful = True
     except Exception as ex:
@@ -182,9 +183,9 @@ def DataReadForAdmin(userId):
 
     return jsonify(response.__dict__)
 
-@ProjectAPI.route('/Resource/')
+@GoalAPI.route('/Resource/<parentId>')
 @SessionManagement('Admin,Lead,Dev')
-def Resource():
+def Resource(parentId):
     try:
         response = Response()
         userSessionDetails = GetUserSessionDetails()
@@ -194,11 +195,11 @@ def Resource():
         resource = {}
 
         if role == 'admin' :
-            resource = ResourcesForAdmin(userId)
+            resource = ResourcesForAdmin(userId,parentId)
         elif role == 'lead' :
-            resource = ResourcesForLead(userId)
+            resource = ResourcesForLead(userId,parentId)
         elif role == 'dev':
-            resource = ResourcesForDev(userId)
+            resource = ResourcesForDev(userId,parentId)
 
         response.Data = resource
         response.WasSuccessful = True
@@ -207,7 +208,7 @@ def Resource():
         response.WasSuccessful = False 
     return jsonify(response.__dict__)
 
-def ResourcesForDev(userId):
+def ResourcesForDev(userId,parentId):
     resource = {};  
     resource["Fields"] = {
             "ID" : {"type" : "string"},
@@ -215,6 +216,7 @@ def ResourcesForDev(userId):
             "Name" : {"type" : "string"},                
             "Description" : {"type" : "string"},
             "CreatedByName" : {"type" : "string"},
+            "AssignedToName" : {"type" : "string"},
             "CreatedBy" : {"type": "string"},
             "CreatedOn": {"type": "date"},
             "Deadline": {"type": "date"},
@@ -227,73 +229,72 @@ def ResourcesForDev(userId):
     resource["Columns"] = [
         {
             "field" : "Name",
-            "title" : "Project Name",
+            "title" : "Goal Name",
             "width": 200,
         },
         {
             "field" : "Description",
-            "title" : "Project description",
+            "title" : "Goal description",
             "width":200,
             "encoded": False,
         },
         {
-            "title" : "Milestones",
-            "template": "# if(data.ReportingStatus != 'ABD' && data.ReportingStatus != 'CMP') { # <button class=\"btn btn-outline-primary\" onclick='LoadMileStones(\"#: RecordID #\")'> <i class=\"mdi mdi-flag-checkered\"></i> </button> # } else { var color = (ReportingStatus == 'CMP') ? 'green' : 'red' # <p style=\"color:#: color #\"> #: data.ReportingStatus #</p> # } #",
-            "excludeFromExport": True,
-            "width":80,
+            "field" : "AssignedToName",
+            "title" : "Assigned to",
+            "width": 200,
         },
         {
             "title" : "Macro Tracking",
-            "template": "<button class=\"btn btn-outline-info\" onclick='DisplayMacroTrackingForProjectInGrid(\"#: RecordID #\")'> <i class=\"mdi mdi-table\"> </button>",
+            "template": "<button class=\"btn btn-outline-info\" onclick='DisplayMacroTrackingForGoalInGrid(\"#: RecordID #\")'> <i class=\"mdi mdi-table\"> </button>",
             "excludeFromExport": True,
             "width":80,
         }, 
         {
             "title" : "Macro Tracking",
-            "template": "<button class=\"btn btn-outline-info\" onclick='DisplayMacroTrackingForProjectInTimeLine(\"#: RecordID #\")'> <i class=\"mdi mdi-source-branch\"> </button>",
+            "template": "<button class=\"btn btn-outline-info\" onclick='DisplayMacroTrackingForGoalInTimeLine(\"#: RecordID #\")'> <i class=\"mdi mdi-source-branch\"> </button>",
             "excludeFromExport": True,
             "width":80,
         }, 
         {
             "title" : "File submissions",
-            "template": "<button class=\"btn btn-outline-secondary\" onclick='LoadReadOnlyFileView(\"#: ID #\",true,true,divMainPage)'> <i class=\"mdi mdi-file-multiple\"> </button>",
+            "template": "<button class=\"btn btn-outline-secondary\" onclick='LoadReadOnlyFileView(\"#: ID #\")'> <i class=\"mdi mdi-file-multiple\"> </button>",
             "excludeFromExport": True,
             "width":80,
         }, 
         {
             "field" : "CreatedOn",
-            "title" : "Project creation date",
+            "title" : "Goal creation date",
             "format" : "{0:dd/MM/yyyy}",
             "width": 200,            
         },
         {
             "field" : "Deadline",
-            "title" : "Project deadline",
+            "title" : "Goal deadline",
             "format" : "{0:dd/MM/yyyy}",
             "width": 200,            
         },
         {
             "field" : "Rating",
-            "title" : "Project rating",
+            "title" : "Goal rating",
             "template": "<div id=\"ratingBar#: ID #\"></div>",
             "width":200,
         },
         {
             "field" : "Remarks",
-            "title" : "Project name",
+            "title" : "Goal remarks",
             "width":200,
         },
         {
             "field" : "CreatedByName",
-            "title" : "Project Created by",
+            "title" : "Goal Created by",
             "width":200,
         }        
     ]
 
-    resource["ReadURL"] = "ProjectAPI/DataRead/Dev/" + userId
+    resource["ReadURL"] = "GoalAPI/DataRead/Dev/" + userId + "/" + parentId
     return resource
 
-def ResourcesForLead(userId):
+def ResourcesForLead(userId,parentId):
     resource = {};  
     resource["Fields"] = {
             "ID" : {"type" : "string"},
@@ -301,6 +302,7 @@ def ResourcesForLead(userId):
             "Name" : {"type" : "string"},                
             "Description" : {"type" : "string"},
             "CreatedByName" : {"type" : "string"},
+            "AssignedToName" : {"type" : "string"},
             "CreatedBy" : {"type": "string"},
             "CreatedOn": {"type": "date"},
             "Deadline": {"type": "date"},            
@@ -309,86 +311,103 @@ def ResourcesForLead(userId):
             "Remarks": {"type": "string"},
             "Rating": {"type": "string"},
         }
-
+    resource["CreateViewUrl"] = "Goal/Create/" + parentId
+    resource["UpdateViewUrl"] = "Goal/Update/" + parentId
     resource["Columns"] = [
         {
-            "field" : "Name",
-            "title" : "Project Name",
-            "width": 200,
-        },
+            "title" : "Edit",
+            "template": "# if(data.ReportingStatus != 'ABD' && data.ReportingStatus != 'CMP') { # <button class=\"btn btn-outline-primary\" onclick='LoadUpdateView(\"#: RecordID #\")'> <i class=\"mdi mdi-grease-pencil\"></i> </button> # } else { var color = (ReportingStatus == 'CMP') ? 'green' : 'red' # <p style=\"color:#: color #\"> #: data.ReportingStatus #</p> # } #",
+            "excludeFromExport": True,
+            "width":80,
+        },   
         {
-            "field" : "Description",
-            "title" : "Project description",
-            "width":200,
-            "encoded": False,
-        },
-        {
-            "title" : "Milestones",
-            "template": "# if(data.ReportingStatus != 'ABD' && data.ReportingStatus != 'CMP') { # <button class=\"btn btn-outline-primary\" onclick='LoadMileStones(\"#: RecordID #\")'> <i class=\"mdi mdi-flag-checkered\"></i> </button> # } else { var color = (ReportingStatus == 'CMP') ? 'green' : 'red' # <p style=\"color:#: color #\"> #: data.ReportingStatus #</p> # } #",
+            "title" : "Abandon",
+            "template": "# if(data.ReportingStatus != 'ABD' && data.ReportingStatus != 'CMP') { # <button class=\"btn btn-outline-danger\" onclick='AbandonGoal(\"#: ID #\")'> <i class=\"mdi mdi-close\"></i> </button> # } else { var color = (ReportingStatus == 'CMP') ? 'green' : 'red' # <p style=\"color:#: color #\">#: data.ReportingStatus #</p> # } #",
             "excludeFromExport": True,
             "width":80,
         },
         {
+            "title" : "Complete",
+            "template": "# if(data.ReportingStatus != 'ABD' && data.ReportingStatus != 'CMP') { # <button class=\"btn btn-outline-success\" onclick='FinishGoal(\"#: ID #\")'> <i class=\"mdi mdi-check\"></i> </button> # } else { var color = (ReportingStatus == 'CMP') ? 'green' : 'red' # <p style=\"color:#: color #\">#: data.ReportingStatus #</p> # } #",
+            "excludeFromExport": True,
+            "width":80,
+        },
+        {
+            "field" : "Name",
+            "title" : "Goal Name",
+            "width": 200,
+        },
+        {
+            "field" : "Description",
+            "title" : "Goal description",
+            "width":200,
+            "encoded": False,
+        },  
+        {
+            "field" : "AssignedToName",
+            "title" : "Assigned to",
+            "width": 200,
+        },   
+        {
             "title" : "Macro Tracking",
-            "template": "<button class=\"btn btn-outline-info\" onclick='DisplayMacroTrackingForProjectInGrid(\"#: RecordID #\")'> <i class=\"mdi mdi-table\"> </button>",
+            "template": "<button class=\"btn btn-outline-info\" onclick='DisplayMacroTrackingForGoalInGrid(\"#: RecordID #\")'> <i class=\"mdi mdi-table\"> </button>",
             "excludeFromExport": True,
             "width":80,
         }, 
         {
             "title" : "Macro Tracking",
-            "template": "<button class=\"btn btn-outline-info\" onclick='DisplayMacroTrackingForProjectInTimeLine(\"#: RecordID #\")'> <i class=\"mdi mdi-source-branch\"> </button>",
+            "template": "<button class=\"btn btn-outline-info\" onclick='DisplayMacroTrackingForGoalInTimeLine(\"#: RecordID #\")'> <i class=\"mdi mdi-source-branch\"> </button>",
             "excludeFromExport": True,
             "width":80,
         },
         {
             "title" : "File submissions",
-            "template": "<button class=\"btn btn-outline-secondary\" onclick='LoadReadOnlyFileView(\"#: ID #\",true,true,divMainPage)'> <i class=\"mdi mdi-file-multiple\"> </button>",
+            "template": "<button class=\"btn btn-outline-warning\" onclick='LoadFileSubmissionView(\"#: ID #\")'> <i class=\"mdi mdi-file-multiple\"> </button>",
             "excludeFromExport": True,
             "width":80,
-        },
+        },        
         {
             "field" : "CreatedOn",
-            "title" : "Project creation date",
+            "title" : "Goal creation date",
             "format" : "{0:dd/MM/yyyy}",
             "width": 200,            
         },
         {
             "field" : "Deadline",
-            "title" : "Project deadline",
+            "title" : "Goal deadline",
             "format" : "{0:dd/MM/yyyy}",
             "width": 200,            
         },
         {
             "field" : "Rating",
-            "title" : "Project rating",
+            "title" : "Goal rating",
             "template": "<div id=\"ratingBar#: ID #\"></div>",
             "width":200,
         },
         {
             "field" : "Remarks",
-            "title" : "Project name",
+            "title" : "Goal remarks",
             "width":200,
         },
         {
             "field" : "CreatedByName",
-            "title" : "Project Created by",
+            "title" : "Goal Created by",
             "width":200,
         }        
     ]
 
-    resource["ReadURL"] = "ProjectAPI/DataRead/Lead/" + userId
+    resource["ReadURL"] = "GoalAPI/DataRead/Lead/" + userId + "/" + parentId
     return resource
 
-def ResourcesForAdmin(userId):        
+def ResourcesForAdmin(userId,parentId):        
         resource = {};  
-        resource["CreateViewUrl"] = "Project/Create/"
-        resource["UpdateViewUrl"] = "Project/Update/"
         resource["Fields"] = {
                 "ID" : {"type" : "string"},
                 "RecordID" : {"type" : "string"},
                 "Name" : {"type" : "string"},                
                 "Description" : {"type" : "string"},
                 "CreatedByName" : {"type" : "string"},
+                "AssignedToName" : {"type" : "string"},
                 "CreatedBy" : {"type": "string"},
                 "CreatedOn": {"type": "date"},
                 "Deadline": {"type": "date"},
@@ -400,103 +419,85 @@ def ResourcesForAdmin(userId):
 
         resource["Columns"] = [
             {
-                "title" : "Edit",
-                "template": "# if(data.ReportingStatus != 'ABD' && data.ReportingStatus != 'CMP') { # <button class=\"btn btn-outline-primary\" onclick='LoadUpdateView(\"#: RecordID #\")'> <i class=\"mdi mdi-grease-pencil\"></i> </button> # } else { var color = (ReportingStatus == 'CMP') ? 'green' : 'red' # <p style=\"color:#: color #\"> #: data.ReportingStatus #</p> # } #",
-                "excludeFromExport": True,
-                "width":80,
-            },
-            {
-                "title" : "Milestones",
-                "template": "# if(data.ReportingStatus != 'ABD' && data.ReportingStatus != 'CMP') { # <button class=\"btn btn-outline-primary\" onclick='LoadMileStones(\"#: RecordID #\")'> <i class=\"mdi mdi-flag-checkered\"></i> </button> # } else { var color = (ReportingStatus == 'CMP') ? 'green' : 'red' # <p style=\"color:#: color #\"> #: data.ReportingStatus #</p> # } #",
-                "excludeFromExport": True,
-                "width":80,
-            },
-            {
                 "field" : "Name",
-                "title" : "Project Name",
+                "title" : "Goal Name",
                 "width": 200,
             },
             {
                 "field" : "ReportingStatus",
-                "title" : "Project status",
+                "title" : "Goal status",
                 "width": 200,
             },
-            {
-                "title" : "Abandon",
-                "template": "# if(data.ReportingStatus != 'ABD' && data.ReportingStatus != 'CMP') { # <button class=\"btn btn-outline-danger\" onclick='AbandonProject(\"#: ID #\")'> <i class=\"mdi mdi-close\"></i> </button> # } else { var color = (ReportingStatus == 'CMP') ? 'green' : 'red' # <p style=\"color:#: color #\">#: data.ReportingStatus #</p> # } #",
-                "excludeFromExport": True,
-                "width":80,
-            },
-            {
-                "title" : "Complete",
-                "template": "# if(data.ReportingStatus != 'ABD' && data.ReportingStatus != 'CMP') { # <button class=\"btn btn-outline-success\" onclick='FinishProject(\"#: ID #\")'> <i class=\"mdi mdi-check\"></i> </button> # } else { var color = (ReportingStatus == 'CMP') ? 'green' : 'red' # <p style=\"color:#: color #\">#: data.ReportingStatus #</p> # } #",
-                "excludeFromExport": True,
-                "width":80,
-            },
+            
             {
                 "field" : "CreatedOn",
-                "title" : "Project creation date",
+                "title" : "Goal creation date",
                 "format" : "{0:dd/MM/yyyy}",
                 "width": 200,            
             },
             {
+                "field" : "AssignedToName",
+                "title" : "Assigned to",
+                "width": 200,
+            },
+            {
                 "field" : "Deadline",
-                "title" : "Project deadline",
+                "title" : "Goal deadline",
                 "format" : "{0:dd/MM/yyyy}",
                 "width": 200,            
             },
             {
                 "field" : "Description",
-                "title" : "Project description",
+                "title" : "Goal description",
                 "width":200,
                 "encoded": False,
             },
             {
                 "title" : "Macro Tracking",
-                "template": "<button class=\"btn btn-outline-info\" onclick='DisplayMacroTrackingForProjectInGrid(\"#: RecordID #\")'> <i class=\"mdi mdi-table\"> </button>",
+                "template": "<button class=\"btn btn-outline-info\" onclick='DisplayMacroTrackingForGoalInGrid(\"#: RecordID #\",true,true,divMainPage)'> <i class=\"mdi mdi-table\"> </button>",
                 "excludeFromExport": True,
                 "width":80,
             }, 
             {
                 "title" : "Macro Tracking",
-                "template": "<button class=\"btn btn-outline-info\" onclick='DisplayMacroTrackingForProjectInTimeLine(\"#: RecordID #\")'> <i class=\"mdi mdi-source-branch\"> </button>",
+                "template": "<button class=\"btn btn-outline-info\" onclick='DisplayMacroTrackingForGoalInTimeLine(\"#: RecordID #\",true,true,divMainPage)'> <i class=\"mdi mdi-source-branch\"> </button>",
                 "excludeFromExport": True,
                 "width":80,
             },            
             {
                 "title" : "File submissions",
-                "template": "# if(data.ReportingStatus != 'ABD' && data.ReportingStatus != 'CMP') { # <button class=\"btn btn-outline-warning\" onclick='LoadFileSubmissionView(\"#: ID #\",true,true,divMainPage)'> <i class=\"mdi mdi-file-multiple\"></i> </button> # } else { # <button class=\"btn btn-outline-secondary\" onclick='LoadReadOnlyFileView(\"#: ID #\",true,true,divMainPage)'> <i class=\"mdi mdi-file-multiple\"> </i></button> # } #",
+                "template": "<button class=\"btn btn-outline-secondary\" onclick='LoadReadOnlyFileView(\"#: ID #\")'> <i class=\"mdi mdi-file-multiple\"> </i></button>",
                 "excludeFromExport": True,
                 "width":80,
             },
             {
                 "field" : "Rating",
-                "title" : "Project rating",
+                "title" : "Goal rating",
                 "template": "<div id=\"ratingBar#: ID #\"></div>",
                 "width":200,
             },
             {
                 "field" : "Remarks",
-                "title" : "Project remarks",
+                "title" : "Goal remarks",
                 "width":200,
             },
             {
                 "field" : "CreatedByName",
-                "title" : "Project Created by",
+                "title" : "Goal Created by",
                 "width":200,
             }        
         ]
 
-        resource["ReadURL"] = "ProjectAPI/DataRead/Admin/" + userId
+        resource["ReadURL"] = "GoalAPI/DataRead/Admin/" + userId + "/" + parentId
         return resource
 
-@ProjectAPI.route('/CreateProject/', methods = ['POST'])
-@SessionManagement('Admin')
-def CreateProject():
+@GoalAPI.route('/CreateGoal/', methods = ['POST'])
+@SessionManagement('Lead')
+def CreateGoal():
     try:
-        projectDetails = json.loads(request.data)
+        milestoneDetails = json.loads(request.data)
         response = Response()
-        response.Data = ProjectModule.CreateProject(projectDetails)
+        response.Data = GoalModule.CreateGoal(milestoneDetails)
         response.WasSuccessful = True
     except Exception as ex:
         response.Message = str(ex)
@@ -504,13 +505,13 @@ def CreateProject():
 
     return jsonify(response.__dict__)
 
-@ProjectAPI.route('/UpdateProject/', methods = ['POST'])
-@SessionManagement('Admin')
-def UpdateProject():    
+@GoalAPI.route('/UpdateGoal/', methods = ['POST'])
+@SessionManagement('Lead')
+def UpdateGoal():    
     try:
-        projectDetails = json.loads(request.data)
+        milestoneDetails = json.loads(request.data)
         response = Response()
-        response.Data = ProjectModule.ParentUpdateProject(projectDetails)
+        response.Data = GoalModule.ParentUpdateGoal(milestoneDetails)
         response.WasSuccessful = True
     except Exception as ex:
         response.Message = str(ex)
@@ -518,13 +519,13 @@ def UpdateProject():
 
     return jsonify(response.__dict__)
 
-@ProjectAPI.route('/FinishProject/<projectChangeID>', methods = ['GET'])
-@SessionManagement('Admin')
-def FinishProject(projectChangeID):    
+@GoalAPI.route('/FinishGoal/<milestoneChangeID>', methods = ['GET'])
+@SessionManagement('Lead')
+def FinishGoal(milestoneChangeID):    
     try:
         response = Response()
         userId = GetUserSessionDetails()["USER_ID"]
-        response.Data = ProjectModule.FinishProject(projectChangeID,userId)
+        response.Data = GoalModule.FinishGoal(milestoneChangeID,userId)
         response.WasSuccessful = True
     except Exception as ex:
         response.Message = str(ex)
@@ -532,13 +533,13 @@ def FinishProject(projectChangeID):
 
     return jsonify(response.__dict__)
 
-@ProjectAPI.route('/AbandonProject/<projectChangeID>', methods = ['GET'])
-@SessionManagement('Admin')
-def AbandonProject(projectChangeID):    
+@GoalAPI.route('/AbandonGoal/<milestoneChangeID>', methods = ['GET'])
+@SessionManagement('Lead')
+def AbandonGoal(milestoneChangeID):    
     try:
         response = Response()
         userId = GetUserSessionDetails()["USER_ID"]
-        response.Data = ProjectModule.AbandonProject(projectChangeID,userId)
+        response.Data = GoalModule.AbandonGoal(milestoneChangeID,userId)
         response.WasSuccessful = True
     except Exception as ex:
         response.Message = str(ex)

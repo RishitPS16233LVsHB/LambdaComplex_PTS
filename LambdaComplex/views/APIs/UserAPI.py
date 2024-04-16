@@ -107,3 +107,18 @@ def GetLeadsOfProject(projectId):
         response.WasSuccessful = False
 
     return jsonify(response.__dict__)
+
+
+@UserAPI.route('/GetDevelopersInMilestone/<milestoneId>/<userId>', methods = ['GET'])
+@SessionManagement('Admin,Lead')
+def GetDevelopersInMilestone(milestoneId,userId):
+    try:
+        response = Response()        
+        result = UserModule.GetDevNamesAndIdsOfTeamInMilestone(milestoneId,userId)
+        response.Data  = result
+        response.WasSuccessful = True
+    except Exception as ex:
+        response.Message = str(ex)
+        response.WasSuccessful = False
+
+    return jsonify(response.__dict__)

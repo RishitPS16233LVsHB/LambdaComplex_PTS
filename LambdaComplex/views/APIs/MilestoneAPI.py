@@ -67,10 +67,16 @@ def ResourcesForDev(userId,projectId):
             "field" : "AssignedToName",
             "title" : "Assigned to",
             "width":200,
+        },        
+        {
+            "title" : "Goals",
+            "template": "# if(data.ReportingStatus != 'ABD' && data.ReportingStatus != 'CMP') { # <button class=\"btn btn-outline-primary\" onclick='LoadGoals(\"#: RecordID #\")'> <i class=\"mdi mdi-target\"></i> </button> # } else { var color = (ReportingStatus == 'CMP') ? 'green' : 'red' # <p style=\"color:#: color #\"> #: data.ReportingStatus #</p> # } #",
+            "excludeFromExport": True,
+            "width":80,
         },
         {
             "title" : "File submissions",
-            "template": "<button class=\"btn btn-outline-warning\" onclick='LoadFileSubmissionView(\"#: ID #\",true,true,divMainPage)'> <i class=\"mdi mdi-file-multiple\"></i> </button>",
+            "template": "<button class=\"btn btn-outline-warning\" onclick='LoadReadOnlyFileView(\"#: ID #\",true,true,divMainPage)'> <i class=\"mdi mdi-file-multiple\"></i> </button>",
             "excludeFromExport": True,
             "width":80,
         },
@@ -156,6 +162,12 @@ def ResourcesForLead(userId,projectId):
         {
             "title" : "Edit ",
             "template": "# if(data.ReportingStatus == 'PAR' || data.ReportingStatus == 'INITIAL') { # <button class=\"btn btn-outline-primary\" onclick='LoadUpdateView(\"#: RecordID #\")'> <i class=\"mdi mdi-grease-pencil\"></i> </button> # } else { var color = (ReportingStatus == 'CMP') ? 'green' : 'red' # <p style=\"color:#: color #\"> #: data.ReportingStatus #</p> # } #",
+            "excludeFromExport": True,
+            "width":80,
+        },
+        {
+            "title" : "Goals",
+            "template": "# if(data.ReportingStatus != 'ABD' && data.ReportingStatus != 'CMP') { # <button class=\"btn btn-outline-primary\" onclick='LoadGoals(\"#: RecordID #\")'> <i class=\"mdi mdi-target\"></i> </button> # } else { var color = (ReportingStatus == 'CMP') ? 'green' : 'red' # <p style=\"color:#: color #\"> #: data.ReportingStatus #</p> # } #",
             "excludeFromExport": True,
             "width":80,
         },
@@ -267,6 +279,12 @@ def ResourcesForAdmin(userId,projectId):
             {
                 "title" : "Edit",
                 "template": "# if(data.ReportingStatus == 'PAR' || data.ReportingStatus == 'INITIAL') { # <button class=\"btn btn-outline-primary\" onclick='LoadUpdateView(\"#: RecordID #\")'> <i class=\"mdi mdi-grease-pencil\"></i> </button> # } else if(ReportingStatus == 'CHR' || ReportingStatus == 'PGR') { # <button class=\"btn btn-outline-success\" onclick='ApproveMilestoneEdit(\"#: ID #\")'> <i class=\"mdi mdi-thumb-up\"></i> </button> <button class=\"btn btn-outline-danger\" onclick='RejectMilestoneEdit(\"#: ID #\")'> <i class=\"mdi mdi-thumb-down\"></i> </button> # } else { var color = (ReportingStatus == 'CMP') ? 'green' : 'red' # <p style=\"color:#: color #\"> #: data.ReportingStatus #</p> # } #",
+                "excludeFromExport": True,
+                "width":80,
+            },
+            {
+                "title" : "Goals",
+                "template": "# if(data.ReportingStatus != 'ABD' && data.ReportingStatus != 'CMP') { # <button class=\"btn btn-outline-primary\" onclick='LoadGoals(\"#: RecordID #\")'> <i class=\"mdi mdi-target\"></i> </button> # } else { var color = (ReportingStatus == 'CMP') ? 'green' : 'red' # <p style=\"color:#: color #\"> #: data.ReportingStatus #</p> # } #",
                 "excludeFromExport": True,
                 "width":80,
             },

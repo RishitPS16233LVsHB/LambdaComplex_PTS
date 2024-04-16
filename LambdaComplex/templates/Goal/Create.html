@@ -1,0 +1,61 @@
+{% block content %}
+<div class="col-md-12 grid-margin stretch-card">
+    <div class="card">
+        <div class="card-body">
+            <h4 class="card-title">Goals</h4>
+            <p class="card-description">Create goal</p>
+            <form class="forms-sample" id="FORM">
+                <input type="hidden" id="hdnParentId" value="{{ parentID }}">
+                <div class="form-group row">
+                    <label for="txtGoalName" class="col-sm-3 col-form-label">Goal Name:</label>
+                    <div class="col-sm-9">
+                        <input type="text" class="form-control" id="txtGoalName" placeholder="Goal Name" required>
+                    </div>
+                </div>
+                <div class="form-group row">
+                    <label for="txtGoalName" class="col-sm-3 col-form-label">Expected Deadline:</label>
+                    <div class="col-sm-9">
+                        <input type="date" class="form-control" id="dtExpectedDeadLine" placeholder="Expected deadline"
+                            required>
+                    </div>
+                </div>
+                <div class="form-group row">
+                    <label for="txtGoalDescription" class="col-sm-3 col-form-label">Goal Description:</label>
+                    <br>
+                    <div class="col-sm-9">
+                        <textarea class="form-control" id="txtGoalDescription" placeholder="" rows="10" required>
+                        </textarea>
+                    </div>
+                </div>
+                <div class="form-group row">
+                    <label for="cmbDeveloper" class="col-sm-3 col-form-label">Developer</label><br>
+                    <div class="col-sm-9">
+                        <input id="cmbDeveloper" class="form-control" required>
+                    </div>
+                </div>
+                <div class="form-group row">
+                    <label for="txtGoalRemarks" class="col-sm-3 col-form-label">Goal Remarks:</label>
+                    <br>
+                    <div class="col-sm-9">
+                        <input type="text" class="form-control" id="txtGoalRemarks" placeholder="Goal remarks" required>
+                    </div>
+                </div>
+                <div class="form-group row">
+                    <label for="rtGoalRating" class="col-sm-3 col-form-label">Goal ratings:</label>
+                    <br>
+                    <div class="col-sm-9">
+                        <input type="text" class="form-control" id="rtGoalRating" placeholder="Goal rating" required>
+                    </div>
+                </div>
+                <button type="button" class="btn btn-gradient-primary me-2" onclick="CreateGoal()">Create
+                </button>
+            </form>
+        </div>
+    </div>
+</div>
+<script>
+    $(document).ready(function () {
+        InitGoalCreate();
+    });
+</script>
+{% endblock %}

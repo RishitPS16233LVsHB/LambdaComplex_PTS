@@ -391,3 +391,12 @@ function DisplayMicroTrackingForMilestoneInTimeLine(recordID = null) {
     }
 }
 
+function LoadGoals(recordId = null) {
+    try {
+        if (IsNullOrEmpty(recordId)) return;
+        LoadGridView("GoalAPI/Resource/" + recordId);
+    }
+    catch (ex) {
+        toastr.error("Error while loading list of milestones: " + ex.message);
+    }
+}

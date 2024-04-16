@@ -29,6 +29,7 @@ class UserModule:
         except Exception:
             raise
 
+    # for milestone module
     @staticmethod
     def GetLeadNamesAndIdsOfTeamInProject(projectId):
         try:
@@ -45,6 +46,47 @@ class UserModule:
                         SELECT [LeaderID] 
                         FROM {Tables.Team}
                         WHERE ProjectID = '{projectId}'
+                    )
+                """
+            users = DatabaseUtilities.GetListOf(query)
+            return users
+        except Exception:
+            raise
+
+    # for goal module
+    @staticmethod
+    def GetDevNamesAndIdsOfTeamInMilestone(milestoneId,leaderId):
+        try:
+            query = f"""
+            SELECT 
+                [ID], 
+                ([FirstName] + '.' + [LastName]) as [UserName] 
+                FROM {Tables.User} 
+                WHERE 
+                    lower([Role]) = 'dev' AND 
+                    IsDeleted = 0 AND
+                    ID in 
+                    (
+                        SELECT [TeamMemberID] 
+                        FROM {Tables.TeamMember} 
+                        WHERE 
+                            [IsDeleted] = 0 AND
+                            [TeamID] in 
+                            (
+                                SELECT [ID]
+                                FROM {Tables.Team}
+                                WHERE 
+                                    [IsDeleted] = 0 AND
+                                    [LeaderID] in 
+                                    (
+                                        SELECT [AssignedTo] 
+                                        FROM {Tables.Milestone}
+                                        WHERE 
+                                            [IsDeleted] = 0 AND
+                                            [AssignedTo] = '{leaderId}' AND
+                                            [ID] = '{milestoneId}'
+                                    )
+                            )
                     )
                 """
             users = DatabaseUtilities.GetListOf(query)
