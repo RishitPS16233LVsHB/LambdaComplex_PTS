@@ -572,7 +572,6 @@ class MilestoneModule:
             raise
 
 
-
     @staticmethod
     def GetLatestStableVersionOfMilestone(milestoneId):
         try:

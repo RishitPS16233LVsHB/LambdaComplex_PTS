@@ -9,7 +9,9 @@ TestAPI = Blueprint("TestAPI",__name__)
 @TestAPI.route('/DataRead/')
 @SessionManagement('Admin,Lead,Dev')
 def DataRead():
-    data =  [
+    response = Response()
+    response.WasSuccessful = True
+    response.Data =  [
         {
             "ID": 1,
             "Name": "John Doe",
@@ -143,7 +145,7 @@ def DataRead():
             "availability": 1
         },
     ]
-    return jsonify(data)
+    return jsonify(response.__dict__)
 
 
 @TestAPI.route('/Resource/')
