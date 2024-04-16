@@ -682,7 +682,6 @@ class MilestoneModule:
         except Exception:
             raise
 
-
     @staticmethod
     def GetLatestStableVersionOfMilestone(milestoneId):
         try:
