@@ -131,7 +131,9 @@ class ProjectModule:
                     FROM {Tables.ProjectChanges} 
                     WHERE 
                         [IsDeleted] = 0 AND
-                        [IsStable] = 1
+                        [IsStable] = 1 AND                        
+                        ([ReportingStatus] != 'REJ' AND [ReportingStatus] != 'ACPT') AND
+                        [RunningStatus] = -1
                     GROUP BY [RecordID]
                 )
                 
@@ -158,7 +160,8 @@ class ProjectModule:
                     ON UM.ID = PCT.[CreatedBy] 
                 WHERE 
                     PCT.[IsDeleted] = 0 AND
-                    PCT.[CreatedBy] = '{userId}'
+                    PCT.[CreatedBy] = '{userId}' AND 
+                    PCT.[RunningStatus] = -1
             """            
             return DatabaseUtilities.GetListOf(query)
         except Exception:
@@ -177,7 +180,9 @@ class ProjectModule:
                     FROM {Tables.ProjectChanges} 
                     WHERE 
                         [IsDeleted] = 0 AND
-                        [IsStable] = 1
+                        [IsStable] = 1 AND                        
+                        ([ReportingStatus] != 'REJ' AND [ReportingStatus] != 'ACPT') AND
+                        [RunningStatus] = -1
                     GROUP BY [RecordID]
                 )
                 
@@ -204,6 +209,7 @@ class ProjectModule:
                     ON UM.ID = PCT.[CreatedBy] 
                 WHERE 
                     PCT.[IsDeleted] = 0 AND
+                    PCT.[RunningStatus] = -1 AND
                     PCT.[RecordID] in (
                         SELECT 
                             TM.[ProjectID]
@@ -229,7 +235,9 @@ class ProjectModule:
                         MAX([CreatedOn]) AS [LatestTime] 
                     FROM {Tables.ProjectChanges} 
                     WHERE 
-                        [IsDeleted] = 0 AND
+                        [IsDeleted] = 0 AND                        
+                        ([ReportingStatus] != 'REJ' AND [ReportingStatus] != 'ACPT') AND
+                        [RunningStatus] = -1 AND
                         [IsStable] = 1
                     GROUP BY [RecordID]
                 )
@@ -257,6 +265,7 @@ class ProjectModule:
                     ON UM.ID = PCT.[CreatedBy] 
                 WHERE 
                     PCT.[IsDeleted] = 0 AND
+                    PCT.[RunningStatus] = -1 AND
                     PCT.[RecordID] in 
                     (
                         SELECT 
@@ -365,7 +374,8 @@ class ProjectModule:
                 WHERE 
                     PCT.[IsDeleted] = 0 AND
                     PCT.[RecordID] = '{projectId}' AND
-                    PCT.[IsStable] = 1
+                    PCT.[IsStable] = 1 AND
+                    PCT.[RunningStatus] = -1
                 ORDER BY
                     PCT.[CreatedOn] DESC
             """

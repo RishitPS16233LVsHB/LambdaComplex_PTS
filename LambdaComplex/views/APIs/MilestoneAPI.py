@@ -155,7 +155,7 @@ def ResourcesForLead(userId,projectId):
     resource["Columns"] = [
         {
             "title" : "Edit ",
-            "template": "# if(data.ReportingStatus == 'PAR') { # <button class=\"btn btn-outline-primary\" onclick='LoadUpdateView(\"#: RecordID #\")'> <i class=\"mdi mdi-grease-pencil\"></i> </button> # } else { var color = (ReportingStatus == 'CMP') ? 'green' : 'red' # <p style=\"color:#: color #\"> #: data.ReportingStatus #</p> # } #",
+            "template": "# if(data.ReportingStatus == 'PAR' || data.ReportingStatus == 'INITIAL') { # <button class=\"btn btn-outline-primary\" onclick='LoadUpdateView(\"#: RecordID #\")'> <i class=\"mdi mdi-grease-pencil\"></i> </button> # } else { var color = (ReportingStatus == 'CMP') ? 'green' : 'red' # <p style=\"color:#: color #\"> #: data.ReportingStatus #</p> # } #",
             "excludeFromExport": True,
             "width":80,
         },
@@ -206,7 +206,7 @@ def ResourcesForLead(userId,projectId):
         },   
         {
             "title" : "File submissions",
-            "template": "# if(data.ReportingStatus == 'PAR') { # <button class=\"btn btn-outline-secondary\" onclick='LoadReadOnlyFileView(\"#: ID #\",true,true,divMainPage)'> <i class=\"mdi mdi-file-multiple\"> </button> # } else { # <button class=\"btn btn-outline-warning\" onclick='LoadFileSubmissionView(\"#: ID #\",true,true,divMainPage)'> <i class=\"mdi mdi-file-multiple\"></i> </button> # } #",
+            "template": "# if(data.ReportingStatus == 'PAR') { # <button class=\"btn btn-outline-secondary\" onclick='LoadReadOnlyFileView(\"#: ID #\",true,true,divMainPage)'> <i class=\"mdi mdi-file-multiple\"></i> </button> # } else { # <button class=\"btn btn-outline-warning\" onclick='LoadFileSubmissionView(\"#: ID #\",true,true,divMainPage)'> <i class=\"mdi mdi-file-multiple\"></i> </button> # } #",
             "excludeFromExport": True,
             "width":80,
         },
@@ -535,7 +535,8 @@ def MacroTrackingGridResource(milestoneId):
                 "RecordID" : {"type" : "string"},
                 "Name" : {"type" : "string"},                
                 "Description" : {"type" : "string"},
-                "CreatedByName" : {"type" : "string"},
+                "CreatedByName" : {"type" : "string"},                
+                "ModifiedByName" : {"type" : "string"},
                 "CreatedBy" : {"type": "string"},
                 "CreatedOn": {"type": "date"},
                 "Deadline": {"type": "date"},
@@ -602,7 +603,12 @@ def MacroTrackingGridResource(milestoneId):
                 "field" : "CreatedByName",
                 "title" : "Milestone Created by",
                 "width":200,
-            },      
+            },  
+            {
+                "field" : "ModifiedByName",
+                "title" : "Milestone Modified by",
+                "width":200,
+            },     
             {
                 "field" : "AssignedTo",
                 "title" : "Milestone Assigned to",
@@ -629,7 +635,8 @@ def MicroTrackingGridResource(milestoneId):
                 "RecordID" : {"type" : "string"},
                 "Name" : {"type" : "string"},                
                 "Description" : {"type" : "string"},
-                "CreatedByName" : {"type" : "string"},
+                "CreatedByName" : {"type" : "string"},                              
+                "ModifiedByName" : {"type" : "string"},
                 "CreatedBy" : {"type": "string"},
                 "CreatedOn": {"type": "date"},
                 "Deadline": {"type": "date"},
@@ -695,6 +702,11 @@ def MicroTrackingGridResource(milestoneId):
             {
                 "field" : "CreatedByName",
                 "title" : "Milestone Created by",
+                "width":200,
+            },
+            {
+                "field" : "ModifiedByName",
+                "title" : "Milestone Modified by",
                 "width":200,
             },      
             {
@@ -736,9 +748,9 @@ def MacroTrackingTimeLineRead(milestoneId):
         resource["Mappings"] = {
             "time" : "CreatedOn",
             "header" : "ReportingStatus",
-            "h1Body" : "CreatedByName",
+            "h1Body" : "ModifiedByName",
             "paraBody" : "Remarks",
-            "footer": "CreatedOn" 
+            "footer": "CreatedByName" 
         }
         response.Data = resource 
         response.WasSuccessful = True
@@ -772,9 +784,9 @@ def MicroTrackingTimeLineRead(milestoneId):
         resource["Mappings"] = {
             "time" : "CreatedOn",
             "header" : "ReportingStatus",
-            "h1Body" : "CreatedByName",
+            "h1Body" : "ModifiedByName",
             "paraBody" : "Remarks",
-            "footer": "CreatedOn" 
+            "footer": "CreatedByName" 
         }
         response.Data = resource 
         response.WasSuccessful = True

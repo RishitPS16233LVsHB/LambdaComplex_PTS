@@ -195,8 +195,6 @@ class MilestoneModule:
         except Exception:
             raise
 
-
-
     @staticmethod
     def GetLatestMilestonesForAdmins(projectId,userId):
         try:
@@ -210,7 +208,8 @@ class MilestoneModule:
                     FROM {Tables.MilestoneChanges} 
                     WHERE 
                         [IsDeleted] = 0 AND                        
-                        (MCT.[ReportingStatus] != 'REJ' OR MCT.[ReportingStatus] != 'ACPT') 
+                        ([ReportingStatus] != 'REJ' AND [ReportingStatus] != 'ACPT') AND
+                        [RunningStatus] = -1
                     GROUP BY [RecordID]
                 )
                 
@@ -250,7 +249,8 @@ class MilestoneModule:
                 WHERE 
                     MCT.[IsDeleted] = 0 AND
                     MCT.[CreatedBy] = '{userId}' AND
-                    MCT.[ParentID] = '{projectId}'
+                    MCT.[ParentID] = '{projectId}' AND
+                    MCT.[RunningStatus] = -1
             """            
             return DatabaseUtilities.GetListOf(query)
         except Exception:
@@ -269,7 +269,8 @@ class MilestoneModule:
                     FROM {Tables.MilestoneChanges} 
                     WHERE 
                         [IsDeleted] = 0 AND                        
-                        (MCT.[ReportingStatus] != 'REJ' OR MCT.[ReportingStatus] != 'ACPT') 
+                        ([ReportingStatus] != 'REJ' AND [ReportingStatus] != 'ACPT') AND
+                        [RunningStatus] = -1
                     GROUP BY [RecordID]
                 )
                 
@@ -309,7 +310,8 @@ class MilestoneModule:
                 WHERE 
                     MCT.[IsDeleted] = 0 AND
                     MCT.[AssignedTo] = '{userId}' AND
-                    MCT.[ParentID] = '{projectId}'
+                    MCT.[ParentID] = '{projectId}' AND
+                    MCT.[RunningStatus] = -1
             """
             return DatabaseUtilities.GetListOf(query)
         except Exception:
@@ -329,7 +331,8 @@ class MilestoneModule:
                     WHERE 
                         [IsDeleted] = 0 AND
                         [IsStable] = 1 AND
-                        (MCT.[ReportingStatus] != 'REJ' OR MCT.[ReportingStatus] != 'ACPT') 
+                        [RunningStatus] = -1 AND
+                        ([ReportingStatus] != 'REJ' AND [ReportingStatus] != 'ACPT') 
                     GROUP BY [RecordID]
                 )
                 
@@ -369,6 +372,7 @@ class MilestoneModule:
                 WHERE                 
                     MCT.[ParentID] = '{projectId}' AND
                     MCT.[IsDeleted] = 0 AND
+                    MCT.[RunningStatus] = -1 AND
                     MCT.[AssignedTo] in
                     (
                         SELECT 
@@ -428,10 +432,22 @@ class MilestoneModule:
     @staticmethod
     def AcceptChangesMilestone(milestoneId,userId):
         try:
-            # insert a record for accepting changes 
+            query = f"""
+            UPDATE {Tables.MilestoneChanges} SET           
+            [ModifiedOn] = getdate(),
+            [CreatedOn] = [CreatedOn],
+            [RunningStatus] = 0,
+            [IsStable] = 0
+            WHERE [Id] = '{milestoneId}'
+            """            
+            DatabaseUtilities.ExecuteNonQuery(query)
+
+             # insert a acceptance record for accepting changes 
             query = f"""            
             INSERT INTO {Tables.MilestoneChanges}
-                ([RecordID]
+                (
+                [ID]
+                ,[RecordID]
                 ,[Name]
                 ,[Description]
                 ,[RunningStatus]
@@ -444,37 +460,81 @@ class MilestoneModule:
                 ,[ReportingStatus]
                 ,[Deadline]
                 ,[Remarks]
-                ,[Rating])
+                ,[Rating]
+                ,[CreatedOn]
+                ,[ModifiedOn]
+                )
             SELECT 
-                [RecordID]
+            TOP 1
+                '{milestoneId}' as [ID]
+                ,[RecordID]
                 ,[Name]
                 ,[Description]
                 ,-1 as [RunningStatus]
                 ,[AssignedTo]
                 ,[ParentID]
+                ,'{userId}' as [CreatedBy]
+                ,'{userId}' as [ModifiedBy]
+                ,1 as [IsStable]
+                ,1 as [Version] 
+                ,'PAR' as [ReportingStatus]
+                ,[Deadline]
+                ,[Remarks]
+                ,[Rating]
+                ,getdate() as [CreatedOn]
+                ,getdate() as [ModifiedOn]
+            FROM {Tables.MilestoneChanges}
+            WHERE ID = '{milestoneId}' AND [IsDeleted] = 0
+            """
+            DatabaseUtilities.ExecuteNonQuery(query)
+
+            # insert a flag record for accepting changes 
+            query = f"""            
+            INSERT INTO {Tables.MilestoneChanges}
+                (
+                [ID]
+                ,[RecordID]
+                ,[Name]
+                ,[Description]
+                ,[RunningStatus]
+                ,[AssignedTo]
+                ,[ParentID]
                 ,[CreatedBy]
                 ,[ModifiedBy]
+                ,[IsStable]
+                ,[Version]
+                ,[ReportingStatus]
+                ,[Deadline]
+                ,[Remarks]
+                ,[Rating]
+                ,[CreatedOn]
+                ,[ModifiedOn]
+                )
+            SELECT 
+            TOP 1
+                '{milestoneId}' as [ID]
+                ,[RecordID]
+                ,[Name]
+                ,[Description]
+                ,0 as [RunningStatus]
+                ,[AssignedTo]
+                ,[ParentID]
+                ,'{userId}' as [CreatedBy]
+                ,'{userId}' as [ModifiedBy]
                 ,0 as [IsStable]
                 ,1 as [Version] 
                 ,'ACPT' as [ReportingStatus]
                 ,[Deadline]
                 ,[Remarks]
                 ,[Rating]
+                ,getdate() as [CreatedOn]
+                ,getdate() as [ModifiedOn]
             FROM {Tables.MilestoneChanges}
             WHERE ID = '{milestoneId}' AND [IsDeleted] = 0
             """
             DatabaseUtilities.ExecuteNonQuery(query)
 
-            query = f"""
-            UPDATE {Tables.MilestoneChanges} SET
-            [ReportingStatus] = 'PAR',            
-            [ModifiedBy] = '{userId}',
-            [ModifiedOn] = getdate(),
-            [CreatedOn] = [CreatedOn],
-            [IsStable] = 1
-            WHERE [Id] = '{milestoneId}'
-            """            
-            return DatabaseUtilities.ExecuteNonQuery(query)
+            return 1
         except Exception:
             raise
 
@@ -482,13 +542,58 @@ class MilestoneModule:
     def RejectChangesMilestone(milestoneId,userId):
         try:
             query = f"""
-            UPDATE {Tables.MilestoneChanges} SET
-            [ReportingStatus] = 'REJ',            
-            [ModifiedBy] = '{userId}',
+            UPDATE {Tables.MilestoneChanges} SET           
             [ModifiedOn] = getdate(),
             [CreatedOn] = [CreatedOn],
-            [IsStable] = 1
+            [IsStable] = 0,
+            [RunningStatus] = 0
             WHERE [Id] = '{milestoneId}'
+            """            
+            DatabaseUtilities.ExecuteNonQuery(query)
+
+            # insert a record for rejecting changes 
+            query = f"""            
+            INSERT INTO {Tables.MilestoneChanges}
+                (
+                [ID]
+                ,[RecordID]
+                ,[Name]
+                ,[Description]
+                ,[RunningStatus]
+                ,[AssignedTo]
+                ,[ParentID]
+                ,[CreatedBy]
+                ,[ModifiedBy]
+                ,[IsStable]
+                ,[Version]
+                ,[ReportingStatus]
+                ,[Deadline]
+                ,[Remarks]
+                ,[Rating]
+                ,[CreatedOn]
+                ,[ModifiedOn]
+                )
+            SELECT
+            TOP 1 
+                '{milestoneId}' as [ID]
+                ,[RecordID]
+                ,[Name]
+                ,[Description]
+                ,0 as [RunningStatus]
+                ,[AssignedTo]
+                ,[ParentID]
+                ,'{userId}' as [CreatedBy]
+                ,'{userId}' as [ModifiedBy]
+                ,0 as [IsStable]
+                ,1 as [Version] 
+                ,'REJ' as [ReportingStatus]
+                ,[Deadline]
+                ,[Remarks]
+                ,[Rating]
+                ,getdate() as [CreatedOn]
+                ,getdate() as [ModifiedOn]
+            FROM {Tables.MilestoneChanges}
+            WHERE ID = '{milestoneId}' AND [IsDeleted] = 0
             """
             return DatabaseUtilities.ExecuteNonQuery(query)
         except Exception:
@@ -512,6 +617,7 @@ class MilestoneModule:
                     ,MCT.[Rating]
                     ,MCT.[Remarks]
                     ,(UM.[FirstName] + '-' + UM.[LastName]) as [CreatedByName]
+                    ,(UM3.[FirstName] + '-' + UM3.[LastName]) as [ModifiedByName]
                     ,(UM2.[FirstName] + '-' + UM2.[LastName]) as [AssignedTo]
                     ,PM.[Name] as [ProjectName]
                 FROM 
@@ -520,6 +626,8 @@ class MilestoneModule:
                     {Tables.User} UM ON MCT.[CreatedBy] = UM.[ID]
                 INNER JOIN 
                     {Tables.User} UM2 ON MCT.[AssignedTo] = UM2.[ID]
+                INNER JOIN 
+                    {Tables.User} UM3 ON MCT.[ModifiedBy] = UM3.[ID]
                 INNER JOIN 
                     {Tables.Project} PM ON MCT.[ParentID] = PM.[ID]
                 WHERE 
@@ -550,6 +658,7 @@ class MilestoneModule:
                     ,CAST(FORMAT(MCT.[Deadline],'yyyy-MM-dd hh:mm:ss') as varchar(30)) AS [Deadline]
                     ,MCT.[Rating]
                     ,MCT.[Remarks]
+                    ,(UM3.[FirstName] + '-' + UM3.[LastName]) as [ModifiedByName]                    
                     ,(UM.[FirstName] + '-' + UM.[LastName]) as [CreatedByName]
                     ,(UM2.[FirstName] + '-' + UM2.[LastName]) as [AssignedTo]
                     ,PM.[Name] as [ProjectName]
@@ -559,6 +668,8 @@ class MilestoneModule:
                     {Tables.User} UM ON MCT.[CreatedBy] = UM.[ID]
                 INNER JOIN 
                     {Tables.User} UM2 ON MCT.[AssignedTo] = UM2.[ID]
+                INNER JOIN 
+                    {Tables.User} UM3 ON MCT.[ModifiedBy] = UM3.[ID]
                 INNER JOIN 
                     {Tables.Project} PM ON MCT.[ParentID] = PM.[ID]
                 WHERE 
@@ -597,7 +708,8 @@ class MilestoneModule:
                     MCT.[IsDeleted] = 0 AND
                     MCT.[RecordID] = '{milestoneId}' AND
                     MCT.[IsStable] = 1 AND
-                    (MCT.[ReportingStatus] != 'REJ' OR MCT.[ReportingStatus] != 'ACPT') 
+                    (MCT.[ReportingStatus] != 'REJ' OR MCT.[ReportingStatus] != 'ACPT') AND
+                    MCT.[RunningStatus] = -1
                 ORDER BY
                     MCT.[CreatedOn] DESC
             """

@@ -153,6 +153,7 @@ function UpdateMilestone() {
 function ChildUpdateMilestone() {
     try {
         YesNoCancelAlert(
+            "Report/Request...",
             "You are about to update this milestone, how would you like it updated?",
             "Change request",
             "Progress report",

@@ -292,10 +292,11 @@ function AlertInfo(message) {
  * @param {*} yesCallback 
  * @param {*} noCallback 
  */
-function YesNoCancelAlert(title, yesButtonText, noButtonText, yesCallback, noCallback) {
+function YesNoCancelAlert(title, message, yesButtonText, noButtonText, yesCallback, noCallback) {
 
     Swal.fire({
         title: title,
+        text: message,
         showDenyButton: true,
         showCancelButton: true,
         confirmButtonText: yesButtonText,
