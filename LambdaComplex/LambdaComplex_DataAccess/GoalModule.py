@@ -20,7 +20,8 @@ class GoalModule:
             ,[Deadline]
             ,[Remarks]
             ,[Rating]
-            ,[ParentID])
+            ,[ParentID]
+            ,[AssignedTo])
         OUTPUT Inserted.ID into @InsertID
         VALUES
             ('{goalData["GoalName"]}'
@@ -34,7 +35,8 @@ class GoalModule:
             ,cast('{goalData["GoalDeadLine"]}' as datetime)
             ,'{goalData["GoalRemarks"]}'
             ,{goalData["GoalRating"]}
-            ,'{goalData["ParentID"]}');
+            ,'{goalData["ParentID"]}'
+            ,'{goalData["AssignedTo"]}');
             
             select @cngInsertID = ID from @InsertID;
             

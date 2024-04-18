@@ -1,0 +1,70 @@
+{% block content %}
+<div class="col-md-12 grid-margin stretch-card">
+    <div class="card">
+        <div class="card-body">
+            <h4 class="card-title">Tasks</h4>
+            <p class="card-description">Update task</p>
+            <form class="forms-sample" id="FORM">
+                <input type="hidden" id="hdnParentId" value="{{ parentID }}">
+                <input type="hidden" id="hdnTaskId" value="{{ recordID }}">
+                <input type="hidden" id="hdnTaskCreatedBy" value="{{ taskCreatedBy }}">
+                <div class="form-group row">
+                    <label for="txtTaskName" class="col-sm-3 col-form-label">Task Name:</label>
+                    <div class="col-sm-9">
+                        <input type="text" class="form-control" id="txtTaskName" placeholder="Task Name" required
+                            value="{{ taskName }}" readonly>
+                    </div>
+                </div>
+                <div class="form-group row">
+                    <label for="txtTaskName" class="col-sm-3 col-form-label">Expected Deadline:</label>
+                    <div class="col-sm-9">
+                        <input type="date" class="form-control" id="dtExpectedDeadLine" placeholder="Expected deadline"
+                            required valueAttr="{{ expectedDeadline }}" readonly>
+                    </div>
+                </div>
+                <div class="form-group row">
+                    <label for="txtTaskDescription" class="col-sm-3 col-form-label">Task Description:</label>
+                    <br>
+                    <div class="col-sm-9">
+                        <textarea class="form-control" id="txtTaskDescription" placeholder="" rows="10" required>
+                            {{ taskDescription }}
+                        </textarea>
+                    </div>
+                </div>
+                <div class="form-group row">
+                    <label for="cmbLeader" class="col-sm-3 col-form-label">Developer:</label><br>
+                    <div class="col-sm-9">
+                        <input id="txtDeveloper" class="form-control" required readonly
+                            value="{{ taskAssignedToName }}">
+                        <input id="hdnDeveloper" type="hidden" class="form-control" required readonly
+                            value="{{ taskAssignedTo }}">
+                    </div>
+                </div>
+                <div class="form-group row">
+                    <label for="txtTaskRemarks" class="col-sm-3 col-form-label">Task Remarks:</label>
+                    <br>
+                    <div class="col-sm-9">
+                        <input type="text" class="form-control" id="txtTaskRemarks" placeholder="Task remarks" required
+                            value="{{ taskRemarks }}">
+                    </div>
+                </div>
+                <div class="form-group row">
+                    <label for="rtTaskRating" class="col-sm-3 col-form-label">Task ratings:</label>
+                    <br>
+                    <div class="col-sm-9">
+                        <input type="text" class="form-control" id="rtTaskRating" placeholder="Task rating" required
+                            value="{{ taskRating }}" readonly>
+                    </div>
+                </div>
+                <button type="button" class="btn btn-gradient-primary me-2" onclick="ChildUpdateTask()">Update
+                </button>
+            </form>
+        </div>
+    </div>
+</div>
+<script>
+    $(document).ready(function () {
+        InitTaskUpdate();
+    });
+</script>
+{% endblock %}

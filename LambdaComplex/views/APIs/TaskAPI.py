@@ -1,15 +1,15 @@
 import json
 from flask import jsonify, Blueprint, request
-from LambdaComplex_DataAccess.MilestoneModule import MilestoneModule
+from LambdaComplex_DataAccess.TaskModule import TaskModule
 from SessionManagement import SessionManagement
 from LambdaComplex_Entities.Common import Response
 from SessionManagement import SessionManagement,GetUserSessionDetails
 
-MilestoneAPI = Blueprint("MilestoneAPI",__name__)
+TaskAPI = Blueprint("TaskAPI",__name__)
 
-@MilestoneAPI.route('/Resource/<projectId>')
+@TaskAPI.route('/Resource/<goalId>')
 @SessionManagement('Admin,Lead,Dev')
-def Resource(projectId):
+def Resource(goalId):
     try:
         response = Response()
         userSessionDetails = GetUserSessionDetails()
@@ -19,11 +19,11 @@ def Resource(projectId):
         resource = {}
 
         if role == 'admin' :
-            resource = ResourcesForAdmin(userId,projectId)
+            resource = ResourcesForAdmin(userId,goalId)
         elif role == 'lead' :
-            resource = ResourcesForLead(userId,projectId)
+            resource = ResourcesForLead(userId,goalId)
         elif role == 'dev':
-            resource = ResourcesForDev(userId,projectId)
+            resource = ResourcesForDev(userId,goalId)
 
         response.Data = resource
         response.WasSuccessful = True
@@ -32,7 +32,7 @@ def Resource(projectId):
         response.WasSuccessful = False 
     return jsonify(response.__dict__)
 
-def ResourcesForDev(userId,projectId):
+def ResourcesForAdmin(userId,goalId):
     resource = {};  
     resource["Fields"] = {
             "ID" : {"type" : "string"},
@@ -54,12 +54,12 @@ def ResourcesForDev(userId,projectId):
     resource["Columns"] = [
         {
             "field" : "Name",
-            "title" : "Milestone Name",
+            "title" : "Task Name",
             "width": 200,
         },
         {
             "field" : "Description",
-            "title" : "Milestone description",
+            "title" : "Task description",
             "width":200,
             "encoded": False,
         },
@@ -67,12 +67,6 @@ def ResourcesForDev(userId,projectId):
             "field" : "AssignedToName",
             "title" : "Assigned to",
             "width":200,
-        },        
-        {
-            "title" : "Goals",
-            "template": "# if(data.ReportingStatus != 'ABD' && data.ReportingStatus != 'CMP') { # <button class=\"btn btn-outline-primary\" onclick='LoadGoals(\"#: RecordID #\")'> <i class=\"mdi mdi-target\"></i> </button> # } else { var color = (ReportingStatus == 'CMP') ? 'green' : 'red' # <p style=\"color:#: color #\"> #: data.ReportingStatus #</p> # } #",
-            "excludeFromExport": True,
-            "width":80,
         },
         {
             "title" : "File submissions",
@@ -82,37 +76,37 @@ def ResourcesForDev(userId,projectId):
         },
         {
             "title" : "Macro Tracking",
-            "template": "<button class=\"btn btn-outline-info\" onclick='DisplayMacroTrackingForMilestoneInGrid(\"#: RecordID #\",true,true,divMainPage)'> <i class=\"mdi mdi-table\"> </button>",
+            "template": "<button class=\"btn btn-outline-info\" onclick='DisplayMacroTrackingForTaskInGrid(\"#: RecordID #\",true,true,divMainPage)'> <i class=\"mdi mdi-table\"> </button>",
             "excludeFromExport": True,
             "width":80,
         }, 
         {
             "title" : "Macro Tracking",
-            "template": "<button class=\"btn btn-outline-info\" onclick='DisplayMacroTrackingForMilestoneInTimeLine(\"#: RecordID #\")'> <i class=\"mdi mdi-source-branch\"> </button>",
+            "template": "<button class=\"btn btn-outline-info\" onclick='DisplayMacroTrackingForTaskInTimeLine(\"#: RecordID #\")'> <i class=\"mdi mdi-source-branch\"> </button>",
             "excludeFromExport": True,
             "width":80,
         }, 
         {
             "title" : "Micro Tracking",
-            "template": "<button class=\"btn btn-outline-secondary\" onclick='DisplayMicroTrackingForMilestoneInGrid(\"#: RecordID #\",true,true,divMainPage)'> <i class=\"mdi mdi-table\"> </button>",
+            "template": "<button class=\"btn btn-outline-secondary\" onclick='DisplayMicroTrackingForTaskInGrid(\"#: RecordID #\",true,true,divMainPage)'> <i class=\"mdi mdi-table\"> </button>",
             "excludeFromExport": True,
             "width":80,
         }, 
         {
             "title" : "Micro Tracking",
-            "template": "<button class=\"btn btn-outline-secondary\" onclick='DisplayMicroTrackingForMilestoneInTimeLine(\"#: RecordID #\",true,true,divMainPage)'> <i class=\"mdi mdi-source-branch\"> </button>",
+            "template": "<button class=\"btn btn-outline-secondary\" onclick='DisplayMicroTrackingForTaskInTimeLine(\"#: RecordID #\",true,true,divMainPage)'> <i class=\"mdi mdi-source-branch\"> </button>",
             "excludeFromExport": True,
             "width":80,
         },    
         {
             "field" : "CreatedOn",
-            "title" : "Milestone creation date",
+            "title" : "Task creation date",
             "format" : "{0:dd/MM/yyyy}",
             "width": 200,            
         },
         {
             "field" : "Deadline",
-            "title" : "Milestone deadline",
+            "title" : "Task deadline",
             "format" : "{0:dd/MM/yyyy}",
             "width": 200,            
         },
@@ -124,23 +118,23 @@ def ResourcesForDev(userId,projectId):
         },
         {
             "field" : "Remarks",
-            "title" : "Milestone name",
+            "title" : "Task name",
             "width":200,
         },
         {
             "field" : "CreatedByName",
-            "title" : "Milestone Created by",
+            "title" : "Task Created by",
             "width":200,
         }        
     ]
 
-    resource["ReadURL"] = "MilestoneAPI/DataRead/Dev/" + userId + "/" + projectId
+    resource["ReadURL"] = "TaskAPI/DataRead/Admin/" + userId + "/" + goalId
     return resource
 
-def ResourcesForLead(userId,projectId):
+def ResourcesForDev(userId,goalId):
     resource = {};  
-    resource["UpdateViewUrl"] = "Milestone/ChildUpdate/" + projectId
-    resource["ReadURL"] = "MilestoneAPI/DataRead/Lead/" + userId + "/" + projectId
+    resource["UpdateViewUrl"] = "Task/ChildUpdate/" + goalId
+    resource["ReadURL"] = "TaskAPI/DataRead/Dev/" + userId + "/" + goalId
     resource["Fields"] = {
         "ID" : {"type" : "string"},
         "RecordID" : {"type" : "string"},
@@ -166,24 +160,18 @@ def ResourcesForLead(userId,projectId):
             "width":80,
         },
         {
-            "title" : "Goals",
-            "template": "# if(data.ReportingStatus != 'ABD' && data.ReportingStatus != 'CMP') { # <button class=\"btn btn-outline-primary\" onclick='LoadGoals(\"#: RecordID #\")'> <i class=\"mdi mdi-target\"></i> </button> # } else { var color = (ReportingStatus == 'CMP') ? 'green' : 'red' # <p style=\"color:#: color #\"> #: data.ReportingStatus #</p> # } #",
-            "excludeFromExport": True,
-            "width":80,
-        },
-        {
             "field" : "Name",
-            "title" : "Milestone Name",
+            "title" : "Task Name",
             "width": 200,
         },
         {
             "field" : "ReportingStatus",
-            "title" : "Milestone status",
+            "title" : "Task status",
             "width": 200,
         },   
         {
             "field" : "Description",
-            "title" : "Milestone description",
+            "title" : "Task description",
             "width":200,
             "encoded": False,
         },        
@@ -194,25 +182,25 @@ def ResourcesForLead(userId,projectId):
         },
         {
             "title" : "Macro Tracking",
-            "template": "<button class=\"btn btn-outline-info\" onclick='DisplayMacroTrackingForMilestoneInGrid(\"#: RecordID #\")'> <i class=\"mdi mdi-table\"> </button>",
+            "template": "<button class=\"btn btn-outline-info\" onclick='DisplayMacroTrackingForTaskInGrid(\"#: RecordID #\")'> <i class=\"mdi mdi-table\"> </button>",
             "excludeFromExport": True,
             "width":80,
         }, 
         {
             "title" : "Macro Tracking",
-            "template": "<button class=\"btn btn-outline-info\" onclick='DisplayMacroTrackingForMilestoneInTimeLine(\"#: RecordID #\")'> <i class=\"mdi mdi-source-branch\"> </button>",
+            "template": "<button class=\"btn btn-outline-info\" onclick='DisplayMacroTrackingForTaskInTimeLine(\"#: RecordID #\")'> <i class=\"mdi mdi-source-branch\"> </button>",
             "excludeFromExport": True,
             "width":80,
         }, 
         {
             "title" : "Micro Tracking",
-            "template": "<button class=\"btn btn-outline-secondary\" onclick='DisplayMicroTrackingForMilestoneInGrid(\"#: RecordID #\",true,true,divMainPage)'> <i class=\"mdi mdi-table\"> </button>",
+            "template": "<button class=\"btn btn-outline-secondary\" onclick='DisplayMicroTrackingForTaskInGrid(\"#: RecordID #\",true,true,divMainPage)'> <i class=\"mdi mdi-table\"> </button>",
             "excludeFromExport": True,
             "width":80,
         }, 
         {
             "title" : "Micro Tracking",
-            "template": "<button class=\"btn btn-outline-secondary\" onclick='DisplayMicroTrackingForMilestoneInTimeLine(\"#: RecordID #\",true,true,divMainPage)'> <i class=\"mdi mdi-source-branch\"> </button>",
+            "template": "<button class=\"btn btn-outline-secondary\" onclick='DisplayMicroTrackingForTaskInTimeLine(\"#: RecordID #\",true,true,divMainPage)'> <i class=\"mdi mdi-source-branch\"> </button>",
             "excludeFromExport": True,
             "width":80,
         },   
@@ -224,40 +212,40 @@ def ResourcesForLead(userId,projectId):
         },
         {
             "field" : "CreatedOn",
-            "title" : "Milestone creation date",
+            "title" : "Task creation date",
             "format" : "{0:dd/MM/yyyy}",
             "width": 200,            
         },
         {
             "field" : "Deadline",
-            "title" : "Milestone deadline",
+            "title" : "Task deadline",
             "format" : "{0:dd/MM/yyyy}",
             "width": 200,            
         },
         {
             "field" : "Rating",
-            "title" : "Milestone rating",
+            "title" : "Task rating",
             "template": "<div id=\"ratingBar#: ID #\"></div>",
             "width":200,
         },
         {
             "field" : "Remarks",
-            "title" : "Milestone name",
+            "title" : "Task name",
             "width":200,
         },
         {
             "field" : "CreatedByName",
-            "title" : "Milestone Created by",
+            "title" : "Task Created by",
             "width":200,
         }        
     ]
 
     return resource
 
-def ResourcesForAdmin(userId,projectId):        
+def ResourcesForLead(userId,goalId):        
         resource = {};  
-        resource["CreateViewUrl"] = "Milestone/Create/" + projectId
-        resource["UpdateViewUrl"] = "Milestone/Update/" + projectId
+        resource["CreateViewUrl"] = "Task/Create/" + goalId
+        resource["UpdateViewUrl"] = "Task/Update/" + goalId
         resource["Fields"] = {
                 "ID" : {"type" : "string"},
                 "RecordID" : {"type" : "string"},
@@ -278,25 +266,31 @@ def ResourcesForAdmin(userId,projectId):
         resource["Columns"] = [
             {
                 "title" : "Edit",
-                "template": "# if(data.ReportingStatus == 'PAR' || data.ReportingStatus == 'INITIAL') { # <button class=\"btn btn-outline-primary\" onclick='LoadUpdateView(\"#: RecordID #\")'> <i class=\"mdi mdi-grease-pencil\"></i> </button> # } else if(ReportingStatus == 'CHR' || ReportingStatus == 'PGR') { # <button class=\"btn btn-outline-success\" onclick='ApproveMilestoneEdit(\"#: ID #\")'> <i class=\"mdi mdi-thumb-up\"></i> </button> <button class=\"btn btn-outline-danger\" onclick='RejectMilestoneEdit(\"#: ID #\")'> <i class=\"mdi mdi-thumb-down\"></i> </button> # } else { var color = (ReportingStatus == 'CMP') ? 'green' : 'red' # <p style=\"color:#: color #\"> #: data.ReportingStatus #</p> # } #",
-                "excludeFromExport": True,
-                "width":80,
-            },
-            {
-                "title" : "Goals",
-                "template": "# if(data.ReportingStatus != 'ABD' && data.ReportingStatus != 'CMP') { # <button class=\"btn btn-outline-primary\" onclick='LoadGoals(\"#: RecordID #\")'> <i class=\"mdi mdi-target\"></i> </button> # } else { var color = (ReportingStatus == 'CMP') ? 'green' : 'red' # <p style=\"color:#: color #\"> #: data.ReportingStatus #</p> # } #",
+                "template": "# if(data.ReportingStatus == 'PAR' || data.ReportingStatus == 'INITIAL') { # <button class=\"btn btn-outline-primary\" onclick='LoadUpdateView(\"#: RecordID #\")'> <i class=\"mdi mdi-grease-pencil\"></i> </button> # } else if(ReportingStatus == 'CHR' || ReportingStatus == 'PGR') { # <button class=\"btn btn-outline-success\" onclick='ApproveTaskEdit(\"#: ID #\")'> <i class=\"mdi mdi-thumb-up\"></i> </button> <button class=\"btn btn-outline-danger\" onclick='RejectTaskEdit(\"#: ID #\")'> <i class=\"mdi mdi-thumb-down\"></i> </button> # } else { var color = (ReportingStatus == 'CMP') ? 'green' : 'red' # <p style=\"color:#: color #\"> #: data.ReportingStatus #</p> # } #",
                 "excludeFromExport": True,
                 "width":80,
             },
             {
                 "field" : "Name",
-                "title" : "Milestone Name",
+                "title" : "Task Name",
                 "width": 200,
             },
             {
                 "field" : "ReportingStatus",
-                "title" : "Milestone status",
+                "title" : "Task status",
                 "width": 200,
+            },
+            {
+                "title" : "Abandon",
+                "template": "# if(data.ReportingStatus == 'PAR' || data.ReportingStatus == 'INITIAL') { # <button class=\"btn btn-outline-danger\" onclick='AbandonTask(\"#: ID #\")'> <i class=\"mdi mdi-close\"></i> </button> # } else { var color = (ReportingStatus == 'CMP') ? 'green' : 'red' # <p style=\"color:#: color #\">#: data.ReportingStatus #</p> # } #",
+                "excludeFromExport": True,
+                "width":80,
+            },
+            {
+                "title" : "Complete",
+                "template": "# if(data.ReportingStatus == 'PAR' || data.ReportingStatus == 'INITIAL') { # <button class=\"btn btn-outline-success\" onclick='FinishTask(\"#: ID #\")'> <i class=\"mdi mdi-check\"></i> </button> # } else { var color = (ReportingStatus == 'CMP') ? 'green' : 'red' # <p style=\"color:#: color #\">#: data.ReportingStatus #</p> # } #",
+                "excludeFromExport": True,
+                "width":80,
             },            
             {
                 "field" : "AssignedToName",
@@ -305,91 +299,91 @@ def ResourcesForAdmin(userId,projectId):
             },
             {
                 "field" : "CreatedOn",
-                "title" : "Milestone creation date",
+                "title" : "Task creation date",
                 "format" : "{0:dd/MM/yyyy}",
                 "width": 200,            
             },
             {
                 "field" : "Deadline",
-                "title" : "Milestone deadline",
+                "title" : "Task deadline",
                 "format" : "{0:dd/MM/yyyy}",
                 "width": 200,            
             },
             {
                 "field" : "Description",
-                "title" : "Milestone description",
+                "title" : "Task description",
                 "width":200,
                 "encoded": False,
             },  
             {
                 "title" : "Macro Tracking",
-                "template": "<button class=\"btn btn-outline-info\" onclick='DisplayMacroTrackingForMilestoneInGrid(\"#: RecordID #\")'> <i class=\"mdi mdi-table\"> </button>",
+                "template": "<button class=\"btn btn-outline-info\" onclick='DisplayMacroTrackingForTaskInGrid(\"#: RecordID #\")'> <i class=\"mdi mdi-table\"> </button>",
                 "excludeFromExport": True,
                 "width":80,
             }, 
             {
                 "title" : "Macro Tracking",
-                "template": "<button class=\"btn btn-outline-info\" onclick='DisplayMacroTrackingForMilestoneInTimeLine(\"#: RecordID #\")'> <i class=\"mdi mdi-source-branch\"> </button>",
+                "template": "<button class=\"btn btn-outline-info\" onclick='DisplayMacroTrackingForTaskInTimeLine(\"#: RecordID #\")'> <i class=\"mdi mdi-source-branch\"> </button>",
                 "excludeFromExport": True,
                 "width":80,
             }, 
             {
                 "title" : "Micro Tracking",
-                "template": "<button class=\"btn btn-outline-secondary\" onclick='DisplayMicroTrackingForMilestoneInGrid(\"#: RecordID #\",true,true,divMainPage)'> <i class=\"mdi mdi-table\"> </button>",
+                "template": "<button class=\"btn btn-outline-secondary\" onclick='DisplayMicroTrackingForTaskInGrid(\"#: RecordID #\",true,true,divMainPage)'> <i class=\"mdi mdi-table\"> </button>",
                 "excludeFromExport": True,
                 "width":80,
             }, 
             {
                 "title" : "Micro Tracking",
-                "template": "<button class=\"btn btn-outline-secondary\" onclick='DisplayMicroTrackingForMilestoneInTimeLine(\"#: RecordID #\",true,true,divMainPage)'> <i class=\"mdi mdi-source-branch\"> </button>",
+                "template": "<button class=\"btn btn-outline-secondary\" onclick='DisplayMicroTrackingForTaskInTimeLine(\"#: RecordID #\",true,true,divMainPage)'> <i class=\"mdi mdi-source-branch\"> </button>",
                 "excludeFromExport": True,
                 "width":80,
             },         
             {
                 "title" : "File submissions",
-                "template": "# if(data.ReportingStatus == 'PAR' || data.ReportingStatus == 'INITIAL') { # <button class=\"btn btn-outline-warning\" onclick='LoadFileSubmissionView(\"#: ID #\",true,true,divMainPage)'> <i class=\"mdi mdi-file-multiple\"></i> </button> # } else { # <button class=\"btn btn-outline-secondary\" onclick='LoadReadOnlyFileView(\"#: ID #\",true,true,divMainPage)'> <i class=\"mdi mdi-file-multiple\"> </i></button> # } #",
+                "template": "# if(data.ReportingStatus == 'PAR' || data.ReportingStatus == 'INITIAL') { # <button class=\"btn btn-outline-warning\" onclick='LoadFileSubmissionView(\"#: ID #\")'> <i class=\"mdi mdi-file-multiple\"></i> </button> # } else { # <button class=\"btn btn-outline-secondary\" onclick='LoadReadOnlyFileView(\"#: ID #\")'> <i class=\"mdi mdi-file-multiple\"> </i></button> # } #",
                 "excludeFromExport": True,
                 "width":80,
             },
             {
                 "title" : "Abandon",
-                "template": "# if(data.ReportingStatus == 'PAR' || data.ReportingStatus == 'INITIAL') { # <button class=\"btn btn-outline-danger\" onclick='AbandonMilestone(\"#: ID #\")'> <i class=\"mdi mdi-close\"></i> </button> # } else { var color = (ReportingStatus == 'CMP') ? 'green' : 'red' # <p style=\"color:#: color #\">#: data.ReportingStatus #</p> # } #",
+                "template": "# if(data.ReportingStatus == 'PAR' || data.ReportingStatus == 'INITIAL') { # <button class=\"btn btn-outline-danger\" onclick='AbandonTask(\"#: ID #\")'> <i class=\"mdi mdi-close\"></i> </button> # } else { var color = (ReportingStatus == 'CMP') ? 'green' : 'red' # <p style=\"color:#: color #\">#: data.ReportingStatus #</p> # } #",
                 "excludeFromExport": True,
                 "width":80,
             },
             {
                 "title" : "Complete",
-                "template": "# if(data.ReportingStatus == 'PAR' || data.ReportingStatus == 'INITIAL') { # <button class=\"btn btn-outline-success\" onclick='FinishMilestone(\"#: ID #\")'> <i class=\"mdi mdi-check\"></i> </button> # } else { var color = (ReportingStatus == 'CMP') ? 'green' : 'red' # <p style=\"color:#: color #\">#: data.ReportingStatus #</p> # } #",
+                "template": "# if(data.ReportingStatus == 'PAR' || data.ReportingStatus == 'INITIAL') { # <button class=\"btn btn-outline-success\" onclick='FinishTask(\"#: ID #\")'> <i class=\"mdi mdi-check\"></i> </button> # } else { var color = (ReportingStatus == 'CMP') ? 'green' : 'red' # <p style=\"color:#: color #\">#: data.ReportingStatus #</p> # } #",
                 "excludeFromExport": True,
                 "width":80,
             },
             {
                 "field" : "Rating",
-                "title" : "Milestone rating",
+                "title" : "Task rating",
                 "template": "<div id=\"ratingBar#: ID #\"></div>",
                 "width":200,
             },
             {
                 "field" : "Remarks",
-                "title" : "Milestone remarks",
+                "title" : "Task remarks",
                 "width":200,
             },
             {
                 "field" : "CreatedByName",
-                "title" : "Milestone Created by",
+                "title" : "Task Created by",
                 "width":200,
             }        
         ]
 
-        resource["ReadURL"] = "MilestoneAPI/DataRead/Admin/" + userId + "/" + projectId
+        resource["ReadURL"] = "TaskAPI/DataRead/Lead/" + userId + "/" + goalId
         return resource
 
-@MilestoneAPI.route('/DataRead/Dev/<userId>/<projectId>', methods = ['GET'])
+@TaskAPI.route('/DataRead/Dev/<userId>/<goalId>', methods = ['GET'])
 @SessionManagement('Dev')
-def DataReadForDevs(userId,projectId):
+def DataReadForDev(userId,goalId):
     try:
         response = Response()        
-        result = MilestoneModule.GetLatestMilestoneForDev(projectId,userId)
+        result = TaskModule.GetLatestTaskForDevs(goalId,userId)
         response.Data  = result
         response.WasSuccessful = True
     except Exception as ex:
@@ -398,12 +392,12 @@ def DataReadForDevs(userId,projectId):
 
     return jsonify(response.__dict__)
 
-@MilestoneAPI.route('/DataRead/Lead/<userId>/<projectId>', methods = ['GET'])
+@TaskAPI.route('/DataRead/Lead/<userId>/<goalId>', methods = ['GET'])
 @SessionManagement('Lead')
-def DataReadForLead(userId,projectId):
+def DataReadForLead(userId,goalId):
     try:
         response = Response()        
-        result = MilestoneModule.GetLatestMilestoneForLead(projectId,userId)
+        result = TaskModule.GetLatestTasksForLeads(goalId,userId)
         response.Data  = result
         response.WasSuccessful = True
     except Exception as ex:
@@ -412,12 +406,13 @@ def DataReadForLead(userId,projectId):
 
     return jsonify(response.__dict__)
 
-@MilestoneAPI.route('/DataRead/Admin/<userId>/<projectId>', methods = ['GET'])
+@TaskAPI.route('/DataRead/Admin/<userId>/<goalId>', methods = ['GET'])
 @SessionManagement('Admin')
-def DataReadForAdmin(userId,projectId):
+def DataReadForAdmin(userId,goalId):
     try:
+        print(userId)# remove this if you really want to use user id
         response = Response()        
-        result = MilestoneModule.GetLatestMilestonesForAdmins(projectId,userId)
+        result = TaskModule.GetLatestTaskForAdmins(goalId)
         response.Data  = result
         response.WasSuccessful = True
     except Exception as ex:
@@ -427,41 +422,13 @@ def DataReadForAdmin(userId,projectId):
     return jsonify(response.__dict__)
 
 
-@MilestoneAPI.route('/CreateMilestone/', methods = ['POST'])
-@SessionManagement('Admin')
-def CreateMilestone():
-    try:
-        projectDetails = json.loads(request.data)
-        response = Response()
-        response.Data = MilestoneModule.CreateMilestone(projectDetails)
-        response.WasSuccessful = True
-    except Exception as ex:
-        response.Message = str(ex)
-        response.WasSuccessful = False
-
-    return jsonify(response.__dict__)
-
-@MilestoneAPI.route('/UpdateMilestone/', methods = ['POST'])
-@SessionManagement('Admin')
-def UpdateMilestone():    
-    try:
-        projectDetails = json.loads(request.data)
-        response = Response()
-        response.Data = MilestoneModule.ParentUpdateMilestone(projectDetails)
-        response.WasSuccessful = True
-    except Exception as ex:
-        response.Message = str(ex)
-        response.WasSuccessful = False
-
-    return jsonify(response.__dict__)
-
-@MilestoneAPI.route('/ChildUpdateMilestoneCHR/', methods = ['POST'])
+@TaskAPI.route('/CreateTask/', methods = ['POST'])
 @SessionManagement('Lead')
-def CHRUpdateMilestone():    
+def CreateTask():
     try:
-        projectDetails = json.loads(request.data)
+        goalDetails = json.loads(request.data)
         response = Response()
-        response.Data = MilestoneModule.ChildCHRUpdateMilestone(projectDetails)
+        response.Data = TaskModule.CreateTask(goalDetails)
         response.WasSuccessful = True
     except Exception as ex:
         response.Message = str(ex)
@@ -469,13 +436,13 @@ def CHRUpdateMilestone():
 
     return jsonify(response.__dict__)
 
-@MilestoneAPI.route('/ChildUpdateMilestonePGR/', methods = ['POST'])
+@TaskAPI.route('/UpdateTask/', methods = ['POST'])
 @SessionManagement('Lead')
-def PGRUpdateMilestone():        
+def UpdateTask():    
     try:
-        projectDetails = json.loads(request.data)
+        goalDetails = json.loads(request.data)
         response = Response()
-        response.Data = MilestoneModule.ChildPGRUpdateMilestone(projectDetails)
+        response.Data = TaskModule.ParentUpdateTask(goalDetails)
         response.WasSuccessful = True
     except Exception as ex:
         response.Message = str(ex)
@@ -483,13 +450,13 @@ def PGRUpdateMilestone():
 
     return jsonify(response.__dict__)
 
-@MilestoneAPI.route('/FinishMilestone/<milestoneChangeId>', methods = ['GET'])
-@SessionManagement('Admin')
-def FinishMilestone(milestoneChangeId):    
+@TaskAPI.route('/ChildUpdateTaskCHR/', methods = ['POST'])
+@SessionManagement('Dev')
+def CHRUpdateTask():    
     try:
+        goalDetails = json.loads(request.data)
         response = Response()
-        userId = GetUserSessionDetails()["USER_ID"]
-        response.Data = MilestoneModule.FinishMilestone(milestoneChangeId,userId)
+        response.Data = TaskModule.ChildCHRUpdateTask(goalDetails)
         response.WasSuccessful = True
     except Exception as ex:
         response.Message = str(ex)
@@ -497,13 +464,13 @@ def FinishMilestone(milestoneChangeId):
 
     return jsonify(response.__dict__)
 
-@MilestoneAPI.route('/AbandonAbandon/<milestoneChangeId>', methods = ['GET'])
-@SessionManagement('Admin')
-def AbandonMilestone(milestoneChangeId):    
+@TaskAPI.route('/ChildUpdateTaskPGR/', methods = ['POST'])
+@SessionManagement('Dev')
+def PGRUpdateTask():        
     try:
+        goalDetails = json.loads(request.data)
         response = Response()
-        userId = GetUserSessionDetails()["USER_ID"]
-        response.Data = MilestoneModule.AbandonMilestone(milestoneChangeId,userId)
+        response.Data = TaskModule.ChildPGRUpdateTask(goalDetails)
         response.WasSuccessful = True
     except Exception as ex:
         response.Message = str(ex)
@@ -511,27 +478,55 @@ def AbandonMilestone(milestoneChangeId):
 
     return jsonify(response.__dict__)
 
-@MilestoneAPI.route('/AcceptChangesMilestone/<milestoneChangeId>', methods = ['GET'])
-@SessionManagement('Admin')
-def AcceptChangesMilestone(milestoneChangeId):    
-    try:
-        response = Response()
-        userId = GetUserSessionDetails()["USER_ID"]
-        response.Data = MilestoneModule.AcceptChangesMilestone(milestoneChangeId,userId)
-        response.WasSuccessful = True
-    except Exception as ex:
-        response.Message = str(ex)
-        response.WasSuccessful = False
-
-    return jsonify(response.__dict__)
-
-@MilestoneAPI.route('/RejectChangesMilestone/<milestoneChangeId>', methods = ['GET'])
-@SessionManagement('Admin')
-def RejectChangesMilestone(milestoneChangeId):    
+@TaskAPI.route('/FinishTask/<taskChangeId>', methods = ['GET'])
+@SessionManagement('Lead')
+def FinishTask(taskChangeId):    
     try:
         response = Response()
         userId = GetUserSessionDetails()["USER_ID"]
-        response.Data = MilestoneModule.RejectChangesMilestone(milestoneChangeId,userId)
+        response.Data = TaskModule.FinishTask(taskChangeId,userId)
+        response.WasSuccessful = True
+    except Exception as ex:
+        response.Message = str(ex)
+        response.WasSuccessful = False
+
+    return jsonify(response.__dict__)
+
+@TaskAPI.route('/AbandonAbandon/<taskChangeId>', methods = ['GET'])
+@SessionManagement('Lead')
+def AbandonTask(taskChangeId):    
+    try:
+        response = Response()
+        userId = GetUserSessionDetails()["USER_ID"]
+        response.Data = TaskModule.AbandonTask(taskChangeId,userId)
+        response.WasSuccessful = True
+    except Exception as ex:
+        response.Message = str(ex)
+        response.WasSuccessful = False
+
+    return jsonify(response.__dict__)
+
+@TaskAPI.route('/AcceptChangesTask/<taskChangeId>', methods = ['GET'])
+@SessionManagement('Lead')
+def AcceptChangesTask(taskChangeId):    
+    try:
+        response = Response()
+        userId = GetUserSessionDetails()["USER_ID"]
+        response.Data = TaskModule.AcceptChangesTask(taskChangeId,userId)
+        response.WasSuccessful = True
+    except Exception as ex:
+        response.Message = str(ex)
+        response.WasSuccessful = False
+
+    return jsonify(response.__dict__)
+
+@TaskAPI.route('/RejectChangesTask/<taskChangeId>', methods = ['GET'])
+@SessionManagement('Lead')
+def RejectChangesTask(taskChangeId):    
+    try:
+        response = Response()
+        userId = GetUserSessionDetails()["USER_ID"]
+        response.Data = TaskModule.RejectChangesTask(taskChangeId,userId)
         response.WasSuccessful = True
     except Exception as ex:
         response.Message = str(ex)
@@ -540,13 +535,13 @@ def RejectChangesMilestone(milestoneChangeId):
     return jsonify(response.__dict__)
 
 
-@MilestoneAPI.route('/MacroTrackingGridResource/<milestoneId>')
+@TaskAPI.route('/MacroTrackingGridResource/<taskId>')
 @SessionManagement('Admin,Lead,Dev')
-def MacroTrackingGridResource(milestoneId):
+def MacroTrackingGridResource(taskId):
     try:
         response = Response()
         resource = {}
-        resource["ReadURL"] = "MilestoneAPI/MacroTrackingGridViewRead/" + milestoneId
+        resource["ReadURL"] = "TaskAPI/MacroTrackingGridViewRead/" + taskId
         
         resource["Fields"] = {
                 "ID" : {"type" : "string"},
@@ -569,7 +564,7 @@ def MacroTrackingGridResource(milestoneId):
         resource["Columns"] = [
             {
                 "field" : "Name",
-                "title" : "Milestone Name",
+                "title" : "Task Name",
                 "width": 200,
             },               
             {
@@ -579,7 +574,7 @@ def MacroTrackingGridResource(milestoneId):
             },
             {
                 "field" : "ReportingStatus",
-                "title" : "Milestone status",
+                "title" : "Task status",
                 "width": 200,
             },
             {
@@ -590,13 +585,13 @@ def MacroTrackingGridResource(milestoneId):
             },
             {
                 "field" : "Deadline",
-                "title" : "Milestone deadline",
+                "title" : "Task deadline",
                 "format" : "{0:dd/MM/yyyy}",
                 "width": 200,            
             },
             {
                 "field" : "Description",
-                "title" : "Milestone description",
+                "title" : "Task description",
                 "width":200,
                 "encoded": False,
             },
@@ -608,7 +603,7 @@ def MacroTrackingGridResource(milestoneId):
             },
             {
                 "field" : "Rating",
-                "title" : "Milestone rating",
+                "title" : "Task rating",
                 "template": "<div id=\"ratingBar#: ID #\"></div>",
                 "width":200,
             },
@@ -619,17 +614,17 @@ def MacroTrackingGridResource(milestoneId):
             },
             {
                 "field" : "CreatedByName",
-                "title" : "Milestone Created by",
+                "title" : "Task Created by",
                 "width":200,
             },  
             {
                 "field" : "ModifiedByName",
-                "title" : "Milestone Modified by",
+                "title" : "Task Modified by",
                 "width":200,
             },     
             {
                 "field" : "AssignedTo",
-                "title" : "Milestone Assigned to",
+                "title" : "Task Assigned to",
                 "width":200,
             }
         ]
@@ -640,13 +635,13 @@ def MacroTrackingGridResource(milestoneId):
         response.WasSuccessful = False 
     return jsonify(response.__dict__)
 
-@MilestoneAPI.route('/MicroTrackingGridResource/<milestoneId>')
+@TaskAPI.route('/MicroTrackingGridResource/<taskId>')
 @SessionManagement('Admin,Lead,Dev')
-def MicroTrackingGridResource(milestoneId):
+def MicroTrackingGridResource(taskId):
     try:
         response = Response()
         resource = {}
-        resource["ReadURL"] = "MilestoneAPI/MicroTrackingGridViewRead/" + milestoneId
+        resource["ReadURL"] = "TaskAPI/MicroTrackingGridViewRead/" + taskId
         
         resource["Fields"] = {
                 "ID" : {"type" : "string"},
@@ -669,7 +664,7 @@ def MicroTrackingGridResource(milestoneId):
         resource["Columns"] = [
             {
                 "field" : "Name",
-                "title" : "Milestone Name",
+                "title" : "Task Name",
                 "width": 200,
             },               
             {
@@ -679,7 +674,7 @@ def MicroTrackingGridResource(milestoneId):
             },
             {
                 "field" : "ReportingStatus",
-                "title" : "Milestone status",
+                "title" : "Task status",
                 "width": 200,
             },
             {
@@ -690,13 +685,13 @@ def MicroTrackingGridResource(milestoneId):
             },
             {
                 "field" : "Deadline",
-                "title" : "Milestone deadline",
+                "title" : "Task deadline",
                 "format" : "{0:dd/MM/yyyy}",
                 "width": 200,            
             },
             {
                 "field" : "Description",
-                "title" : "Milestone description",
+                "title" : "Task description",
                 "width":200,
                 "encoded": False,
             },
@@ -708,7 +703,7 @@ def MicroTrackingGridResource(milestoneId):
             },
             {
                 "field" : "Rating",
-                "title" : "Milestone rating",
+                "title" : "Task rating",
                 "template": "<div id=\"ratingBar#: ID #\"></div>",
                 "width":200,
             },
@@ -719,17 +714,17 @@ def MicroTrackingGridResource(milestoneId):
             },
             {
                 "field" : "CreatedByName",
-                "title" : "Milestone Created by",
+                "title" : "Task Created by",
                 "width":200,
             },
             {
                 "field" : "ModifiedByName",
-                "title" : "Milestone Modified by",
+                "title" : "Task Modified by",
                 "width":200,
             },      
             {
                 "field" : "AssignedTo",
-                "title" : "Milestone Assigned to",
+                "title" : "Task Assigned to",
                 "width":200,
             }
         ]
@@ -742,12 +737,12 @@ def MicroTrackingGridResource(milestoneId):
 
 
 
-@MilestoneAPI.route('/MacroTrackingGridViewRead/<milestoneId>', methods = ['GET'])
+@TaskAPI.route('/MacroTrackingGridViewRead/<taskId>', methods = ['GET'])
 @SessionManagement('Admin,Lead,Dev')
-def MacroTrackingGridViewRead(milestoneId):
+def MacroTrackingGridViewRead(taskId):
     try:
         response = Response()        
-        result = MilestoneModule.GetMacroHistory(milestoneId)
+        result = TaskModule.GetMacroHistory(taskId)
         response.Data  = result
         response.WasSuccessful = True
     except Exception as ex:
@@ -756,13 +751,13 @@ def MacroTrackingGridViewRead(milestoneId):
 
     return jsonify(response.__dict__)
 
-@MilestoneAPI.route('/MacroTrackingTimeLineRead/<milestoneId>')
+@TaskAPI.route('/MacroTrackingTimeLineRead/<taskId>')
 @SessionManagement('Admin,Lead,Dev')
-def MacroTrackingTimeLineRead(milestoneId):
+def MacroTrackingTimeLineRead(taskId):
     try:
         response = Response()
         resource = {}
-        resource["Data"] = MilestoneModule.GetMacroHistory(milestoneId)
+        resource["Data"] = TaskModule.GetMacroHistory(taskId)
         resource["Mappings"] = {
             "time" : "CreatedOn",
             "header" : "ReportingStatus",
@@ -778,12 +773,12 @@ def MacroTrackingTimeLineRead(milestoneId):
 
     return jsonify(response.__dict__)
 
-@MilestoneAPI.route('/MicroTrackingGridViewRead/<milestoneId>', methods = ['GET'])
+@TaskAPI.route('/MicroTrackingGridViewRead/<taskId>', methods = ['GET'])
 @SessionManagement('Admin,Lead,Dev')
-def MicroTrackingGridViewRead(milestoneId):
+def MicroTrackingGridViewRead(taskId):
     try:
         response = Response()        
-        result = MilestoneModule.GetMicroHistory(milestoneId)
+        result = TaskModule.GetMicroHistory(taskId)
         response.Data  = result
         response.WasSuccessful = True
     except Exception as ex:
@@ -792,13 +787,13 @@ def MicroTrackingGridViewRead(milestoneId):
 
     return jsonify(response.__dict__)
 
-@MilestoneAPI.route('/MicroTrackingTimeLineRead/<milestoneId>')
+@TaskAPI.route('/MicroTrackingTimeLineRead/<taskId>')
 @SessionManagement('Admin,Lead,Dev')
-def MicroTrackingTimeLineRead(milestoneId):
+def MicroTrackingTimeLineRead(taskId):
     try:
         response = Response()
         resource = {}
-        resource["Data"] = MilestoneModule.GetMicroHistory(milestoneId)
+        resource["Data"] = TaskModule.GetMicroHistory(taskId)
         resource["Mappings"] = {
             "time" : "CreatedOn",
             "header" : "ReportingStatus",

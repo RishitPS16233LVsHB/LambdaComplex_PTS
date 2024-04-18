@@ -244,6 +244,12 @@ def ResourcesForDev(userId,parentId):
             "width": 200,
         },
         {
+            "title" : "Tasks",
+            "template": "# if(data.ReportingStatus != 'ABD' && data.ReportingStatus != 'CMP') { # <button class=\"btn btn-outline-primary\" onclick='LoadTasks(\"#: RecordID #\")'> <i class=\"mdi mdi-clipboard-check\"></i> </button> # } else { var color = (ReportingStatus == 'CMP') ? 'green' : 'red' # <p style=\"color:#: color #\"> #: data.ReportingStatus #</p> # } #",
+            "excludeFromExport": True,
+            "width":80,
+        },
+        {
             "title" : "Macro Tracking",
             "template": "<button class=\"btn btn-outline-info\" onclick='DisplayMacroTrackingForGoalInGrid(\"#: RecordID #\")'> <i class=\"mdi mdi-table\"> </button>",
             "excludeFromExport": True,
@@ -347,7 +353,13 @@ def ResourcesForLead(userId,parentId):
             "field" : "AssignedToName",
             "title" : "Assigned to",
             "width": 200,
-        },   
+        }, 
+        {
+            "title" : "Tasks",
+            "template": "# if(data.ReportingStatus != 'ABD' && data.ReportingStatus != 'CMP') { # <button class=\"btn btn-outline-primary\" onclick='LoadTasks(\"#: RecordID #\")'> <i class=\"mdi mdi-clipboard-check\"></i> </button> # } else { var color = (ReportingStatus == 'CMP') ? 'green' : 'red' # <p style=\"color:#: color #\"> #: data.ReportingStatus #</p> # } #",
+            "excludeFromExport": True,
+            "width":80,
+        },  
         {
             "title" : "Macro Tracking",
             "template": "<button class=\"btn btn-outline-info\" onclick='DisplayMacroTrackingForGoalInGrid(\"#: RecordID #\")'> <i class=\"mdi mdi-table\"> </button>",
@@ -427,8 +439,7 @@ def ResourcesForAdmin(userId,parentId):
                 "field" : "ReportingStatus",
                 "title" : "Goal status",
                 "width": 200,
-            },
-            
+            },            
             {
                 "field" : "CreatedOn",
                 "title" : "Goal creation date",
@@ -445,6 +456,12 @@ def ResourcesForAdmin(userId,parentId):
                 "title" : "Goal deadline",
                 "format" : "{0:dd/MM/yyyy}",
                 "width": 200,            
+            },
+            {
+                "title" : "Tasks",
+                "template": "# if(data.ReportingStatus != 'ABD' && data.ReportingStatus != 'CMP') { # <button class=\"btn btn-outline-primary\" onclick='LoadTasks(\"#: RecordID #\")'> <i class=\"mdi mdi-clipboard-check\"></i> </button> # } else { var color = (ReportingStatus == 'CMP') ? 'green' : 'red' # <p style=\"color:#: color #\"> #: data.ReportingStatus #</p> # } #",
+                "excludeFromExport": True,
+                "width":80,
             },
             {
                 "field" : "Description",

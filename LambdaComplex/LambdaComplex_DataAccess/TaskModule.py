@@ -1,14 +1,14 @@
 from LambdaComplex_DataAccess.DatabaseUtilities import DatabaseUtilities
 from LambdaComplex_Entities.Tables import Tables
 
-class MilestoneModule:
+class TaskModule:
     @staticmethod
-    def CreateMilestone(milestoneData):
+    def CreateTask(taskData):
         try:
             query = f"""
             declare @InsertID table(ID varchar(36));
             declare @cngInsertID varchar(36);
-            INSERT INTO {Tables.Milestone}
+            INSERT INTO {Tables.Task}
             ([Name]
             ,[Description]
             ,[RunningStatus]
@@ -24,23 +24,23 @@ class MilestoneModule:
             ,[Rating])
         OUTPUT Inserted.ID into @InsertID
         VALUES
-            ('{milestoneData["MilestoneName"]}'
-            ,'{milestoneData["MilestoneDescription"]}'
+            ('{taskData["TaskName"]}'
+            ,'{taskData["TaskDescription"]}'
             ,-1
-            ,'{milestoneData["AssignedTo"]}'   
-            ,'{milestoneData["ParentID"]}'
-            ,'{milestoneData["UserID"]}'
-            ,'{milestoneData["UserID"]}'
+            ,'{taskData["AssignedTo"]}'   
+            ,'{taskData["ParentID"]}'
+            ,'{taskData["UserID"]}'
+            ,'{taskData["UserID"]}'
             ,1
             ,1
             ,'INITIAL'
-            ,cast('{milestoneData["MilestoneDeadLine"]}' as datetime)
-            ,'{milestoneData["MilestoneRemarks"]}'
-            ,{milestoneData["MilestoneRating"]});
+            ,cast('{taskData["TaskDeadLine"]}' as datetime)
+            ,'{taskData["TaskRemarks"]}'
+            ,{taskData["TaskRating"]});
             
             select @cngInsertID = ID from @InsertID;
             
-            INSERT INTO {Tables.MilestoneChanges}
+            INSERT INTO {Tables.TaskChanges}
             ([RecordID]
             ,[Name]
             ,[Description]
@@ -57,29 +57,29 @@ class MilestoneModule:
             ,[Rating])
         VALUES
             (@cngInsertID
-            ,'{milestoneData["MilestoneName"]}'
-            ,'{milestoneData["MilestoneDescription"]}'
+            ,'{taskData["TaskName"]}'
+            ,'{taskData["TaskDescription"]}'
             ,-1   
-            ,'{milestoneData["AssignedTo"]}' 
-            ,'{milestoneData["ParentID"]}'
-            ,'{milestoneData["UserID"]}'
-            ,'{milestoneData["UserID"]}'
+            ,'{taskData["AssignedTo"]}' 
+            ,'{taskData["ParentID"]}'
+            ,'{taskData["UserID"]}'
+            ,'{taskData["UserID"]}'
             ,1
             ,1
             ,'INITIAL'
-            ,cast('{milestoneData["MilestoneDeadLine"]}' as datetime)
-            ,'{milestoneData["MilestoneRemarks"]}'
-            ,{milestoneData["MilestoneRating"]});
+            ,cast('{taskData["TaskDeadLine"]}' as datetime)
+            ,'{taskData["TaskRemarks"]}'
+            ,{taskData["TaskRating"]});
             """
             DatabaseUtilities.ExecuteNonQuery(query)
         except Exception:
             raise
 
     @staticmethod
-    def ParentUpdateMilestone(milestoneData):       
+    def ParentUpdateTask(taskData):       
         try:
             query = f"""
-                INSERT INTO {Tables.MilestoneChanges}
+                INSERT INTO {Tables.TaskChanges}
                 ([RecordID]
                 ,[Name]
                 ,[Description]
@@ -95,20 +95,20 @@ class MilestoneModule:
                 ,[Remarks]
                 ,[Rating])
                  VALUES
-                ('{milestoneData["RecordID"]}'
-                ,'{milestoneData["MilestoneName"]}'
-                ,'{milestoneData["MilestoneDescription"]}'
-                ,'{milestoneData["AssignedTo"]}' 
-                ,'{milestoneData["ParentID"]}'
+                ('{taskData["RecordID"]}'
+                ,'{taskData["TaskName"]}'
+                ,'{taskData["TaskDescription"]}'
+                ,'{taskData["AssignedTo"]}' 
+                ,'{taskData["ParentID"]}'
                 ,-1   
-                ,'{milestoneData["UserID"]}'
-                ,'{milestoneData["UserID"]}'
+                ,'{taskData["UserID"]}'
+                ,'{taskData["UserID"]}'
                 ,1
                 ,1
                 ,'PAR'
-                ,cast('{milestoneData["MilestoneDeadLine"]}' as datetime)
-                ,'{milestoneData["MilestoneRemarks"]}'
-                ,{milestoneData["MilestoneRating"]});
+                ,cast('{taskData["TaskDeadLine"]}' as datetime)
+                ,'{taskData["TaskRemarks"]}'
+                ,{taskData["TaskRating"]});
             """
             
             DatabaseUtilities.ExecuteNonQuery(query)
@@ -116,10 +116,10 @@ class MilestoneModule:
             raise
 
     @staticmethod
-    def ChildCHRUpdateMilestone(milestoneData):       
+    def ChildCHRUpdateTask(taskData):       
         try:
             query = f"""
-                INSERT INTO {Tables.MilestoneChanges}
+                INSERT INTO {Tables.TaskChanges}
                 ([RecordID]
                 ,[Name]
                 ,[Description]
@@ -135,20 +135,20 @@ class MilestoneModule:
                 ,[Remarks]
                 ,[Rating])
                  VALUES
-                ('{milestoneData["RecordID"]}'
-                ,'{milestoneData["MilestoneName"]}'
-                ,'{milestoneData["MilestoneDescription"]}'
-                ,'{milestoneData["AssignedTo"]}' 
-                ,'{milestoneData["ParentID"]}'
+                ('{taskData["RecordID"]}'
+                ,'{taskData["TaskName"]}'
+                ,'{taskData["TaskDescription"]}'
+                ,'{taskData["AssignedTo"]}' 
+                ,'{taskData["ParentID"]}'
                 ,-1   
-                ,'{milestoneData["CreatedBy"]}'
-                ,'{milestoneData["UserID"]}'
+                ,'{taskData["CreatedBy"]}'
+                ,'{taskData["UserID"]}'
                 ,1
                 ,1
                 ,'CHR'
-                ,cast('{milestoneData["MilestoneDeadLine"]}' as datetime)
-                ,'{milestoneData["MilestoneRemarks"]}'
-                ,{milestoneData["MilestoneRating"]});
+                ,cast('{taskData["TaskDeadLine"]}' as datetime)
+                ,'{taskData["TaskRemarks"]}'
+                ,{taskData["TaskRating"]});
             """
             
             DatabaseUtilities.ExecuteNonQuery(query)
@@ -156,10 +156,10 @@ class MilestoneModule:
             raise
 
     @staticmethod
-    def ChildPGRUpdateMilestone(milestoneData):       
+    def ChildPGRUpdateTask(taskData):       
         try:
             query = f"""
-                INSERT INTO {Tables.MilestoneChanges}
+                INSERT INTO {Tables.TaskChanges}
                 ([RecordID]
                 ,[Name]
                 ,[Description]
@@ -175,20 +175,20 @@ class MilestoneModule:
                 ,[Remarks]
                 ,[Rating])
                  VALUES
-                ('{milestoneData["RecordID"]}'
-                ,'{milestoneData["MilestoneName"]}'
-                ,'{milestoneData["MilestoneDescription"]}'
-                ,'{milestoneData["AssignedTo"]}' 
-                ,'{milestoneData["ParentID"]}'
+                ('{taskData["RecordID"]}'
+                ,'{taskData["TaskName"]}'
+                ,'{taskData["TaskDescription"]}'
+                ,'{taskData["AssignedTo"]}' 
+                ,'{taskData["ParentID"]}'
                 ,-1   
-                ,'{milestoneData["CreatedBy"]}'
-                ,'{milestoneData["UserID"]}'
+                ,'{taskData["CreatedBy"]}'
+                ,'{taskData["UserID"]}'
                 ,1
                 ,1
                 ,'PGR'
-                ,cast('{milestoneData["MilestoneDeadLine"]}' as datetime)
-                ,'{milestoneData["MilestoneRemarks"]}'
-                ,{milestoneData["MilestoneRating"]});
+                ,cast('{taskData["TaskDeadLine"]}' as datetime)
+                ,'{taskData["TaskRemarks"]}'
+                ,{taskData["TaskRating"]});
             """
             
             DatabaseUtilities.ExecuteNonQuery(query)
@@ -196,16 +196,16 @@ class MilestoneModule:
             raise
 
     @staticmethod
-    def GetLatestMilestonesForAdmins(projectId,userId):
+    def GetLatestTasksForLeads(goalId,userId):
         try:
             query = f"""
-                -- get CTE of projects with latest stable update project changes 
+                -- get CTE of goals with latest stable update goal changes 
                 WITH
                 LatestTime AS(
                     SELECT 
                         [RecordID],
                         MAX([CreatedOn]) AS [LatestTime] 
-                    FROM {Tables.MilestoneChanges} 
+                    FROM {Tables.TaskChanges} 
                     WHERE 
                         [IsDeleted] = 0 AND                        
                         ([ReportingStatus] != 'REJ' AND [ReportingStatus] != 'ACPT') AND
@@ -213,60 +213,60 @@ class MilestoneModule:
                     GROUP BY [RecordID]
                 )
                 
-                -- join the latest update project records with Milestone changes
+                -- join the latest update goal records with Task changes
                 SELECT 
-                    MCT.[ID]
-                    ,MCT.[RecordID]
-                    ,MCT.[Name]
-                    ,CAST( MCT.[Description] as XML).value('.[1]','nvarchar(MAX)') as [Description]
-                    ,MCT.[CreatedBy]
-                    ,CAST(FORMAT(MCT.[CreatedOn],'yyyy-MM-dd') as varchar(30)) AS [CreatedOn]
-                    ,MCT.[IsStable]
-                    ,MCT.[ReportingStatus]                    
-                    ,CAST(FORMAT(MCT.[Deadline],'yyyy-MM-dd') as varchar(30)) AS [Deadline]
-                    ,MCT.[Rating]
-                    ,MCT.[Remarks]
+                    TCT.[ID]
+                    ,TCT.[RecordID]
+                    ,TCT.[Name]
+                    ,CAST( TCT.[Description] as XML).value('.[1]','nvarchar(MAX)') as [Description]
+                    ,TCT.[CreatedBy]
+                    ,CAST(FORMAT(TCT.[CreatedOn],'yyyy-MM-dd') as varchar(30)) AS [CreatedOn]
+                    ,TCT.[IsStable]
+                    ,TCT.[ReportingStatus]                    
+                    ,CAST(FORMAT(TCT.[Deadline],'yyyy-MM-dd') as varchar(30)) AS [Deadline]
+                    ,TCT.[Rating]
+                    ,TCT.[Remarks]
                     ,(UM.[FirstName] + '.' + UM.[LastName]) as [CreatedByName]
                     ,(UM2.[FirstName] + '.' + UM2.[LastName]) as [AssignedToName]
-                    ,PM.[Name] as [ProjectName]
-                    ,MCT.[ParentID]
-                    ,MCT.[AssignedTo]
+                    ,GM.[Name] as [GoalName]
+                    ,TCT.[ParentID]
+                    ,TCT.[AssignedTo]
                 FROM 
-                    {Tables.MilestoneChanges} MCT 
+                    {Tables.TaskChanges} TCT 
                 INNER JOIN LatestTime LT 
-                    ON LT.RecordID = MCT.RecordID AND 
-                    LT.LatestTime = MCT.CreatedOn
+                    ON LT.RecordID = TCT.RecordID AND 
+                    LT.LatestTime = TCT.CreatedOn
 
                 INNER JOIN {Tables.User} UM
-                    ON UM.ID = MCT.[CreatedBy] 
+                    ON UM.ID = TCT.[CreatedBy] 
 
                 INNER JOIN {Tables.User} UM2
-                    ON UM2.ID = MCT.[AssignedTo] 
+                    ON UM2.ID = TCT.[AssignedTo] 
 
-                INNER JOIN {Tables.Project} PM
-                    ON PM.ID = MCT.[ParentID] 
+                INNER JOIN {Tables.Goal} GM
+                    ON GM.ID = TCT.[ParentID] 
 
                 WHERE 
-                    MCT.[IsDeleted] = 0 AND
-                    MCT.[CreatedBy] = '{userId}' AND
-                    MCT.[ParentID] = '{projectId}' AND
-                    MCT.[RunningStatus] = -1
+                    TCT.[IsDeleted] = 0 AND
+                    TCT.[CreatedBy] = '{userId}' AND
+                    TCT.[ParentID] = '{goalId}' AND
+                    TCT.[RunningStatus] = -1
             """            
             return DatabaseUtilities.GetListOf(query)
         except Exception:
             raise
 
     @staticmethod
-    def GetLatestMilestoneForLead(projectId,userId):
+    def GetLatestTaskForDevs(goalId,userId):
         try:
             query = f"""
-                -- get CTE of projects with latest stable update project changes 
+                -- get CTE of goals with latest stable update goal changes 
                 WITH
                 LatestTime AS(
                     SELECT 
                         [RecordID],
                         MAX([CreatedOn]) AS [LatestTime] 
-                    FROM {Tables.MilestoneChanges} 
+                    FROM {Tables.TaskChanges} 
                     WHERE 
                         [IsDeleted] = 0 AND                        
                         ([ReportingStatus] != 'REJ' AND [ReportingStatus] != 'ACPT') AND
@@ -274,60 +274,60 @@ class MilestoneModule:
                     GROUP BY [RecordID]
                 )
                 
-                -- join the latest update project records with Milestone changes
+                -- join the latest update goal records with Task changes
                 SELECT 
-                    MCT.[ID]
-                    ,MCT.[RecordID]
-                    ,MCT.[Name]
-                    ,CAST( MCT.[Description] as XML).value('.[1]','nvarchar(MAX)') as [Description]
-                    ,MCT.[CreatedBy]
-                    ,CAST(FORMAT(MCT.[CreatedOn],'yyyy-MM-dd') as varchar(30)) AS [CreatedOn]
-                    ,MCT.[IsStable]
-                    ,MCT.[ReportingStatus]                    
-                    ,CAST(FORMAT(MCT.[Deadline],'yyyy-MM-dd') as varchar(30)) AS [Deadline]
-                    ,MCT.[Rating]
-                    ,MCT.[Remarks]
+                    TCT.[ID]
+                    ,TCT.[RecordID]
+                    ,TCT.[Name]
+                    ,CAST( TCT.[Description] as XML).value('.[1]','nvarchar(MAX)') as [Description]
+                    ,TCT.[CreatedBy]
+                    ,CAST(FORMAT(TCT.[CreatedOn],'yyyy-MM-dd') as varchar(30)) AS [CreatedOn]
+                    ,TCT.[IsStable]
+                    ,TCT.[ReportingStatus]                    
+                    ,CAST(FORMAT(TCT.[Deadline],'yyyy-MM-dd') as varchar(30)) AS [Deadline]
+                    ,TCT.[Rating]
+                    ,TCT.[Remarks]
                     ,(UM.[FirstName] + '.' + UM.[LastName]) as [CreatedByName]
                     ,(UM2.[FirstName] + '.' + UM2.[LastName]) as [AssignedToName]
-                    ,PM.[Name] as [ProjectName]
-                    ,MCT.[ParentID]
-                    ,MCT.[AssignedTo]
+                    ,GM.[Name] as [GoalName]
+                    ,TCT.[ParentID]
+                    ,TCT.[AssignedTo]
                 FROM 
-                    {Tables.MilestoneChanges} MCT 
+                    {Tables.TaskChanges} TCT 
                 INNER JOIN LatestTime LT 
-                    ON LT.RecordID = MCT.RecordID AND 
-                    LT.LatestTime = MCT.CreatedOn
+                    ON LT.RecordID = TCT.RecordID AND 
+                    LT.LatestTime = TCT.CreatedOn
 
                 INNER JOIN {Tables.User} UM
-                    ON UM.ID = MCT.[CreatedBy] 
+                    ON UM.ID = TCT.[CreatedBy] 
 
                 INNER JOIN {Tables.User} UM2
-                    ON UM2.ID = MCT.[AssignedTo] 
+                    ON UM2.ID = TCT.[AssignedTo] 
 
-                INNER JOIN {Tables.Project} PM
-                    ON PM.ID = MCT.[ParentID]
+                INNER JOIN {Tables.Goal} GM
+                    ON GM.ID = TCT.[ParentID]
 
                 WHERE 
-                    MCT.[IsDeleted] = 0 AND
-                    MCT.[AssignedTo] = '{userId}' AND
-                    MCT.[ParentID] = '{projectId}' AND
-                    MCT.[RunningStatus] = -1
+                    TCT.[IsDeleted] = 0 AND
+                    TCT.[AssignedTo] = '{userId}' AND
+                    TCT.[ParentID] = '{goalId}' AND
+                    TCT.[RunningStatus] = -1
             """
             return DatabaseUtilities.GetListOf(query)
         except Exception:
             raise
 
     @staticmethod
-    def GetLatestMilestoneForDev(projectId,userId):
+    def GetLatestTaskForAdmins(goalId):
         try:
             query = f"""
-                -- get CTE of projects with latest stable update project changes 
+                -- get CTE of goals with latest stable update goal changes 
                 WITH
                 LatestTime AS(
                     SELECT 
                         [RecordID],
                         MAX([CreatedOn]) AS [LatestTime] 
-                    FROM {Tables.MilestoneChanges} 
+                    FROM {Tables.TaskChanges} 
                     WHERE 
                         [IsDeleted] = 0 AND
                         [IsStable] = 1 AND
@@ -336,60 +336,43 @@ class MilestoneModule:
                     GROUP BY [RecordID]
                 )
                 
-                -- join the latest update project records with Milestone changes
+                -- join the latest update goal records with Task changes
                 SELECT 
-                    MCT.[ID]
-                    ,MCT.[RecordID]
-                    ,MCT.[Name]
-                    ,CAST( MCT.[Description] as XML).value('.[1]','nvarchar(MAX)') as [Description]
-                    ,MCT.[CreatedBy]
-                    ,CAST(FORMAT(MCT.[CreatedOn],'yyyy-MM-dd') as varchar(30)) AS [CreatedOn]
-                    ,MCT.[IsStable]
-                    ,MCT.[ReportingStatus]                    
-                    ,CAST(FORMAT(MCT.[Deadline],'yyyy-MM-dd') as varchar(30)) AS [Deadline]
-                    ,MCT.[Rating]
-                    ,MCT.[Remarks]
+                    TCT.[ID]
+                    ,TCT.[RecordID]
+                    ,TCT.[Name]
+                    ,CAST( TCT.[Description] as XML).value('.[1]','nvarchar(MAX)') as [Description]
+                    ,TCT.[CreatedBy]
+                    ,CAST(FORMAT(TCT.[CreatedOn],'yyyy-MM-dd') as varchar(30)) AS [CreatedOn]
+                    ,TCT.[IsStable]
+                    ,TCT.[ReportingStatus]                    
+                    ,CAST(FORMAT(TCT.[Deadline],'yyyy-MM-dd') as varchar(30)) AS [Deadline]
+                    ,TCT.[Rating]
+                    ,TCT.[Remarks]
                     ,(UM.[FirstName] + '.' + UM.[LastName]) as [CreatedByName]
                     ,(UM2.[FirstName] + '.' + UM2.[LastName]) as [AssignedToName]
-                    ,PM.[Name] as [ProjectName]
-                    ,MCT.[ParentID]
-                    ,MCT.[AssignedTo]
+                    ,GM.[Name] as [GoalName]
+                    ,TCT.[ParentID]
+                    ,TCT.[AssignedTo]
                 FROM 
-                    {Tables.MilestoneChanges} MCT 
+                    {Tables.TaskChanges} TCT 
                 INNER JOIN LatestTime LT 
-                    ON LT.RecordID = MCT.RecordID AND 
-                    LT.LatestTime = MCT.CreatedOn
+                    ON LT.RecordID = TCT.RecordID AND 
+                    LT.LatestTime = TCT.CreatedOn
 
                 INNER JOIN {Tables.User} UM
-                    ON UM.ID = MCT.[CreatedBy] 
+                    ON UM.ID = TCT.[CreatedBy] 
 
                 INNER JOIN {Tables.User} UM2
-                    ON UM2.ID = MCT.[AssignedTo] 
+                    ON UM2.ID = TCT.[AssignedTo] 
 
-                INNER JOIN {Tables.Project} PM
-                    ON PM.ID = MCT.[ParentID]
+                INNER JOIN {Tables.Goal} GM
+                    ON GM.ID = TCT.[ParentID]
 
                 WHERE                 
-                    MCT.[ParentID] = '{projectId}' AND
-                    MCT.[IsDeleted] = 0 AND
-                    MCT.[RunningStatus] = -1 AND
-                    MCT.[AssignedTo] in
-                    (
-                        SELECT 
-                            TM.[LeaderID]
-                        FROM {Tables.Team} TM
-                        WHERE 
-                            TM.[IsDeleted] = 0 AND
-                            TM.[ID] in 
-                            ( 
-                                SELECT 
-                                    TMT.[TeamID]
-                                FROM {Tables.TeamMember} TMT
-                                WHERE 
-                                    TMT.[IsDeleted] = 0 AND
-                                    TMT.[TeamMemberID] = '{userId}'
-                            )
-                    )
+                    TCT.[ParentID] = '{goalId}' AND
+                    TCT.[IsDeleted] = 0 AND
+                    TCT.[RunningStatus] = -1
             """
             return DatabaseUtilities.GetListOf(query)
         except Exception:
@@ -398,10 +381,10 @@ class MilestoneModule:
 
 
     @staticmethod
-    def AbandonMilestone(milestoneId,userId):
+    def AbandonTask(taskId,userId):
         try:
             query = f"""
-            INSERT INTO {Tables.MilestoneChanges}
+            INSERT INTO {Tables.TaskChanges}
                 (
                 [ID]
                 ,[RecordID]
@@ -423,7 +406,7 @@ class MilestoneModule:
                 )
             SELECT 
             TOP 1
-                '{milestoneId}' as [ID]
+                '{taskId}' as [ID]
                 ,[RecordID]
                 ,[Name]
                 ,[Description]
@@ -440,18 +423,19 @@ class MilestoneModule:
                 ,[Rating]
                 ,getdate() as [CreatedOn]
                 ,getdate() as [ModifiedOn]
-            FROM {Tables.MilestoneChanges}
-            WHERE ID = '{milestoneId}' AND [IsDeleted] = 0
+            FROM {Tables.TaskChanges}
+            WHERE ID = '{taskId}' AND [IsDeleted] = 0
             """
             return DatabaseUtilities.ExecuteNonQuery(query)
         except Exception:
             raise
     
     @staticmethod
-    def FinishMilestone(milestoneId,userId):
+    def FinishTask(taskId,userId):
         try:
-            query = f"""
-            INSERT INTO {Tables.MilestoneChanges}
+            # insert a completion record for accepting changes 
+            query = f"""            
+            INSERT INTO {Tables.TaskChanges}
                 (
                 [ID]
                 ,[RecordID]
@@ -473,7 +457,7 @@ class MilestoneModule:
                 )
             SELECT 
             TOP 1
-                '{milestoneId}' as [ID]
+                '{taskId}' as [ID]
                 ,[RecordID]
                 ,[Name]
                 ,[Description]
@@ -484,35 +468,35 @@ class MilestoneModule:
                 ,'{userId}' as [ModifiedBy]
                 ,1 as [IsStable]
                 ,1 as [Version] 
-                ,'ACPT' as [ReportingStatus]
+                ,'CMP' as [ReportingStatus]
                 ,[Deadline]
                 ,[Remarks]
                 ,[Rating]
                 ,getdate() as [CreatedOn]
                 ,getdate() as [ModifiedOn]
-            FROM {Tables.MilestoneChanges}
-            WHERE ID = '{milestoneId}' AND [IsDeleted] = 0
+            FROM {Tables.TaskChanges}
+            WHERE ID = '{taskId}' AND [IsDeleted] = 0
             """
             return DatabaseUtilities.ExecuteNonQuery(query)
         except Exception:
             raise
 
     @staticmethod
-    def AcceptChangesMilestone(milestoneId,userId):
+    def AcceptChangesTask(taskId,userId):
         try:
             query = f"""
-            UPDATE {Tables.MilestoneChanges} SET           
+            UPDATE {Tables.TaskChanges} SET           
             [ModifiedOn] = getdate(),
             [CreatedOn] = [CreatedOn],
             [RunningStatus] = 0,
             [IsStable] = 0
-            WHERE [Id] = '{milestoneId}'
+            WHERE [Id] = '{taskId}'
             """            
             DatabaseUtilities.ExecuteNonQuery(query)
 
              # insert a acceptance record for accepting changes 
             query = f"""            
-            INSERT INTO {Tables.MilestoneChanges}
+            INSERT INTO {Tables.TaskChanges}
                 (
                 [ID]
                 ,[RecordID]
@@ -534,7 +518,7 @@ class MilestoneModule:
                 )
             SELECT 
             TOP 1
-                '{milestoneId}' as [ID]
+                '{taskId}' as [ID]
                 ,[RecordID]
                 ,[Name]
                 ,[Description]
@@ -551,14 +535,14 @@ class MilestoneModule:
                 ,[Rating]
                 ,getdate() as [CreatedOn]
                 ,getdate() as [ModifiedOn]
-            FROM {Tables.MilestoneChanges}
-            WHERE ID = '{milestoneId}' AND [IsDeleted] = 0
+            FROM {Tables.TaskChanges}
+            WHERE ID = '{taskId}' AND [IsDeleted] = 0
             """
             DatabaseUtilities.ExecuteNonQuery(query)
 
             # insert a flag record for accepting changes 
             query = f"""            
-            INSERT INTO {Tables.MilestoneChanges}
+            INSERT INTO {Tables.TaskChanges}
                 (
                 [ID]
                 ,[RecordID]
@@ -580,7 +564,7 @@ class MilestoneModule:
                 )
             SELECT 
             TOP 1
-                '{milestoneId}' as [ID]
+                '{taskId}' as [ID]
                 ,[RecordID]
                 ,[Name]
                 ,[Description]
@@ -597,8 +581,8 @@ class MilestoneModule:
                 ,[Rating]
                 ,getdate() as [CreatedOn]
                 ,getdate() as [ModifiedOn]
-            FROM {Tables.MilestoneChanges}
-            WHERE ID = '{milestoneId}' AND [IsDeleted] = 0
+            FROM {Tables.TaskChanges}
+            WHERE ID = '{taskId}' AND [IsDeleted] = 0
             """
             DatabaseUtilities.ExecuteNonQuery(query)
 
@@ -607,21 +591,21 @@ class MilestoneModule:
             raise
 
     @staticmethod
-    def RejectChangesMilestone(milestoneId,userId):
+    def RejectChangesTask(taskId,userId):
         try:
             query = f"""
-            UPDATE {Tables.MilestoneChanges} SET           
+            UPDATE {Tables.TaskChanges} SET           
             [ModifiedOn] = getdate(),
             [CreatedOn] = [CreatedOn],
             [IsStable] = 0,
             [RunningStatus] = 0
-            WHERE [Id] = '{milestoneId}'
+            WHERE [Id] = '{taskId}'
             """            
             DatabaseUtilities.ExecuteNonQuery(query)
 
             # insert a record for rejecting changes 
             query = f"""            
-            INSERT INTO {Tables.MilestoneChanges}
+            INSERT INTO {Tables.TaskChanges}
                 (
                 [ID]
                 ,[RecordID]
@@ -643,7 +627,7 @@ class MilestoneModule:
                 )
             SELECT
             TOP 1 
-                '{milestoneId}' as [ID]
+                '{taskId}' as [ID]
                 ,[RecordID]
                 ,[Name]
                 ,[Description]
@@ -660,8 +644,8 @@ class MilestoneModule:
                 ,[Rating]
                 ,getdate() as [CreatedOn]
                 ,getdate() as [ModifiedOn]
-            FROM {Tables.MilestoneChanges}
-            WHERE ID = '{milestoneId}' AND [IsDeleted] = 0
+            FROM {Tables.TaskChanges}
+            WHERE ID = '{taskId}' AND [IsDeleted] = 0
             """
             return DatabaseUtilities.ExecuteNonQuery(query)
         except Exception:
@@ -669,119 +653,148 @@ class MilestoneModule:
 
 
     @staticmethod
-    def GetMacroHistory(milestoneId):        
+    def GetMacroHistory(taskId):        
         try:
             query = f"""
                  SELECT 
-                    MCT.[ID]
-                    ,MCT.[RecordID]
-                    ,MCT.[Name]
-                    ,CAST( MCT.[Description] as XML).value('.[1]','nvarchar(MAX)') as [Description]
-                    ,MCT.[CreatedBy]
-                    ,CAST(FORMAT(MCT.[CreatedOn],'yyyy-MM-dd hh:mm:ss') as varchar(30)) AS [CreatedOn]
-                    ,MCT.[IsStable]
-                    ,MCT.[ReportingStatus]                    
-                    ,CAST(FORMAT(MCT.[Deadline],'yyyy-MM-dd hh:mm:ss') as varchar(30)) AS [Deadline]
-                    ,MCT.[Rating]
-                    ,MCT.[Remarks]
+                    TCT.[ID]
+                    ,TCT.[RecordID]
+                    ,TCT.[Name]
+                    ,CAST( TCT.[Description] as XML).value('.[1]','nvarchar(MAX)') as [Description]
+                    ,TCT.[CreatedBy]
+                    ,CAST(FORMAT(TCT.[CreatedOn],'yyyy-MM-dd hh:mm:ss') as varchar(30)) AS [CreatedOn]
+                    ,TCT.[IsStable]
+                    ,TCT.[ReportingStatus]                    
+                    ,CAST(FORMAT(TCT.[Deadline],'yyyy-MM-dd hh:mm:ss') as varchar(30)) AS [Deadline]
+                    ,TCT.[Rating]
+                    ,TCT.[Remarks]
                     ,(UM.[FirstName] + '-' + UM.[LastName]) as [CreatedByName]
                     ,(UM3.[FirstName] + '-' + UM3.[LastName]) as [ModifiedByName]
                     ,(UM2.[FirstName] + '-' + UM2.[LastName]) as [AssignedTo]
-                    ,PM.[Name] as [ProjectName]
+                    ,GM.[Name] as [GoalName]
                 FROM 
-                    {Tables.MilestoneChanges} MCT
+                    {Tables.TaskChanges} TCT
                 INNER JOIN 
-                    {Tables.User} UM ON MCT.[CreatedBy] = UM.[ID]
+                    {Tables.User} UM ON TCT.[CreatedBy] = UM.[ID]
                 INNER JOIN 
-                    {Tables.User} UM2 ON MCT.[AssignedTo] = UM2.[ID]
+                    {Tables.User} UM2 ON TCT.[AssignedTo] = UM2.[ID]
                 INNER JOIN 
-                    {Tables.User} UM3 ON MCT.[ModifiedBy] = UM3.[ID]
+                    {Tables.User} UM3 ON TCT.[ModifiedBy] = UM3.[ID]
                 INNER JOIN 
-                    {Tables.Project} PM ON MCT.[ParentID] = PM.[ID]
+                    {Tables.Goal} GM ON TCT.[ParentID] = GM.[ID]
                 WHERE 
-                    MCT.[IsDeleted] = 0 AND
-                    MCT.[RecordID] = '{milestoneId}' AND
-                    MCT.[IsStable] = 1 AND
-                    (MCT.[ReportingStatus] != 'REJ' OR MCT.[ReportingStatus] != 'ACPT') 
+                    TCT.[IsDeleted] = 0 AND
+                    TCT.[RecordID] = '{taskId}' AND
+                    TCT.[IsStable] = 1 AND
+                    (TCT.[ReportingStatus] != 'REJ' OR TCT.[ReportingStatus] != 'ACPT') 
                 ORDER BY
-                    MCT.[CreatedOn] DESC
+                    TCT.[CreatedOn] DESC
             """
             return DatabaseUtilities.GetListOf(query)
         except Exception:
             raise
 
     @staticmethod
-    def GetMicroHistory(milestoneId):        
+    def GetMicroHistory(taskId):        
         try:
             query = f"""
                  SELECT 
-                    MCT.[ID]
-                    ,MCT.[RecordID]
-                    ,MCT.[Name]
-                    ,CAST( MCT.[Description] as XML).value('.[1]','nvarchar(MAX)') as [Description]
-                    ,MCT.[CreatedBy]
-                    ,CAST(FORMAT(MCT.[CreatedOn],'yyyy-MM-dd hh:mm:ss') as varchar(30)) AS [CreatedOn]
-                    ,MCT.[IsStable]
-                    ,MCT.[ReportingStatus]                    
-                    ,CAST(FORMAT(MCT.[Deadline],'yyyy-MM-dd hh:mm:ss') as varchar(30)) AS [Deadline]
-                    ,MCT.[Rating]
-                    ,MCT.[Remarks]
+                    TCT.[ID]
+                    ,TCT.[RecordID]
+                    ,TCT.[Name]
+                    ,CAST( TCT.[Description] as XML).value('.[1]','nvarchar(MAX)') as [Description]
+                    ,TCT.[CreatedBy]
+                    ,CAST(FORMAT(TCT.[CreatedOn],'yyyy-MM-dd hh:mm:ss') as varchar(30)) AS [CreatedOn]
+                    ,TCT.[IsStable]
+                    ,TCT.[ReportingStatus]                    
+                    ,CAST(FORMAT(TCT.[Deadline],'yyyy-MM-dd hh:mm:ss') as varchar(30)) AS [Deadline]
+                    ,TCT.[Rating]
+                    ,TCT.[Remarks]
                     ,(UM3.[FirstName] + '-' + UM3.[LastName]) as [ModifiedByName]                    
                     ,(UM.[FirstName] + '-' + UM.[LastName]) as [CreatedByName]
                     ,(UM2.[FirstName] + '-' + UM2.[LastName]) as [AssignedTo]
-                    ,PM.[Name] as [ProjectName]
+                    ,GM.[Name] as [GoalName]
                 FROM 
-                    {Tables.MilestoneChanges} MCT
+                    {Tables.TaskChanges} TCT
                 INNER JOIN 
-                    {Tables.User} UM ON MCT.[CreatedBy] = UM.[ID]
+                    {Tables.User} UM ON TCT.[CreatedBy] = UM.[ID]
                 INNER JOIN 
-                    {Tables.User} UM2 ON MCT.[AssignedTo] = UM2.[ID]
+                    {Tables.User} UM2 ON TCT.[AssignedTo] = UM2.[ID]
                 INNER JOIN 
-                    {Tables.User} UM3 ON MCT.[ModifiedBy] = UM3.[ID]
+                    {Tables.User} UM3 ON TCT.[ModifiedBy] = UM3.[ID]
                 INNER JOIN 
-                    {Tables.Project} PM ON MCT.[ParentID] = PM.[ID]
+                    {Tables.Goal} GM ON TCT.[ParentID] = GM.[ID]
                 WHERE 
-                    MCT.[IsDeleted] = 0 AND
-                    MCT.[RecordID] = '{milestoneId}'
+                    TCT.[IsDeleted] = 0 AND
+                    TCT.[RecordID] = '{taskId}'
                 ORDER BY
-                    MCT.[CreatedOn] DESC
+                    TCT.[CreatedOn] DESC
             """
             return DatabaseUtilities.GetListOf(query)
         except Exception:
             raise
 
     @staticmethod
-    def GetLatestStableVersionOfMilestone(milestoneId):
+    def GetLatestStableVersionOfTask(taskId):
         try:
             query = f"""
                  SELECT 
                     TOP (1)
-                    MCT.[ID]
-                    ,MCT.[RecordID]
-                    ,MCT.[Name]
-                    ,CAST(MCT.[Description] as XML).value('.[1]','nvarchar(MAX)') as [Description]
-                    ,MCT.[CreatedBy]
-                    ,MCT.[CreatedOn]
-                    ,MCT.[AssignedTo]
-                    ,MCT.[ParentID]
-                    ,MCT.[IsStable]
-                    ,MCT.[ReportingStatus]
-                    ,CAST(FORMAT(MCT.[Deadline],'yyyy-MM-dd') as varchar(30)) AS [Deadline]
-                    ,MCT.[Rating]
-                    ,MCT.[Remarks]
+                    TCT.[ID]
+                    ,TCT.[RecordID]
+                    ,TCT.[Name]
+                    ,CAST(TCT.[Description] as XML).value('.[1]','nvarchar(MAX)') as [Description]
+                    ,TCT.[CreatedBy]
+                    ,TCT.[CreatedOn]
+                    ,TCT.[AssignedTo]
+                    ,TCT.[ParentID]
+                    ,TCT.[IsStable]
+                    ,TCT.[ReportingStatus]
+                    ,CAST(FORMAT(TCT.[Deadline],'yyyy-MM-dd') as varchar(30)) AS [Deadline]
+                    ,TCT.[Rating]
+                    ,TCT.[Remarks]
+                    ,(UM.[FirstName] + '.' + UM.[LastName]) AS [CreatedByName]
+                    ,(UM1.[FirstName] + '.' + UM1.[LastName]) AS [AssignedToName]
                 FROM 
-                    {Tables.MilestoneChanges} MCT
+                    {Tables.TaskChanges} TCT
+                INNER JOIN 
+                    {Tables.User} UM 
+                    ON UM.[ID] = TCT.[CreatedBy]
+                INNER JOIN 
+                    {Tables.User} UM1 
+                    ON UM1.[ID] = TCT.[AssignedTo]                
                 WHERE 
-                    MCT.[IsDeleted] = 0 AND
-                    MCT.[RecordID] = '{milestoneId}' AND
-                    MCT.[IsStable] = 1 AND
-                    (MCT.[ReportingStatus] != 'REJ' OR MCT.[ReportingStatus] != 'ACPT') AND
-                    MCT.[RunningStatus] = -1
+                    TCT.[IsDeleted] = 0 AND
+                    TCT.[RecordID] = '{taskId}' AND
+                    TCT.[IsStable] = 1 AND
+                    (TCT.[ReportingStatus] != 'REJ' OR TCT.[ReportingStatus] != 'ACPT') AND
+                    TCT.[RunningStatus] = -1
                 ORDER BY
-                    MCT.[CreatedOn] DESC
+                    TCT.[CreatedOn] DESC
             """
             return DatabaseUtilities.GetListOf(query)
         except Exception:
             raise
 
         
+    @staticmethod
+    def GetGoalAssignedToNameAndID(goalId):
+        try:
+            query = f"""
+                 SELECT 
+                    UM.[ID] as AssignedToID,
+                    (UM.[FirstName] + '.' + UM.[LastName]) as [AssignedToName]
+                FROM 
+                    {Tables.Goal} GMT
+                INNER JOIN 
+                    {Tables.User} UM ON UM.[ID] = GMT.[AssignedTo]
+                WHERE 
+                    GMT.[IsDeleted] = 0 AND
+                    GMT.[ID] = '{goalId}' AND
+                    GMT.[IsStable] = 1 AND
+                    (GMT.[ReportingStatus] != 'REJ' OR GMT.[ReportingStatus] != 'ACPT') AND
+                    GMT.[RunningStatus] = -1
+            """
+            return DatabaseUtilities.GetListOf(query)
+        except Exception:
+            raise

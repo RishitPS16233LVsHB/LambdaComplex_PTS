@@ -15,6 +15,7 @@ from views.Views.Team import Team
 from views.Views.FileUpload import FileUpload
 from views.Views.Milestone import Milestone
 from views.Views.Goal import Goal
+from views.Views.Task import Task
 
 from views.APIs.UserAPI import UserAPI
 from views.APIs.CalendarEventAPI import CalendarEventAPI
@@ -24,7 +25,7 @@ from views.APIs.WorkTimeLineAPI import WorkTimeLineAPI
 from views.APIs.ProjectAPI import ProjectAPI
 from views.APIs.MilestoneAPI import MilestoneAPI
 from views.APIs.GoalAPI import GoalAPI
-
+from views.APIs.TaskAPI import TaskAPI
 
 # non functional for testing new controls only 
 from views.Views.Test import Test
@@ -53,6 +54,7 @@ App.register_blueprint(FileUpload,url_prefix="/FileUpload/")
 App.register_blueprint(Project,url_prefix="/Project/")
 App.register_blueprint(Milestone,url_prefix="/Milestone/")
 App.register_blueprint(Goal,url_prefix="/Goal/")
+App.register_blueprint(Task,url_prefix="/Task/")
 
 # register APIs Views of APIs controllers here
 App.register_blueprint(UserAPI, url_prefix='/api/UserAPI/')
@@ -63,6 +65,7 @@ App.register_blueprint(WorkTimeLineAPI, url_prefix='/api/WorkTimeLineAPI/')
 App.register_blueprint(ProjectAPI, url_prefix='/api/ProjectAPI/')
 App.register_blueprint(MilestoneAPI, url_prefix='/api/MilestoneAPI/')
 App.register_blueprint(GoalAPI, url_prefix='/api/GoalAPI/')
+App.register_blueprint(TaskAPI, url_prefix='/api/TaskAPI/')
 
 # temporary testing purpose API
 App.register_blueprint(Test, url_prefix='/Test/')
