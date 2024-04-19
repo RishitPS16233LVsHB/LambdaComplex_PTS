@@ -154,6 +154,72 @@ function AbandonProject(projectChangeID = null) {
     }
 }
 
+function RebootProject(projectID = null) {
+    try {
+        if (IsNullOrEmpty(projectID)) return;
+        ConfirmationAlert('Project', 'Do you really want to reboot this project?', function (value) {
+            var url = 'ProjectAPI/RebootProject/' + projectID
+            AjaxGETRequest(
+                url,
+                function (response) {
+                    response = SafeJSONparse(response);
+                    if (response.WasSuccessful) {
+                        AlertWarning("Rebooted project!");
+                        RefreshDataView();
+                    }
+                    else {
+                        toastr.error("Alas! Error rebooting project: " + response.Message);
+                    }
+                },
+                function (error) {
+
+                }, true, true, true
+            );
+        });
+    }
+    catch (ex) {
+        toastr.error("Error while rebooting project: " + ex.message);
+    }
+}
+function ReversionProject(projectChangeID = null) {
+    try {
+        if (IsNullOrEmpty(projectChangeID)) return;
+        ConfirmationAlert('Project', 'Do you really want to reversion this project to an older version?', function (value) {
+            var url = 'ProjectAPI/ReversionProject/' + projectChangeID
+            AjaxGETRequest(
+                url,
+                function (response) {
+                    response = SafeJSONparse(response);
+                    if (response.WasSuccessful) {
+                        AlertWarning("Reversioned project!");
+                        RefreshDataView();
+                    }
+                    else {
+                        toastr.error("Alas! Error reversioning project: " + response.Message);
+                    }
+                },
+                function (error) {
+
+                }, true, true, true
+            );
+        });
+    }
+    catch (ex) {
+        toastr.error("Error while reversioning project: " + ex.message);
+    }
+}
+function LoadProjectReversionView(recordID = null) {
+    try {
+        if (IsNullOrEmpty(recordID)) return;
+        var resourceUrl = "ProjectAPI/ProjectReversionGridViewResource/" + recordID;
+        LoadGridView(resourceUrl, true, true, divMainPage);
+    }
+    catch (ex) {
+        toastr.error('Error while displaying Project reversion tracking in grid: ' + ex.message);
+    }
+}
+
+
 function DisplayMacroTrackingForProjectInGrid(recordID = null) {
     try {
         if (IsNullOrEmpty(recordID)) return;
@@ -168,6 +234,27 @@ function DisplayMacroTrackingForProjectInTimeLine(recordID = null) {
     try {
         if (IsNullOrEmpty(recordID)) return;
         var resourceUrl = "ProjectAPI/MacroTrackingTimeLineRead/" + recordID;
+        LoadTimeLineView(resourceUrl, true, true, divMainPage);
+    }
+    catch (ex) {
+        toastr.error('Error while displaying Macro Tracking for the project in timeline: ' + ex.message);
+    }
+}
+
+function DisplayMicroTrackingForProjectInGrid(recordID = null) {
+    try {
+        if (IsNullOrEmpty(recordID)) return;
+        var resourceUrl = "ProjectAPI/MicroTrackingGridResource/" + recordID;
+        LoadGridView(resourceUrl, true, true, divMainPage);
+    }
+    catch (ex) {
+        toastr.error('Error while displaying Micro Tracking for the project in grid: ' + ex.message);
+    }
+}
+function DisplayMicroTrackingForProjectInTimeLine(recordID = null) {
+    try {
+        if (IsNullOrEmpty(recordID)) return;
+        var resourceUrl = "ProjectAPI/MicroTrackingTimeLineRead/" + recordID;
         LoadTimeLineView(resourceUrl, true, true, divMainPage);
     }
     catch (ex) {

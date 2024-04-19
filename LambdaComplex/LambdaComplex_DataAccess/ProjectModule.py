@@ -353,6 +353,37 @@ class ProjectModule:
             raise
 
     @staticmethod
+    def GetMicroHistory(projectId):        
+        try:
+            query = f"""
+                 SELECT 
+                    PCT.[ID]
+                    ,PCT.[RecordID]
+                    ,PCT.[Name]
+                    ,CAST( PCT.[Description] as XML).value('.[1]','nvarchar(MAX)') as [Description]
+                    ,PCT.[CreatedBy]
+                    ,CAST(FORMAT(PCT.[CreatedOn],'yyyy-MM-dd hh:mm:ss') as varchar(30)) AS [CreatedOn]
+                    ,PCT.[IsStable]
+                    ,PCT.[ReportingStatus]                    
+                    ,CAST(FORMAT(PCT.[Deadline],'yyyy-MM-dd hh:mm:ss') as varchar(30)) AS [Deadline]
+                    ,PCT.[Rating]
+                    ,PCT.[Remarks]
+                    ,(UM.[FirstName] + '-' + UM.[LastName]) as [CreatedByName]
+                FROM 
+                    {Tables.ProjectChanges} PCT
+                INNER JOIN 
+                    {Tables.User} UM ON PCT.[CreatedBy] = UM.[ID]
+                WHERE 
+                    PCT.[IsDeleted] = 0 AND
+                    PCT.[RecordID] = '{projectId}'
+                ORDER BY
+                    PCT.[CreatedOn] DESC
+            """
+            return DatabaseUtilities.GetListOf(query)
+        except Exception:
+            raise
+
+    @staticmethod
     def GetLatestStableVersionOfProject(projectId):
         try:
             query = f"""
@@ -404,3 +435,201 @@ class ProjectModule:
         except Exception:
             raise
         
+    @staticmethod
+    def Reversion(projectChangeId,userId):
+        try:
+            # insert a reversion flag record 
+            query = f"""            
+           INSERT INTO {Tables.ProjectChanges}
+                (
+                [ID]
+                ,[RecordID]
+                ,[Name]
+                ,[Description]
+                ,[RunningStatus]
+                -- ,[AssignedTo]
+                -- ,[ParentID]
+                ,[CreatedBy]
+                ,[ModifiedBy]
+                ,[IsStable]
+                ,[Version]
+                ,[ReportingStatus]
+                ,[Deadline]
+                ,[Remarks]
+                ,[Rating]
+                ,[CreatedOn]
+                ,[ModifiedOn]
+                )
+            SELECT 
+            TOP 1
+                '{projectChangeId}' as [ID]
+                ,[RecordID]
+                ,[Name]
+                ,[Description]
+                ,0 as [RunningStatus]
+                -- ,[AssignedTo]
+                -- ,[ParentID]
+                ,'{userId}' as [CreatedBy]
+                ,'{userId}' as [ModifiedBy]
+                ,0 as [IsStable]
+                ,1 as [Version] 
+                ,'RVN' as [ReportingStatus]
+                ,[Deadline]
+                ,[Remarks]
+                ,[Rating]
+                ,getdate() as [CreatedOn]
+                ,getdate() as [ModifiedOn]
+            FROM {Tables.ProjectChanges}
+            WHERE ID = '{projectChangeId}' AND [IsDeleted] = 0
+            """
+            DatabaseUtilities.ExecuteNonQuery(query)
+            # insert a actual par  record 
+            query = f"""            
+           INSERT INTO {Tables.ProjectChanges}
+                (
+                [ID]
+                ,[RecordID]
+                ,[Name]
+                ,[Description]
+                ,[RunningStatus]
+                -- ,[AssignedTo]
+                -- ,[ParentID]
+                ,[CreatedBy]
+                ,[ModifiedBy]
+                ,[IsStable]
+                ,[Version]
+                ,[ReportingStatus]
+                ,[Deadline]
+                ,[Remarks]
+                ,[Rating]
+                ,[CreatedOn]
+                ,[ModifiedOn]
+                )
+            SELECT 
+            TOP 1
+                '{projectChangeId}' as [ID]
+                ,[RecordID]
+                ,[Name]
+                ,[Description]
+                ,-1 as [RunningStatus]
+                -- ,[AssignedTo]
+                -- ,[ParentID]
+                ,'{userId}' as [CreatedBy]
+                ,'{userId}' as [ModifiedBy]
+                ,1 as [IsStable]
+                ,1 as [Version] 
+                ,'PAR' as [ReportingStatus]
+                ,[Deadline]
+                ,[Remarks]
+                ,[Rating]
+                ,getdate() as [CreatedOn]
+                ,getdate() as [ModifiedOn]
+            FROM {Tables.ProjectChanges}
+            WHERE ID = '{projectChangeId}' AND [IsDeleted] = 0
+            """
+            DatabaseUtilities.ExecuteNonQuery(query)
+        except Exception:
+            raise
+
+    @staticmethod
+    def Reboot(projectId,userId):
+        try:
+            # insert a reboot flag record 
+            query = f"""            
+           INSERT INTO {Tables.ProjectChanges}
+                (
+                [ID]
+                ,[RecordID]
+                ,[Name]
+                ,[Description]
+                ,[RunningStatus]
+                -- ,[AssignedTo]
+                -- ,[ParentID]
+                ,[CreatedBy]
+                ,[ModifiedBy]
+                ,[IsStable]
+                ,[Version]
+                ,[ReportingStatus]
+                ,[Deadline]
+                ,[Remarks]
+                ,[Rating]
+                ,[CreatedOn]
+                ,[ModifiedOn]
+                )
+            SELECT 
+            TOP 1
+                '{projectId}' as [ID]
+                ,[RecordID]
+                ,[Name]
+                ,[Description]
+                ,0 as [RunningStatus]
+                -- ,[AssignedTo]
+                -- ,[ParentID]
+                ,'{userId}' as [CreatedBy]
+                ,'{userId}' as [ModifiedBy]
+                ,0 as [IsStable]
+                ,1 as [Version] 
+                ,'RBT' as [ReportingStatus]
+                ,[Deadline]
+                ,[Remarks]
+                ,[Rating]
+                ,getdate() as [CreatedOn]
+                ,getdate() as [ModifiedOn]
+            FROM {Tables.ProjectChanges}
+            WHERE 
+                [RecordID] = '{projectId}' AND 
+                [IsDeleted] = 0 AND
+                [ReportingStatus] = 'INITIAL'
+            """
+            DatabaseUtilities.ExecuteNonQuery(query)
+            # insert a actual par  record 
+            query = f"""            
+           INSERT INTO {Tables.ProjectChanges}
+                (
+                [ID]
+                ,[RecordID]
+                ,[Name]
+                ,[Description]
+                ,[RunningStatus]
+                -- ,[AssignedTo]
+                -- ,[ParentID]
+                ,[CreatedBy]
+                ,[ModifiedBy]
+                ,[IsStable]
+                ,[Version]
+                ,[ReportingStatus]
+                ,[Deadline]
+                ,[Remarks]
+                ,[Rating]
+                ,[CreatedOn]
+                ,[ModifiedOn]
+                )
+            SELECT 
+            TOP 1
+                '{projectId}' as [ID]
+                ,[RecordID]
+                ,[Name]
+                ,[Description]
+                ,-1 as [RunningStatus]
+                -- ,[AssignedTo]
+                -- ,[ParentID]
+                ,'{userId}' as [CreatedBy]
+                ,'{userId}' as [ModifiedBy]
+                ,1 as [IsStable]
+                ,1 as [Version] 
+                ,'PAR' as [ReportingStatus]
+                ,[Deadline]
+                ,[Remarks]
+                ,[Rating]
+                ,getdate() as [CreatedOn]
+                ,getdate() as [ModifiedOn]
+            FROM {Tables.ProjectChanges}
+            WHERE 
+                [RecordID] = '{projectId}' AND 
+                [IsDeleted] = 0 AND
+                [ReportingStatus] = 'INITIAL'
+            """
+            DatabaseUtilities.ExecuteNonQuery(query)
+        except Exception:
+            raise
+    
