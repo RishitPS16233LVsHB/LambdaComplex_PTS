@@ -292,13 +292,47 @@ class ProjectModule:
     def AbandonProject(projectChangeId,userId):
         try:
             query = f"""
-            UPDATE {Tables.ProjectChanges} SET
-            [ReportingStatus] = 'ABD',            
-            [ModifiedBy] = '{userId}',
-            [ModifiedOn] = getdate(),
-            [CreatedOn] = [CreatedOn],
-            [IsStable] = 1
-            WHERE [Id] = '{projectChangeId}'
+            INSERT INTO {Tables.ProjectChanges}
+                (
+                [ID]
+                ,[RecordID]
+                ,[Name]
+                ,[Description]
+                ,[RunningStatus]
+                -- ,[AssignedTo]
+                -- ,[ParentID]
+                ,[CreatedBy]
+                ,[ModifiedBy]
+                ,[IsStable]
+                ,[Version]
+                ,[ReportingStatus]
+                ,[Deadline]
+                ,[Remarks]
+                ,[Rating]
+                ,[CreatedOn]
+                ,[ModifiedOn]
+                )
+            SELECT 
+            TOP 1
+                '{projectChangeId}' as [ID]
+                ,[RecordID]
+                ,[Name]
+                ,[Description]
+                ,-1 as [RunningStatus]
+                -- ,[AssignedTo]
+                -- ,[ParentID]
+                ,'{userId}' as [CreatedBy]
+                ,'{userId}' as [ModifiedBy]
+                ,1 as [IsStable]
+                ,1 as [Version] 
+                ,'ABD' as [ReportingStatus]
+                ,[Deadline]
+                ,[Remarks]
+                ,[Rating]
+                ,getdate() as [CreatedOn]
+                ,getdate() as [ModifiedOn]
+            FROM {Tables.ProjectChanges}
+            WHERE ID = '{projectChangeId}' AND [IsDeleted] = 0
             """
             return DatabaseUtilities.ExecuteNonQuery(query)
         except Exception:
@@ -308,13 +342,47 @@ class ProjectModule:
     def FinishProject(projectChangeId,userId):
         try:
             query = f"""
-            UPDATE {Tables.ProjectChanges} SET
-            [ReportingStatus] = 'CMP',            
-            [ModifiedBy] = '{userId}',
-            [ModifiedOn] = getdate(),
-            [CreatedOn] = [CreatedOn],
-            [IsStable] = 1
-            WHERE [Id] = '{projectChangeId}'
+                INSERT INTO {Tables.ProjectChanges}
+                (
+                [ID]
+                ,[RecordID]
+                ,[Name]
+                ,[Description]
+                ,[RunningStatus]
+                -- ,[AssignedTo]
+                -- ,[ParentID]
+                ,[CreatedBy]
+                ,[ModifiedBy]
+                ,[IsStable]
+                ,[Version]
+                ,[ReportingStatus]
+                ,[Deadline]
+                ,[Remarks]
+                ,[Rating]
+                ,[CreatedOn]
+                ,[ModifiedOn]
+                )
+            SELECT 
+            TOP 1
+                '{projectChangeId}' as [ID]
+                ,[RecordID]
+                ,[Name]
+                ,[Description]
+                ,-1 as [RunningStatus]
+                -- ,[AssignedTo]
+                -- ,[ParentID]
+                ,'{userId}' as [CreatedBy]
+                ,'{userId}' as [ModifiedBy]
+                ,1 as [IsStable]
+                ,1 as [Version] 
+                ,'CMP' as [ReportingStatus]
+                ,[Deadline]
+                ,[Remarks]
+                ,[Rating]
+                ,getdate() as [CreatedOn]
+                ,getdate() as [ModifiedOn]
+            FROM {Tables.ProjectChanges}
+            WHERE ID = '{projectChangeId}' AND [IsDeleted] = 0
             """
             return DatabaseUtilities.ExecuteNonQuery(query)
         except Exception:

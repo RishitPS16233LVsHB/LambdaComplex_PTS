@@ -140,6 +140,126 @@ def MacroTrackingTimeLineRead(goalId):
 
     return jsonify(response.__dict__)
 
+
+@GoalAPI.route('/MicroTrackingGridResource/<goalId>')
+@SessionManagement('Admin,Lead,Dev')
+def MicroTrackingGridResource(goalId):
+    try:
+        response = Response()
+        resource = {}
+        resource["ReadURL"] = "GoalAPI/MicroTrackingGridViewRead/" + goalId
+        
+        resource["Fields"] = {
+                "ID" : {"type" : "string"},
+                "RecordID" : {"type" : "string"},
+                "Name" : {"type" : "string"},                
+                "Description" : {"type" : "string"},
+                "CreatedByName" : {"type" : "string"},
+                "CreatedBy" : {"type": "string"},
+                "CreatedOn": {"type": "date"},
+                "Deadline": {"type": "date"},
+                "IsStable": {"type": "string"},
+                "ReportingStatus": {"type": "string"},
+                "Remarks": {"type": "string"},
+                "Rating": {"type": "string"},
+            }
+
+        resource["Columns"] = [
+            {
+                "field" : "Name",
+                "title" : "Goal Name",
+                "width": 200,
+            },
+            {
+                "field" : "ReportingStatus",
+                "title" : "Goal status",
+                "width": 200,
+            },
+            {
+                "field" : "CreatedOn",
+                "title" : "Goal creation date",
+                "format" : "{0:dd/MM/yyyy}",
+                "width": 200,            
+            },
+            {
+                "field" : "Deadline",
+                "title" : "Goal deadline",
+                "format" : "{0:dd/MM/yyyy}",
+                "width": 200,            
+            },
+            {
+                "field" : "Description",
+                "title" : "Goal description",
+                "width":200,
+                "encoded": False,
+            },
+            {
+                "title" : "File submissions",
+                "template": "<button class=\"btn btn-outline-secondary\" onclick='LoadReadOnlyFileView(\"#: ID #\",true,true,divMainPage)'> <i class=\"mdi mdi-file-multiple\"> </i></button>",
+                "excludeFromExport": True,
+                "width":80,
+            },
+            {
+                "field" : "Rating",
+                "title" : "Goal rating",
+                "template": "<div id=\"ratingBar#: ID #\"></div>",
+                "width":200,
+            },
+            {
+                "field" : "Remarks",
+                "title" : "Goal remarks",
+                "width":200,
+            },
+            {
+                "field" : "CreatedByName",
+                "title" : "Goal Created by",
+                "width":200,
+            }        
+        ]
+        response.Data = resource
+        response.WasSuccessful = True
+    except Exception as ex:
+        response.message = str(ex)
+        response.WasSuccessful = False 
+    return jsonify(response.__dict__)
+
+@GoalAPI.route('/MicroTrackingGridViewRead/<goalId>', methods = ['GET'])
+@SessionManagement('Admin,Lead,Dev')
+def MicroTrackingGridViewRead(goalId):
+    try:
+        response = Response()        
+        result = GoalModule.GetMicroHistory(goalId)
+        response.Data  = result
+        response.WasSuccessful = True
+    except Exception as ex:
+        response.Message = str(ex)
+        response.WasSuccessful = False
+
+    return jsonify(response.__dict__)
+
+@GoalAPI.route('/MicroTrackingTimeLineRead/<goalId>')
+@SessionManagement('Admin,Lead,Dev')
+def MicroTrackingTimeLineRead(goalId):
+    try:
+        response = Response()
+        resource = {}
+        resource["Data"] = GoalModule.GetMicroHistory(goalId)
+        resource["Mappings"] = {
+            "time" : "CreatedOn",
+            "header" : "ReportingStatus",
+            "h1Body" : "CreatedOn",
+            "paraBody" : "Remarks",
+            "footer": "CreatedByName" 
+        }
+        response.Data = resource 
+        response.WasSuccessful = True
+    except Exception as ex:
+        response.Message = str(ex)
+        response.WasSuccessful = False
+
+    return jsonify(response.__dict__)
+
+
 @GoalAPI.route('/DataRead/Dev/<userId>/<parentId>', methods = ['GET'])
 @SessionManagement('Dev')
 def DataReadForDevs(userId,parentId):
@@ -262,6 +382,18 @@ def ResourcesForDev(userId,parentId):
             "width":80,
         }, 
         {
+            "title" : "Micro Tracking",
+            "template": "<button class=\"btn btn-outline-secondary\" onclick='DisplayMicroTrackingForGoalInGrid(\"#: RecordID #\")'> <i class=\"mdi mdi-table\"> </button>",
+            "excludeFromExport": True,
+            "width":80,
+        }, 
+        {
+            "title" : "Micro Tracking",
+            "template": "<button class=\"btn btn-outline-secondary\" onclick='DisplayMicroTrackingForGoalInTimeLine(\"#: RecordID #\")'> <i class=\"mdi mdi-source-branch\"> </button>",
+            "excludeFromExport": True,
+            "width":80,
+        },         
+        {
             "title" : "File submissions",
             "template": "<button class=\"btn btn-outline-secondary\" onclick='LoadReadOnlyFileView(\"#: ID #\")'> <i class=\"mdi mdi-file-multiple\"> </button>",
             "excludeFromExport": True,
@@ -325,6 +457,18 @@ def ResourcesForLead(userId,parentId):
             "template": "# if(data.ReportingStatus != 'ABD' && data.ReportingStatus != 'CMP') { # <button class=\"btn btn-outline-primary\" onclick='LoadUpdateView(\"#: RecordID #\")'> <i class=\"mdi mdi-grease-pencil\"></i> </button> # } else { var color = (ReportingStatus == 'CMP') ? 'green' : 'red' # <p style=\"color:#: color #\"> #: data.ReportingStatus #</p> # } #",
             "excludeFromExport": True,
             "width":80,
+        },
+        {
+            "title" : "Reboot",
+            "template": "# if(data.ReportingStatus != 'ABD' && data.ReportingStatus != 'CMP') { # <button class=\"btn btn-outline-danger\" onclick='RebootGoal(\"#: RecordID #\")'> <i class=\"mdi mdi-backup-restore\"></i> </button> # } else { var color = (ReportingStatus == 'CMP') ? 'green' : 'red' # <p style=\"color:#: color #\"> #: data.ReportingStatus #</p> # } #",
+            "excludeFromExport": True,
+            "width":80,
+        },
+        {
+            "title" : "Reversion",
+            "template": "# if(data.ReportingStatus != 'ABD' && data.ReportingStatus != 'CMP') { # <button class=\"btn btn-outline-warning\" onclick='LoadGoalReversionView(\"#: RecordID #\")'> <i class=\"mdi mdi-undo-variant\"></i> </button> # } else { var color = (ReportingStatus == 'CMP') ? 'green' : 'red' # <p style=\"color:#: color #\"> #: data.ReportingStatus #</p> # } #",
+            "excludeFromExport": True,
+            "width":80,
         },   
         {
             "title" : "Abandon",
@@ -372,6 +516,18 @@ def ResourcesForLead(userId,parentId):
             "excludeFromExport": True,
             "width":80,
         },
+        {
+            "title" : "Micro Tracking",
+            "template": "<button class=\"btn btn-outline-secondary\" onclick='DisplayMicroTrackingForGoalInGrid(\"#: RecordID #\")'> <i class=\"mdi mdi-table\"> </button>",
+            "excludeFromExport": True,
+            "width":80,
+        }, 
+        {
+            "title" : "Micro Tracking",
+            "template": "<button class=\"btn btn-outline-secondary\" onclick='DisplayMicroTrackingForGoalInTimeLine(\"#: RecordID #\")'> <i class=\"mdi mdi-source-branch\"> </button>",
+            "excludeFromExport": True,
+            "width":80,
+        },        
         {
             "title" : "File submissions",
             "template": "<button class=\"btn btn-outline-warning\" onclick='LoadFileSubmissionView(\"#: ID #\")'> <i class=\"mdi mdi-file-multiple\"> </button>",
@@ -480,7 +636,19 @@ def ResourcesForAdmin(userId,parentId):
                 "template": "<button class=\"btn btn-outline-info\" onclick='DisplayMacroTrackingForGoalInTimeLine(\"#: RecordID #\",true,true,divMainPage)'> <i class=\"mdi mdi-source-branch\"> </button>",
                 "excludeFromExport": True,
                 "width":80,
-            },            
+            },   
+            {
+                "title" : "Micro Tracking",
+                "template": "<button class=\"btn btn-outline-secondary\" onclick='DisplayMicroTrackingForGoalInGrid(\"#: RecordID #\")'> <i class=\"mdi mdi-table\"> </button>",
+                "excludeFromExport": True,
+                "width":80,
+            }, 
+            {
+                "title" : "Micro Tracking",
+                "template": "<button class=\"btn btn-outline-secondary\" onclick='DisplayMicroTrackingForGoalInTimeLine(\"#: RecordID #\")'> <i class=\"mdi mdi-source-branch\"> </button>",
+                "excludeFromExport": True,
+                "width":80,
+            },                      
             {
                 "title" : "File submissions",
                 "template": "<button class=\"btn btn-outline-secondary\" onclick='LoadReadOnlyFileView(\"#: ID #\")'> <i class=\"mdi mdi-file-multiple\"> </i></button>",
@@ -564,4 +732,420 @@ def AbandonGoal(milestoneChangeID):
 
     return jsonify(response.__dict__)
 
+@GoalAPI.route('/WorkHierarchyResource/<parentId>')
+@SessionManagement('Admin,Lead,Dev')
+def WorkHierarchyResource(parentId):
+    try:
+        response = Response()
+        userSessionDetails = GetUserSessionDetails()
+        userId = userSessionDetails.get("USER_ID")
+        role = userSessionDetails.get("USER_ROLE")
+        role = role.lower()
+        resource = {}
 
+        if role == 'admin' :
+            resource = WorkHierarchyResourcesForAdmin(userId,parentId)
+        elif role == 'lead' :
+            resource = WorkHierarchyResourcesForLead(userId,parentId)
+        elif role == 'dev':
+            resource = WorkHierarchyResourcesForDev(userId,parentId)
+
+        response.Data = resource
+        response.WasSuccessful = True
+    except Exception as ex:
+        response.message = str(ex)
+        response.WasSuccessful = False 
+    return jsonify(response.__dict__)
+
+def WorkHierarchyResourcesForDev(userId,parentId):
+    resource = {};  
+    resource["Fields"] = {
+            "ID" : {"type" : "string"},
+            "RecordID" : {"type" : "string"},
+            "Name" : {"type" : "string"},                
+            "Description" : {"type" : "string"},
+            "CreatedByName" : {"type" : "string"},
+            "AssignedToName" : {"type" : "string"},
+            "CreatedBy" : {"type": "string"},
+            "CreatedOn": {"type": "date"},
+            "Deadline": {"type": "date"},
+            "IsStable": {"type": "string"},
+            "ReportingStatus": {"type": "string"},
+            "Remarks": {"type": "string"},
+            "Rating": {"type": "string"},
+        }
+
+    resource["Columns"] = [
+        {
+            "field" : "Name",
+            "title" : "Goal Name",
+            "width": 200,
+        },
+        {
+            "field" : "Description",
+            "title" : "Goal description",
+            "width":200,
+            "encoded": False,
+        },
+        {
+            "field" : "AssignedToName",
+            "title" : "Assigned to",
+            "width": 200,
+        },
+        {
+            "title" : "Tasks",
+            "template": "<button class=\"btn btn-outline-primary\" onclick='LoadTasksHierarchy(\"#: RecordID #\")'> <i class=\"mdi mdi-clipboard-check\"></i> </button>",
+            "excludeFromExport": True,
+            "width":80,
+        },
+        {
+            "title" : "Macro Tracking",
+            "template": "<button class=\"btn btn-outline-info\" onclick='DisplayMacroTrackingForGoalInGrid(\"#: RecordID #\")'> <i class=\"mdi mdi-table\"> </button>",
+            "excludeFromExport": True,
+            "width":80,
+        }, 
+        {
+            "title" : "Macro Tracking",
+            "template": "<button class=\"btn btn-outline-info\" onclick='DisplayMacroTrackingForGoalInTimeLine(\"#: RecordID #\")'> <i class=\"mdi mdi-source-branch\"> </button>",
+            "excludeFromExport": True,
+            "width":80,
+        }, 
+        {
+            "title" : "File submissions",
+            "template": "<button class=\"btn btn-outline-secondary\" onclick='LoadReadOnlyFileView(\"#: ID #\")'> <i class=\"mdi mdi-file-multiple\"> </button>",
+            "excludeFromExport": True,
+            "width":80,
+        }, 
+        {
+            "field" : "CreatedOn",
+            "title" : "Goal creation date",
+            "format" : "{0:dd/MM/yyyy}",
+            "width": 200,            
+        },
+        {
+            "field" : "Deadline",
+            "title" : "Goal deadline",
+            "format" : "{0:dd/MM/yyyy}",
+            "width": 200,            
+        },
+        {
+            "field" : "Rating",
+            "title" : "Goal rating",
+            "template": "<div id=\"ratingBar#: ID #\"></div>",
+            "width":200,
+        },
+        {
+            "field" : "Remarks",
+            "title" : "Goal remarks",
+            "width":200,
+        },
+        {
+            "field" : "CreatedByName",
+            "title" : "Goal Created by",
+            "width":200,
+        }        
+    ]
+
+    resource["ReadURL"] = "GoalAPI/DataRead/Dev/" + userId + "/" + parentId
+    return resource
+
+def WorkHierarchyResourcesForLead(userId,parentId):
+    resource = {};  
+    resource["Fields"] = {
+            "ID" : {"type" : "string"},
+            "RecordID" : {"type" : "string"},
+            "Name" : {"type" : "string"},                
+            "Description" : {"type" : "string"},
+            "CreatedByName" : {"type" : "string"},
+            "AssignedToName" : {"type" : "string"},
+            "CreatedBy" : {"type": "string"},
+            "CreatedOn": {"type": "date"},
+            "Deadline": {"type": "date"},
+            "IsStable": {"type": "string"},
+            "ReportingStatus": {"type": "string"},
+            "Remarks": {"type": "string"},
+            "Rating": {"type": "string"},
+        }
+
+    resource["Columns"] = [
+        {
+            "field" : "Name",
+            "title" : "Goal Name",
+            "width": 200,
+        },
+        {
+            "field" : "Description",
+            "title" : "Goal description",
+            "width":200,
+            "encoded": False,
+        },
+        {
+            "field" : "AssignedToName",
+            "title" : "Assigned to",
+            "width": 200,
+        },
+        {
+            "title" : "Tasks",
+            "template": "<button class=\"btn btn-outline-primary\" onclick='LoadTasksHierarchy(\"#: RecordID #\")'> <i class=\"mdi mdi-clipboard-check\"></i> </button>",
+            "excludeFromExport": True,
+            "width":80,
+        },
+        {
+            "title" : "Macro Tracking",
+            "template": "<button class=\"btn btn-outline-info\" onclick='DisplayMacroTrackingForGoalInGrid(\"#: RecordID #\")'> <i class=\"mdi mdi-table\"> </button>",
+            "excludeFromExport": True,
+            "width":80,
+        }, 
+        {
+            "title" : "Macro Tracking",
+            "template": "<button class=\"btn btn-outline-info\" onclick='DisplayMacroTrackingForGoalInTimeLine(\"#: RecordID #\")'> <i class=\"mdi mdi-source-branch\"> </button>",
+            "excludeFromExport": True,
+            "width":80,
+        }, 
+        {
+            "title" : "File submissions",
+            "template": "<button class=\"btn btn-outline-secondary\" onclick='LoadReadOnlyFileView(\"#: ID #\")'> <i class=\"mdi mdi-file-multiple\"> </button>",
+            "excludeFromExport": True,
+            "width":80,
+        }, 
+        {
+            "field" : "CreatedOn",
+            "title" : "Goal creation date",
+            "format" : "{0:dd/MM/yyyy}",
+            "width": 200,            
+        },
+        {
+            "field" : "Deadline",
+            "title" : "Goal deadline",
+            "format" : "{0:dd/MM/yyyy}",
+            "width": 200,            
+        },
+        {
+            "field" : "Rating",
+            "title" : "Goal rating",
+            "template": "<div id=\"ratingBar#: ID #\"></div>",
+            "width":200,
+        },
+        {
+            "field" : "Remarks",
+            "title" : "Goal remarks",
+            "width":200,
+        },
+        {
+            "field" : "CreatedByName",
+            "title" : "Goal Created by",
+            "width":200,
+        }        
+    ]
+
+    resource["ReadURL"] = "GoalAPI/DataRead/Lead/" + userId + "/" + parentId
+    return resource
+
+def WorkHierarchyResourcesForAdmin(userId,parentId):        
+    resource = {};  
+    resource["Fields"] = {
+            "ID" : {"type" : "string"},
+            "RecordID" : {"type" : "string"},
+            "Name" : {"type" : "string"},                
+            "Description" : {"type" : "string"},
+            "CreatedByName" : {"type" : "string"},
+            "AssignedToName" : {"type" : "string"},
+            "CreatedBy" : {"type": "string"},
+            "CreatedOn": {"type": "date"},
+            "Deadline": {"type": "date"},
+            "IsStable": {"type": "string"},
+            "ReportingStatus": {"type": "string"},
+            "Remarks": {"type": "string"},
+            "Rating": {"type": "string"},
+        }
+
+    resource["Columns"] = [
+        {
+            "field" : "Name",
+            "title" : "Goal Name",
+            "width": 200,
+        },
+        {
+            "field" : "Description",
+            "title" : "Goal description",
+            "width":200,
+            "encoded": False,
+        },
+        {
+            "field" : "AssignedToName",
+            "title" : "Assigned to",
+            "width": 200,
+        },
+        {
+            "title" : "Tasks",
+            "template": "<button class=\"btn btn-outline-primary\" onclick='LoadTasksHierarchy(\"#: RecordID #\")'> <i class=\"mdi mdi-clipboard-check\"></i> </button>",
+            "excludeFromExport": True,
+            "width":80,
+        },
+        {
+            "title" : "Macro Tracking",
+            "template": "<button class=\"btn btn-outline-info\" onclick='DisplayMacroTrackingForGoalInGrid(\"#: RecordID #\")'> <i class=\"mdi mdi-table\"> </button>",
+            "excludeFromExport": True,
+            "width":80,
+        }, 
+        {
+            "title" : "Macro Tracking",
+            "template": "<button class=\"btn btn-outline-info\" onclick='DisplayMacroTrackingForGoalInTimeLine(\"#: RecordID #\")'> <i class=\"mdi mdi-source-branch\"> </button>",
+            "excludeFromExport": True,
+            "width":80,
+        }, 
+        {
+            "title" : "File submissions",
+            "template": "<button class=\"btn btn-outline-secondary\" onclick='LoadReadOnlyFileView(\"#: ID #\")'> <i class=\"mdi mdi-file-multiple\"> </button>",
+            "excludeFromExport": True,
+            "width":80,
+        }, 
+        {
+            "field" : "CreatedOn",
+            "title" : "Goal creation date",
+            "format" : "{0:dd/MM/yyyy}",
+            "width": 200,            
+        },
+        {
+            "field" : "Deadline",
+            "title" : "Goal deadline",
+            "format" : "{0:dd/MM/yyyy}",
+            "width": 200,            
+        },
+        {
+            "field" : "Rating",
+            "title" : "Goal rating",
+            "template": "<div id=\"ratingBar#: ID #\"></div>",
+            "width":200,
+        },
+        {
+            "field" : "Remarks",
+            "title" : "Goal remarks",
+            "width":200,
+        },
+        {
+            "field" : "CreatedByName",
+            "title" : "Goal Created by",
+            "width":200,
+        }        
+    ]
+    
+    resource["ReadURL"] = "GoalAPI/DataRead/Admin/" + userId + "/" + parentId
+    return resource
+
+
+@GoalAPI.route('/ReversionGoal/<goalChangeID>', methods = ['GET'])
+@SessionManagement('Lead')
+def Reversion(goalChangeID):    
+    try:
+        response = Response()
+        userId = GetUserSessionDetails()["USER_ID"]
+        response.Data = GoalModule.Reversion(goalChangeID,userId)
+        response.WasSuccessful = True
+    except Exception as ex:
+        response.Message = str(ex)
+        response.WasSuccessful = False
+
+    return jsonify(response.__dict__)
+
+@GoalAPI.route('/RebootGoal/<goalId>', methods = ['GET'])
+@SessionManagement('Lead')
+def Reboot(goalId):    
+    try:
+        response = Response()
+        userId = GetUserSessionDetails()["USER_ID"]
+        response.Data = GoalModule.Reboot(goalId,userId)
+        response.WasSuccessful = True
+    except Exception as ex:
+        response.Message = str(ex)
+        response.WasSuccessful = False
+
+    return jsonify(response.__dict__)
+
+@GoalAPI.route('/GoalReversionGridViewResource/<goalId>')
+@SessionManagement('Lead')
+def GoalReversionGridViewResource(goalId):
+    try:
+        response = Response()
+        resource = {}
+        resource["ReadURL"] = "GoalAPI/MacroTrackingGridViewRead/" + goalId
+        
+        resource["Fields"] = {
+                "ID" : {"type" : "string"},
+                "RecordID" : {"type" : "string"},
+                "Name" : {"type" : "string"},                
+                "Description" : {"type" : "string"},
+                "CreatedByName" : {"type" : "string"},
+                "CreatedBy" : {"type": "string"},
+                "CreatedOn": {"type": "date"},
+                "Deadline": {"type": "date"},
+                "IsStable": {"type": "string"},
+                "ReportingStatus": {"type": "string"},
+                "Remarks": {"type": "string"},
+                "Rating": {"type": "string"},
+            }
+
+        resource["Columns"] = [
+            {
+                "field" : "Name",
+                "title" : "Goal Name",
+                "width": 200,
+            },
+            {
+                "field" : "ReportingStatus",
+                "title" : "Goal status",
+                "width": 200,
+            },
+            {
+                "field" : "CreatedOn",
+                "title" : "Goal creation date",
+                "format" : "{0:dd/MM/yyyy}",
+                "width": 200,            
+            },
+            {
+                "field" : "Deadline",
+                "title" : "Goal deadline",
+                "format" : "{0:dd/MM/yyyy}",
+                "width": 200,            
+            },
+            {
+                "field" : "Description",
+                "title" : "Goal description",
+                "width":200,
+                "encoded": False,
+            },
+            {
+                "title" : "File submissions",
+                "template": "<button class=\"btn btn-outline-secondary\" onclick='LoadReadOnlyFileView(\"#: ID #\",true,true,divMainPage)'> <i class=\"mdi mdi-file-multiple\"> </i></button>",
+                "excludeFromExport": True,
+                "width":80,
+            },
+            {
+                "title" : "Revert goal",
+                "template": "<button class=\"btn btn-outline-danger\" onclick='ReversionGoal(\"#: ID #\")'> <i class=\"mdi mdi-undo\"> </i></button>",
+                "excludeFromExport": True,
+                "width":80,
+            },
+            {
+                "field" : "Rating",
+                "title" : "Goal rating",
+                "template": "<div id=\"ratingBar#: ID #\"></div>",
+                "width":200,
+            },
+            {
+                "field" : "Remarks",
+                "title" : "Goal remarks",
+                "width":200,
+            },
+            {
+                "field" : "CreatedByName",
+                "title" : "Goal Created by",
+                "width":200,
+            }        
+        ]
+        response.Data = resource
+        response.WasSuccessful = True
+    except Exception as ex:
+        response.message = str(ex)
+        response.WasSuccessful = False 
+    return jsonify(response.__dict__)

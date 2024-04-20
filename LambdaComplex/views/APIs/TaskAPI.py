@@ -112,7 +112,7 @@ def ResourcesForAdmin(userId,goalId):
         },
         {
             "field" : "Rating",
-            "title" : "Project rating",
+            "title" : "Task rating",
             "template": "<div id=\"ratingBar#: ID #\"></div>",
             "width":200,
         },
@@ -280,6 +280,18 @@ def ResourcesForLead(userId,goalId):
                 "title" : "Task status",
                 "width": 200,
             },
+            {
+                "title" : "Reboot",
+                "template": "# if(data.ReportingStatus != 'ABD' && data.ReportingStatus != 'CMP') { # <button class=\"btn btn-outline-danger\" onclick='RebootTask(\"#: RecordID #\")'> <i class=\"mdi mdi-backup-restore\"></i> </button> # } else { var color = (ReportingStatus == 'CMP') ? 'green' : 'red' # <p style=\"color:#: color #\"> #: data.ReportingStatus #</p> # } #",
+                "excludeFromExport": True,
+                "width":80,
+            },
+            {
+                "title" : "Reversion",
+                "template": "# if(data.ReportingStatus != 'ABD' && data.ReportingStatus != 'CMP') { # <button class=\"btn btn-outline-warning\" onclick='LoadTaskReversionView(\"#: RecordID #\")'> <i class=\"mdi mdi-undo-variant\"></i> </button> # } else { var color = (ReportingStatus == 'CMP') ? 'green' : 'red' # <p style=\"color:#: color #\"> #: data.ReportingStatus #</p> # } #",
+                "excludeFromExport": True,
+                "width":80,
+            },            
             {
                 "title" : "Abandon",
                 "template": "# if(data.ReportingStatus == 'PAR' || data.ReportingStatus == 'INITIAL') { # <button class=\"btn btn-outline-danger\" onclick='AbandonTask(\"#: ID #\")'> <i class=\"mdi mdi-close\"></i> </button> # } else { var color = (ReportingStatus == 'CMP') ? 'green' : 'red' # <p style=\"color:#: color #\">#: data.ReportingStatus #</p> # } #",
@@ -558,7 +570,7 @@ def MacroTrackingGridResource(taskId):
                 "Remarks": {"type": "string"},
                 "Rating": {"type": "string"},
                 "AssignedToName" : {"type": "string"},
-                "ProjectName": {"type":"string"},
+                "TaskName": {"type":"string"},
             }
 
         resource["Columns"] = [
@@ -568,8 +580,8 @@ def MacroTrackingGridResource(taskId):
                 "width": 200,
             },               
             {
-                "field" : "ProjectName",
-                "title" : "Project name",
+                "field" : "TaskName",
+                "title" : "Task name",
                 "width":200,
             },
             {
@@ -658,7 +670,7 @@ def MicroTrackingGridResource(taskId):
                 "Remarks": {"type": "string"},
                 "Rating": {"type": "string"},
                 "AssignedToName" : {"type": "string"},
-                "ProjectName": {"type":"string"},
+                "TaskName": {"type":"string"},
             }
 
         resource["Columns"] = [
@@ -668,8 +680,8 @@ def MicroTrackingGridResource(taskId):
                 "width": 200,
             },               
             {
-                "field" : "ProjectName",
-                "title" : "Project name",
+                "field" : "TaskName",
+                "title" : "Task name",
                 "width":200,
             },
             {
@@ -807,4 +819,443 @@ def MicroTrackingTimeLineRead(taskId):
         response.Message = str(ex)
         response.WasSuccessful = False
 
+    return jsonify(response.__dict__)
+
+
+@TaskAPI.route('/WorkHierarchyResource/<goalId>')
+@SessionManagement('Admin,Lead,Dev')
+def WorkHierarchyResource(goalId):
+    try:
+        response = Response()
+        userSessionDetails = GetUserSessionDetails()
+        userId = userSessionDetails.get("USER_ID")
+        role = userSessionDetails.get("USER_ROLE")
+        role = role.lower()
+        resource = {}
+
+        if role == 'admin' :
+            resource = WorkHierarchyResourcesForAdmin(userId,goalId)
+        elif role == 'lead' :
+            resource = WorkHierarchyResourcesForLead(userId,goalId)
+        elif role == 'dev':
+            resource = WorkHierarchyResourcesForDev(userId,goalId)
+
+        response.Data = resource
+        response.WasSuccessful = True
+    except Exception as ex:
+        response.message = str(ex)
+        response.WasSuccessful = False 
+    return jsonify(response.__dict__)
+
+def WorkHierarchyResourcesForAdmin(userId,goalId):
+    resource = {};  
+    resource["Fields"] = {
+            "ID" : {"type" : "string"},
+            "RecordID" : {"type" : "string"},
+            "Name" : {"type" : "string"},                
+            "Description" : {"type" : "string"},
+            "CreatedByName" : {"type" : "string"},
+            "AssignedToName" : {"type" : "string"},
+            "ParentID" : {"type" : "string"},
+            "CreatedBy" : {"type": "string"},
+            "CreatedOn": {"type": "date"},
+            "Deadline": {"type": "date"},
+            "IsStable": {"type": "string"},
+            "ReportingStatus": {"type": "string"},
+            "Remarks": {"type": "string"},
+            "Rating": {"type": "string"},
+        }
+
+    resource["Columns"] = [
+        {
+            "field" : "Name",
+            "title" : "Task Name",
+            "width": 200,
+        },
+        {
+            "field" : "Description",
+            "title" : "Task description",
+            "width":200,
+            "encoded": False,
+        },
+        {
+            "field" : "AssignedToName",
+            "title" : "Assigned to",
+            "width":200,
+        },
+        {
+            "title" : "File submissions",
+            "template": "<button class=\"btn btn-outline-secondary\" onclick='LoadReadOnlyFileView(\"#: ID #\")'> <i class=\"mdi mdi-file-multiple\"></i> </button>",
+            "excludeFromExport": True,
+            "width":80,
+        },
+        {
+            "title" : "Macro Tracking",
+            "template": "<button class=\"btn btn-outline-info\" onclick='DisplayMacroTrackingForTaskInGrid(\"#: RecordID #\",true,true,divMainPage)'> <i class=\"mdi mdi-table\"> </button>",
+            "excludeFromExport": True,
+            "width":80,
+        }, 
+        {
+            "title" : "Macro Tracking",
+            "template": "<button class=\"btn btn-outline-info\" onclick='DisplayMacroTrackingForTaskInTimeLine(\"#: RecordID #\")'> <i class=\"mdi mdi-source-branch\"> </button>",
+            "excludeFromExport": True,
+            "width":80,
+        }, 
+        {
+            "title" : "Micro Tracking",
+            "template": "<button class=\"btn btn-outline-secondary\" onclick='DisplayMicroTrackingForTaskInGrid(\"#: RecordID #\",true,true,divMainPage)'> <i class=\"mdi mdi-table\"> </button>",
+            "excludeFromExport": True,
+            "width":80,
+        }, 
+        {
+            "title" : "Micro Tracking",
+            "template": "<button class=\"btn btn-outline-secondary\" onclick='DisplayMicroTrackingForTaskInTimeLine(\"#: RecordID #\",true,true,divMainPage)'> <i class=\"mdi mdi-source-branch\"> </button>",
+            "excludeFromExport": True,
+            "width":80,
+        },    
+        {
+            "field" : "CreatedOn",
+            "title" : "Task creation date",
+            "format" : "{0:dd/MM/yyyy}",
+            "width": 200,            
+        },
+        {
+            "field" : "Deadline",
+            "title" : "Task deadline",
+            "format" : "{0:dd/MM/yyyy}",
+            "width": 200,            
+        },
+        {
+            "field" : "Rating",
+            "title" : "Task rating",
+            "template": "<div id=\"ratingBar#: ID #\"></div>",
+            "width":200,
+        },
+        {
+            "field" : "Remarks",
+            "title" : "Task name",
+            "width":200,
+        },
+        {
+            "field" : "CreatedByName",
+            "title" : "Task Created by",
+            "width":200,
+        }        
+    ]
+
+    resource["ReadURL"] = "TaskAPI/DataRead/Admin/" + userId + "/" + goalId
+    return resource
+
+def WorkHierarchyResourcesForDev(userId,goalId):
+    resource = {};  
+    resource["ReadURL"] = "TaskAPI/DataRead/Dev/" + userId + "/" + goalId
+    resource["Fields"] = {
+        "ID" : {"type" : "string"},
+        "RecordID" : {"type" : "string"},
+        "Name" : {"type" : "string"},                
+        "Description" : {"type" : "string"},
+        "CreatedByName" : {"type" : "string"},
+        "AssignedToName" : {"type" : "string"},
+        "ParentID" : {"type" : "string"},
+        "CreatedBy" : {"type": "string"},
+        "CreatedOn": {"type": "date"},
+        "Deadline": {"type": "date"},
+        "IsStable": {"type": "string"},
+        "ReportingStatus": {"type": "string"},
+        "Remarks": {"type": "string"},
+        "Rating": {"type": "string"},
+    }
+
+    resource["Columns"] = [
+        {
+            "field" : "Name",
+            "title" : "Task Name",
+            "width": 200,
+        },
+        {
+            "field" : "Description",
+            "title" : "Task description",
+            "width":200,
+            "encoded": False,
+        },
+        {
+            "field" : "AssignedToName",
+            "title" : "Assigned to",
+            "width":200,
+        },
+        {
+            "title" : "File submissions",
+            "template": "<button class=\"btn btn-outline-secondary\" onclick='LoadReadOnlyFileView(\"#: ID #\")'> <i class=\"mdi mdi-file-multiple\"></i> </button>",
+            "excludeFromExport": True,
+            "width":80,
+        },
+        {
+            "title" : "Macro Tracking",
+            "template": "<button class=\"btn btn-outline-info\" onclick='DisplayMacroTrackingForTaskInGrid(\"#: RecordID #\",true,true,divMainPage)'> <i class=\"mdi mdi-table\"> </button>",
+            "excludeFromExport": True,
+            "width":80,
+        }, 
+        {
+            "title" : "Macro Tracking",
+            "template": "<button class=\"btn btn-outline-info\" onclick='DisplayMacroTrackingForTaskInTimeLine(\"#: RecordID #\")'> <i class=\"mdi mdi-source-branch\"> </button>",
+            "excludeFromExport": True,
+            "width":80,
+        }, 
+        {
+            "title" : "Micro Tracking",
+            "template": "<button class=\"btn btn-outline-secondary\" onclick='DisplayMicroTrackingForTaskInGrid(\"#: RecordID #\",true,true,divMainPage)'> <i class=\"mdi mdi-table\"> </button>",
+            "excludeFromExport": True,
+            "width":80,
+        }, 
+        {
+            "title" : "Micro Tracking",
+            "template": "<button class=\"btn btn-outline-secondary\" onclick='DisplayMicroTrackingForTaskInTimeLine(\"#: RecordID #\",true,true,divMainPage)'> <i class=\"mdi mdi-source-branch\"> </button>",
+            "excludeFromExport": True,
+            "width":80,
+        },    
+        {
+            "field" : "CreatedOn",
+            "title" : "Task creation date",
+            "format" : "{0:dd/MM/yyyy}",
+            "width": 200,            
+        },
+        {
+            "field" : "Deadline",
+            "title" : "Task deadline",
+            "format" : "{0:dd/MM/yyyy}",
+            "width": 200,            
+        },
+        {
+            "field" : "Rating",
+            "title" : "Task rating",
+            "template": "<div id=\"ratingBar#: ID #\"></div>",
+            "width":200,
+        },
+        {
+            "field" : "Remarks",
+            "title" : "Task name",
+            "width":200,
+        },
+        {
+            "field" : "CreatedByName",
+            "title" : "Task Created by",
+            "width":200,
+        }             
+    ]
+
+    return resource
+
+def WorkHierarchyResourcesForLead(userId,goalId):        
+        resource = {};  
+        resource["Fields"] = {
+                "ID" : {"type" : "string"},
+                "RecordID" : {"type" : "string"},
+                "Name" : {"type" : "string"},                
+                "Description" : {"type" : "string"},
+                "CreatedByName" : {"type" : "string"},
+                "AssignedToName" : {"type" : "string"},
+                "ParentID" : {"type" : "string"},
+                "CreatedBy" : {"type": "string"},
+                "CreatedOn": {"type": "date"},
+                "Deadline": {"type": "date"},
+                "IsStable": {"type": "string"},
+                "ReportingStatus": {"type": "string"},
+                "Remarks": {"type": "string"},
+                "Rating": {"type": "string"},
+            }
+
+        resource["Columns"] = [
+        {
+            "field" : "Name",
+            "title" : "Task Name",
+            "width": 200,
+        },
+        {
+            "field" : "Description",
+            "title" : "Task description",
+            "width":200,
+            "encoded": False,
+        },
+        {
+            "field" : "AssignedToName",
+            "title" : "Assigned to",
+            "width":200,
+        },
+        {
+            "title" : "File submissions",
+            "template": "<button class=\"btn btn-outline-secondary\" onclick='LoadReadOnlyFileView(\"#: ID #\")'> <i class=\"mdi mdi-file-multiple\"></i> </button>",
+            "excludeFromExport": True,
+            "width":80,
+        },
+        {
+            "title" : "Macro Tracking",
+            "template": "<button class=\"btn btn-outline-info\" onclick='DisplayMacroTrackingForTaskInGrid(\"#: RecordID #\",true,true,divMainPage)'> <i class=\"mdi mdi-table\"> </button>",
+            "excludeFromExport": True,
+            "width":80,
+        }, 
+        {
+            "title" : "Macro Tracking",
+            "template": "<button class=\"btn btn-outline-info\" onclick='DisplayMacroTrackingForTaskInTimeLine(\"#: RecordID #\")'> <i class=\"mdi mdi-source-branch\"> </button>",
+            "excludeFromExport": True,
+            "width":80,
+        }, 
+        {
+            "title" : "Micro Tracking",
+            "template": "<button class=\"btn btn-outline-secondary\" onclick='DisplayMicroTrackingForTaskInGrid(\"#: RecordID #\",true,true,divMainPage)'> <i class=\"mdi mdi-table\"> </button>",
+            "excludeFromExport": True,
+            "width":80,
+        }, 
+        {
+            "title" : "Micro Tracking",
+            "template": "<button class=\"btn btn-outline-secondary\" onclick='DisplayMicroTrackingForTaskInTimeLine(\"#: RecordID #\",true,true,divMainPage)'> <i class=\"mdi mdi-source-branch\"> </button>",
+            "excludeFromExport": True,
+            "width":80,
+        },    
+        {
+            "field" : "CreatedOn",
+            "title" : "Task creation date",
+            "format" : "{0:dd/MM/yyyy}",
+            "width": 200,            
+        },
+        {
+            "field" : "Deadline",
+            "title" : "Task deadline",
+            "format" : "{0:dd/MM/yyyy}",
+            "width": 200,            
+        },
+        {
+            "field" : "Rating",
+            "title" : "Task rating",
+            "template": "<div id=\"ratingBar#: ID #\"></div>",
+            "width":200,
+        },
+        {
+            "field" : "Remarks",
+            "title" : "Task name",
+            "width":200,
+        },
+        {
+            "field" : "CreatedByName",
+            "title" : "Task Created by",
+            "width":200,
+        }             
+        ]
+
+        resource["ReadURL"] = "TaskAPI/DataRead/Lead/" + userId + "/" + goalId
+        return resource
+
+@TaskAPI.route('/ReversionTask/<taskChangeID>', methods = ['GET'])
+@SessionManagement('Lead')
+def Reversion(taskChangeID):    
+    try:
+        response = Response()
+        userId = GetUserSessionDetails()["USER_ID"]
+        response.Data = TaskModule.Reversion(taskChangeID,userId)
+        response.WasSuccessful = True
+    except Exception as ex:
+        response.Message = str(ex)
+        response.WasSuccessful = False
+
+    return jsonify(response.__dict__)
+
+@TaskAPI.route('/RebootTask/<taskId>', methods = ['GET'])
+@SessionManagement('Lead')
+def Reboot(taskId):    
+    try:
+        response = Response()
+        userId = GetUserSessionDetails()["USER_ID"]
+        response.Data = TaskModule.Reboot(taskId,userId)
+        response.WasSuccessful = True
+    except Exception as ex:
+        response.Message = str(ex)
+        response.WasSuccessful = False
+
+    return jsonify(response.__dict__)
+
+@TaskAPI.route('/TaskReversionGridViewResource/<taskId>')
+@SessionManagement('Lead')
+def TaskReversionGridViewResource(taskId):
+    try:
+        response = Response()
+        resource = {}
+        resource["ReadURL"] = "TaskAPI/MacroTrackingGridViewRead/" + taskId
+        
+        resource["Fields"] = {
+                "ID" : {"type" : "string"},
+                "RecordID" : {"type" : "string"},
+                "Name" : {"type" : "string"},                
+                "Description" : {"type" : "string"},
+                "CreatedByName" : {"type" : "string"},
+                "CreatedBy" : {"type": "string"},
+                "CreatedOn": {"type": "date"},
+                "Deadline": {"type": "date"},
+                "IsStable": {"type": "string"},
+                "ReportingStatus": {"type": "string"},
+                "Remarks": {"type": "string"},
+                "Rating": {"type": "string"},
+            }
+
+        resource["Columns"] = [
+            {
+                "field" : "Name",
+                "title" : "Task Name",
+                "width": 200,
+            },
+            {
+                "field" : "ReportingStatus",
+                "title" : "Task status",
+                "width": 200,
+            },
+            {
+                "field" : "CreatedOn",
+                "title" : "Task creation date",
+                "format" : "{0:dd/MM/yyyy}",
+                "width": 200,            
+            },
+            {
+                "field" : "Deadline",
+                "title" : "Task deadline",
+                "format" : "{0:dd/MM/yyyy}",
+                "width": 200,            
+            },
+            {
+                "field" : "Description",
+                "title" : "Task description",
+                "width":200,
+                "encoded": False,
+            },
+            {
+                "title" : "File submissions",
+                "template": "<button class=\"btn btn-outline-secondary\" onclick='LoadReadOnlyFileView(\"#: ID #\",true,true,divMainPage)'> <i class=\"mdi mdi-file-multiple\"> </i></button>",
+                "excludeFromExport": True,
+                "width":80,
+            },
+            {
+                "title" : "Revert task",
+                "template": "<button class=\"btn btn-outline-danger\" onclick='ReversionTask(\"#: ID #\")'> <i class=\"mdi mdi-undo\"> </i></button>",
+                "excludeFromExport": True,
+                "width":80,
+            },
+            {
+                "field" : "Rating",
+                "title" : "Task rating",
+                "template": "<div id=\"ratingBar#: ID #\"></div>",
+                "width":200,
+            },
+            {
+                "field" : "Remarks",
+                "title" : "Task remarks",
+                "width":200,
+            },
+            {
+                "field" : "CreatedByName",
+                "title" : "Task Created by",
+                "width":200,
+            }        
+        ]
+        response.Data = resource
+        response.WasSuccessful = True
+    except Exception as ex:
+        response.message = str(ex)
+        response.WasSuccessful = False 
     return jsonify(response.__dict__)

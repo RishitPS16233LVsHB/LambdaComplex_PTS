@@ -391,10 +391,85 @@ function DisplayMicroTrackingForMilestoneInTimeLine(recordID = null) {
     }
 }
 
+function RebootMilestone(milestoneID = null) {
+    try {
+        if (IsNullOrEmpty(milestoneID)) return;
+        ConfirmationAlert('Milestone', 'Do you really want to reboot this milestone?', function (value) {
+            var url = 'MilestoneAPI/RebootMilestone/' + milestoneID
+            AjaxGETRequest(
+                url,
+                function (response) {
+                    response = SafeJSONparse(response);
+                    if (response.WasSuccessful) {
+                        AlertWarning("Rebooted milestone!");
+                        RefreshDataView();
+                    }
+                    else {
+                        toastr.error("Alas! Error rebooting milestone: " + response.Message);
+                    }
+                },
+                function (error) {
+
+                }, true, true, true
+            );
+        });
+    }
+    catch (ex) {
+        toastr.error("Error while rebooting milestone: " + ex.message);
+    }
+}
+function ReversionMilestone(milestoneChangeID = null) {
+    try {
+        if (IsNullOrEmpty(milestoneChangeID)) return;
+        ConfirmationAlert('Milestone', 'Do you really want to reversion this milestone to an older version?', function (value) {
+            var url = 'MilestoneAPI/ReversionMilestone/' + milestoneChangeID
+            AjaxGETRequest(
+                url,
+                function (response) {
+                    response = SafeJSONparse(response);
+                    if (response.WasSuccessful) {
+                        AlertWarning("Reversioned milestone!");
+                        RefreshDataView();
+                    }
+                    else {
+                        toastr.error("Alas! Error reversioning milestone: " + response.Message);
+                    }
+                },
+                function (error) {
+
+                }, true, true, true
+            );
+        });
+    }
+    catch (ex) {
+        toastr.error("Error while reversioning milestone: " + ex.message);
+    }
+}
+function LoadMilestoneReversionView(recordID = null) {
+    try {
+        if (IsNullOrEmpty(recordID)) return;
+        var resourceUrl = "MilestoneAPI/MilestoneReversionGridViewResource/" + recordID;
+        LoadGridView(resourceUrl, true, true, divMainPage);
+    }
+    catch (ex) {
+        toastr.error('Error while displaying Milestone reversion tracking in grid: ' + ex.message);
+    }
+}
+
+
 function LoadGoals(recordId = null) {
     try {
         if (IsNullOrEmpty(recordId)) return;
         LoadGridView("GoalAPI/Resource/" + recordId);
+    }
+    catch (ex) {
+        toastr.error("Error while loading list of milestones: " + ex.message);
+    }
+}
+function LoadGoalsHierarchy(recordId = null) {
+    try {
+        if (IsNullOrEmpty(recordId)) return;
+        LoadGridView("GoalAPI/WorkHierarchyResource/" + recordId);
     }
     catch (ex) {
         toastr.error("Error while loading list of milestones: " + ex.message);

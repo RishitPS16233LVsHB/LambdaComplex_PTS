@@ -295,13 +295,47 @@ class GoalModule:
     def AbandonGoal(goalChangeId,userId):
         try:
             query = f"""
-            UPDATE {Tables.GoalChanges} SET
-            [ReportingStatus] = 'ABD',            
-            [ModifiedBy] = '{userId}',
-            [ModifiedOn] = getdate(),
-            [CreatedOn] = [CreatedOn],
-            [IsStable] = 1
-            WHERE [Id] = '{goalChangeId}'
+            INSERT INTO {Tables.GoalChanges}
+                            (
+                            [ID]
+                            ,[RecordID]
+                            ,[Name]
+                            ,[Description]
+                            ,[RunningStatus]
+                            ,[AssignedTo]
+                            ,[ParentID]
+                            ,[CreatedBy]
+                            ,[ModifiedBy]
+                            ,[IsStable]
+                            ,[Version]
+                            ,[ReportingStatus]
+                            ,[Deadline]
+                            ,[Remarks]
+                            ,[Rating]
+                            ,[CreatedOn]
+                            ,[ModifiedOn]
+                            )
+                        SELECT 
+                        TOP 1
+                            '{goalChangeId}' as [ID]
+                            ,[RecordID]
+                            ,[Name]
+                            ,[Description]
+                            ,-1 as [RunningStatus]
+                            ,[AssignedTo]
+                            ,[ParentID]
+                            ,'{userId}' as [CreatedBy]
+                            ,'{userId}' as [ModifiedBy]
+                            ,1 as [IsStable]
+                            ,1 as [Version] 
+                            ,'ABD' as [ReportingStatus]
+                            ,[Deadline]
+                            ,[Remarks]
+                            ,[Rating]
+                            ,getdate() as [CreatedOn]
+                            ,getdate() as [ModifiedOn]
+                        FROM {Tables.GoalChanges}
+                        WHERE ID = '{goalChangeId}' AND [IsDeleted] = 0
             """
             return DatabaseUtilities.ExecuteNonQuery(query)
         except Exception:
@@ -311,13 +345,47 @@ class GoalModule:
     def FinishGoal(goalChangeId,userId):
         try:
             query = f"""
-            UPDATE {Tables.GoalChanges} SET
-            [ReportingStatus] = 'CMP',            
-            [ModifiedBy] = '{userId}',
-            [ModifiedOn] = getdate(),
-            [CreatedOn] = [CreatedOn],
-            [IsStable] = 1
-            WHERE [Id] = '{goalChangeId}'
+            INSERT INTO {Tables.GoalChanges}
+                            (
+                            [ID]
+                            ,[RecordID]
+                            ,[Name]
+                            ,[Description]
+                            ,[RunningStatus]
+                            ,[AssignedTo]
+                            ,[ParentID]
+                            ,[CreatedBy]
+                            ,[ModifiedBy]
+                            ,[IsStable]
+                            ,[Version]
+                            ,[ReportingStatus]
+                            ,[Deadline]
+                            ,[Remarks]
+                            ,[Rating]
+                            ,[CreatedOn]
+                            ,[ModifiedOn]
+                            )
+                        SELECT 
+                        TOP 1
+                            '{goalChangeId}' as [ID]
+                            ,[RecordID]
+                            ,[Name]
+                            ,[Description]
+                            ,-1 as [RunningStatus]
+                            ,[AssignedTo]
+                            ,[ParentID]
+                            ,'{userId}' as [CreatedBy]
+                            ,'{userId}' as [ModifiedBy]
+                            ,1 as [IsStable]
+                            ,1 as [Version] 
+                            ,'CMP' as [ReportingStatus]
+                            ,[Deadline]
+                            ,[Remarks]
+                            ,[Rating]
+                            ,getdate() as [CreatedOn]
+                            ,getdate() as [ModifiedOn]
+                        FROM {Tables.GoalChanges}
+                        WHERE ID = '{goalChangeId}' AND [IsDeleted] = 0
             """
             return DatabaseUtilities.ExecuteNonQuery(query)
         except Exception:
@@ -340,14 +408,51 @@ class GoalModule:
                     ,GCT.[Rating]
                     ,GCT.[Remarks]
                     ,(UM.[FirstName] + '-' + UM.[LastName]) as [CreatedByName]
+                    ,(UM2.[FirstName] + '-' + UM2.[LastName]) as [AssignedToName]
                 FROM 
                     {Tables.GoalChanges} GCT
                 INNER JOIN 
                     {Tables.User} UM ON GCT.[CreatedBy] = UM.[ID]
+                INNER JOIN 
+                    {Tables.User} UM2 ON GCT.[AssignedTo] = UM2.[ID]
                 WHERE 
                     GCT.[IsDeleted] = 0 AND
                     GCT.[RecordID] = '{goalId}' AND
                     GCT.[IsStable] = 1
+                ORDER BY
+                    GCT.[CreatedOn] DESC
+            """
+            return DatabaseUtilities.GetListOf(query)
+        except Exception:
+            raise
+    
+    @staticmethod
+    def GetMicroHistory(goalId):        
+        try:
+            query = f"""
+                 SELECT 
+                    GCT.[ID]
+                    ,GCT.[RecordID]
+                    ,GCT.[Name]
+                    ,CAST( GCT.[Description] as XML).value('.[1]','nvarchar(MAX)') as [Description]
+                    ,GCT.[CreatedBy]
+                    ,CAST(FORMAT(GCT.[CreatedOn],'yyyy-MM-dd hh:mm:ss') as varchar(30)) AS [CreatedOn]
+                    ,GCT.[IsStable]
+                    ,GCT.[ReportingStatus]                    
+                    ,CAST(FORMAT(GCT.[Deadline],'yyyy-MM-dd hh:mm:ss') as varchar(30)) AS [Deadline]
+                    ,GCT.[Rating]
+                    ,GCT.[Remarks]
+                    ,(UM.[FirstName] + '-' + UM.[LastName]) as [CreatedByName]
+                    ,(UM2.[FirstName] + '-' + UM2.[LastName]) as [AssignedToName]
+                FROM 
+                    {Tables.GoalChanges} GCT
+                INNER JOIN 
+                    {Tables.User} UM ON GCT.[CreatedBy] = UM.[ID]
+                INNER JOIN 
+                    {Tables.User} UM2 ON GCT.[AssignedTo] = UM2.[ID]
+                WHERE 
+                    GCT.[IsDeleted] = 0 AND
+                    GCT.[RecordID] = '{goalId}'
                 ORDER BY
                     GCT.[CreatedOn] DESC
             """
@@ -581,7 +686,6 @@ class GoalModule:
                 [IsDeleted] = 0 AND
                 [ReportingStatus] = 'INITIAL'
             """
-            DatabaseUtilities.ExecuteNonQuery(query)
             DatabaseUtilities.ExecuteNonQuery(query)
         except Exception:
             raise

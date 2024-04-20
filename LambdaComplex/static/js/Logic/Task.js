@@ -304,6 +304,73 @@ function AbandonTask(taskChangeId = null) {
     }
 }
 
+
+function RebootTask(taskID = null) {
+    try {
+        if (IsNullOrEmpty(taskID)) return;
+        ConfirmationAlert('Task', 'Do you really want to reboot this task?', function (value) {
+            var url = 'TaskAPI/RebootTask/' + taskID
+            AjaxGETRequest(
+                url,
+                function (response) {
+                    response = SafeJSONparse(response);
+                    if (response.WasSuccessful) {
+                        AlertWarning("Rebooted task!");
+                        RefreshDataView();
+                    }
+                    else {
+                        toastr.error("Alas! Error rebooting task: " + response.Message);
+                    }
+                },
+                function (error) {
+
+                }, true, true, true
+            );
+        });
+    }
+    catch (ex) {
+        toastr.error("Error while rebooting task: " + ex.message);
+    }
+}
+function ReversionTask(taskChangeID = null) {
+    try {
+        if (IsNullOrEmpty(taskChangeID)) return;
+        ConfirmationAlert('Task', 'Do you really want to reversion this task to an older version?', function (value) {
+            var url = 'TaskAPI/ReversionTask/' + taskChangeID
+            AjaxGETRequest(
+                url,
+                function (response) {
+                    response = SafeJSONparse(response);
+                    if (response.WasSuccessful) {
+                        AlertWarning("Reversioned task!");
+                        RefreshDataView();
+                    }
+                    else {
+                        toastr.error("Alas! Error reversioning task: " + response.Message);
+                    }
+                },
+                function (error) {
+
+                }, true, true, true
+            );
+        });
+    }
+    catch (ex) {
+        toastr.error("Error while reversioning task: " + ex.message);
+    }
+}
+function LoadTaskReversionView(recordID = null) {
+    try {
+        if (IsNullOrEmpty(recordID)) return;
+        var resourceUrl = "TaskAPI/TaskReversionGridViewResource/" + recordID;
+        LoadGridView(resourceUrl, true, true, divMainPage);
+    }
+    catch (ex) {
+        toastr.error('Error while displaying Task reversion tracking in grid: ' + ex.message);
+    }
+}
+
+
 function DisplayMacroTrackingForTaskInGrid(recordID = null) {
     try {
         if (IsNullOrEmpty(recordID)) return;

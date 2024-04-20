@@ -114,12 +114,6 @@
                         <div class="collapse" id="home-inner">
                             <ul class="nav flex-column sub-menu">
                                 <li class="nav-item">
-                                    <a class="nav-link" href="/">
-                                        <span class="menu-title">Home</span>
-                                        <i class="mdi mdi-home menu-icon"></i>
-                                    </a>
-                                </li>
-                                <li class="nav-item">
                                     <a class="nav-link"
                                         onclick="LoadCalendarView('CalendarEventAPI/CalendarViewResource',true,true)">
                                         <span class="menu-title">Calendar</span>
@@ -172,13 +166,6 @@
                     </li>
 
                     <li class="nav-item">
-                        <a class="nav-link" onclick="LoadGridView('ProjectAPI/Resource/')">
-                            <span class="menu-title">Projects</span>
-                            <i class="mdi mdi-home-modern menu-icon"></i>
-                        </a>
-                    </li>
-
-                    <li class="nav-item">
                         <a class="nav-link collapsed" data-bs-toggle="collapse" href="#team-inner" aria-expanded="false"
                             aria-controls="team-inner">
                             <span class="menu-title">Team</span>
@@ -199,14 +186,29 @@
                                         <i class="mdi mdi-mail menu-icon"></i>
                                     </a>
                                 </li>
-                                <li class="nav-item">
-                                    <a class="nav-link" href="#">
-                                        <span class="menu-title">Tasks</span>
-                                        <i class="mdi mdi-format-list-numbered menu-icon"></i>
-                                    </a>
-                                </li>
                             </ul>
                         </div>
+                    </li>
+
+                    <li class="nav-item">
+                        <a class="nav-link" onclick="LoadGridView('ProjectAPI/Resource/')">
+                            <span class="menu-title">Workspace</span>
+                            <i class="mdi mdi-black-mesa menu-icon"></i>
+                        </a>
+                    </li>
+
+                    <li class="nav-item">
+                        <a class="nav-link" onclick="LoadGridView('ProjectAPI/WorkHierarchyResource/')">
+                            <span class="menu-title">Work Hierarchy</span>
+                            <i class="mdi mdi-table-large menu-icon"></i>
+                        </a>
+                    </li>
+
+                    <li class="nav-item">
+                        <a class="nav-link" onclick="LoadGridView('ProjectAPI/ProgressResource/')">
+                            <span class="menu-title">Progress</span>
+                            <i class="mdi mdi-chart-areaspline menu-icon"></i>
+                        </a>
                     </li>
 
                     <li class="nav-item">
@@ -235,49 +237,6 @@
                     </li>
 
                     <li class="nav-item">
-                        <a class="nav-link collapsed" data-bs-toggle="collapse" href="#progress-inner"
-                            aria-expanded="false" aria-controls="progress-inner">
-                            <span class="menu-title">Progress</span>
-                            <i class="menu-arrow"></i>
-                            <i class="mdi mdi-chart-areaspline menu-icon"></i>
-                        </a>
-                        <div class="collapse" id="progress-inner">
-                            <ul class="nav flex-column sub-menu">
-                                <li class="nav-item">
-                                    <a class="nav-link" href="#">
-                                        <span class="menu-title">My Contributions </span>
-                                        <i class="mdi mdi-account menu-icon"></i>
-                                    </a>
-                                </li>
-                                <li class="nav-item">
-                                    <a class="nav-link" href="#">
-                                        <span class="menu-title">My Projects </span>
-                                        <i class="mdi mdi-home-modern menu-icon"></i>
-                                    </a>
-                                </li>
-                                <li class="nav-item">
-                                    <a class="nav-link" href="#">
-                                        <span class="menu-title">My Milestone</span>
-                                        <i class="mdi mdi-stairs menu-icon"></i>
-                                    </a>
-                                </li>
-                                <li class="nav-item">
-                                    <a class="nav-link" href="#">
-                                        <span class="menu-title">My Goals</span>
-                                        <i class="mdi mdi-target menu-icon"></i>
-                                    </a>
-                                </li>
-                                <li class="nav-item">
-                                    <a class="nav-link" href="#">
-                                        <span class="menu-title">My Tasks</span>
-                                        <i class="mdi mdi-checkbox-multiple-marked-outline menu-icon"></i>
-                                    </a>
-                                </li>
-                            </ul>
-                        </div>
-                    </li>
-
-                    <li class="nav-item">
                         <a class="nav-link" onclick="LoadListView('TestAPI/Resource/')">
                             <span class="menu-title">Test List</span>
                         </a>
@@ -292,12 +251,14 @@
                 </ul>
             </nav>
             <div class="main-panel">
-
                 <div class="content-wrapper" style="overflow-y: auto;overflow-x: auto;" id="divMainPage">
+                    <div style="text-align: center;">
+                        <h1 style="font-size: 300px;"><i class="mdi mdi-black-mesa"></i></h1>
+                    </div>
                     {% block content %}
+
                     {% endblock %}
                 </div>
-
             </div>
         </div>
     </div>

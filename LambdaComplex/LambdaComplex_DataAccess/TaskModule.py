@@ -995,7 +995,6 @@ class TaskModule:
                 [ReportingStatus] = 'INITIAL'
             """
             DatabaseUtilities.ExecuteNonQuery(query)
-            DatabaseUtilities.ExecuteNonQuery(query)
         except Exception:
             raise
     

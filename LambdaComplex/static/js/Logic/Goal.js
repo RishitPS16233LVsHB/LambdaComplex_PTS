@@ -228,11 +228,107 @@ function DisplayMacroTrackingForGoalInTimeLine(recordID = null) {
         toastr.error('Error while displaying Macro Tracking for the goal in timeline: ' + ex.message);
     }
 }
+function DisplayMicroTrackingForGoalInGrid(recordID = null) {
+    try {
+        if (IsNullOrEmpty(recordID)) return;
+        var resourceUrl = "GoalAPI/MicroTrackingGridResource/" + recordID;
+        LoadGridView(resourceUrl, true, true, divMainPage);
+    }
+    catch (ex) {
+        toastr.error('Error while displaying Micro Tracking for the goal in grid: ' + ex.message);
+    }
+}
+function DisplayMicroTrackingForGoalInTimeLine(recordID = null) {
+    try {
+        if (IsNullOrEmpty(recordID)) return;
+        var resourceUrl = "GoalAPI/MicroTrackingTimeLineRead/" + recordID;
+        LoadTimeLineView(resourceUrl, true, true, divMainPage);
+    }
+    catch (ex) {
+        toastr.error('Error while displaying Micro Tracking for the goal in timeline: ' + ex.message);
+    }
+}
+
+
+function RebootGoal(goalID = null) {
+    try {
+        if (IsNullOrEmpty(goalID)) return;
+        ConfirmationAlert('Goal', 'Do you really want to reboot this goal?', function (value) {
+            var url = 'GoalAPI/RebootGoal/' + goalID
+            AjaxGETRequest(
+                url,
+                function (response) {
+                    response = SafeJSONparse(response);
+                    if (response.WasSuccessful) {
+                        AlertWarning("Rebooted goal!");
+                        RefreshDataView();
+                    }
+                    else {
+                        toastr.error("Alas! Error rebooting goal: " + response.Message);
+                    }
+                },
+                function (error) {
+
+                }, true, true, true
+            );
+        });
+    }
+    catch (ex) {
+        toastr.error("Error while rebooting goal: " + ex.message);
+    }
+}
+function ReversionGoal(goalChangeID = null) {
+    try {
+        if (IsNullOrEmpty(goalChangeID)) return;
+        ConfirmationAlert('Goal', 'Do you really want to reversion this goal to an older version?', function (value) {
+            var url = 'GoalAPI/ReversionGoal/' + goalChangeID
+            AjaxGETRequest(
+                url,
+                function (response) {
+                    response = SafeJSONparse(response);
+                    if (response.WasSuccessful) {
+                        AlertWarning("Reversioned goal!");
+                        RefreshDataView();
+                    }
+                    else {
+                        toastr.error("Alas! Error reversioning goal: " + response.Message);
+                    }
+                },
+                function (error) {
+
+                }, true, true, true
+            );
+        });
+    }
+    catch (ex) {
+        toastr.error("Error while reversioning goal: " + ex.message);
+    }
+}
+function LoadGoalReversionView(recordID = null) {
+    try {
+        if (IsNullOrEmpty(recordID)) return;
+        var resourceUrl = "GoalAPI/GoalReversionGridViewResource/" + recordID;
+        LoadGridView(resourceUrl, true, true, divMainPage);
+    }
+    catch (ex) {
+        toastr.error('Error while displaying Goal reversion tracking in grid: ' + ex.message);
+    }
+}
+
 
 function LoadTasks(recordId = null) {
     try {
         if (IsNullOrEmpty(recordId)) return;
         LoadGridView("TaskAPI/Resource/" + recordId);
+    }
+    catch (ex) {
+        toastr.error("Error while loading list of milestones: " + ex.message);
+    }
+}
+function LoadTasksHierarchy(recordId = null) {
+    try {
+        if (IsNullOrEmpty(recordId)) return;
+        LoadGridView("TaskAPI/WorkHierarchyResource/" + recordId);
     }
     catch (ex) {
         toastr.error("Error while loading list of milestones: " + ex.message);

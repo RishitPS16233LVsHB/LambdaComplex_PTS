@@ -289,6 +289,18 @@ def ResourcesForAdmin(userId,projectId):
                 "width":80,
             },
             {
+                "title" : "Reboot",
+                "template": "# if(data.ReportingStatus != 'ABD' && data.ReportingStatus != 'CMP') { # <button class=\"btn btn-outline-danger\" onclick='RebootMilestone(\"#: RecordID #\")'> <i class=\"mdi mdi-backup-restore\"></i> </button> # } else { var color = (ReportingStatus == 'CMP') ? 'green' : 'red' # <p style=\"color:#: color #\"> #: data.ReportingStatus #</p> # } #",
+                "excludeFromExport": True,
+                "width":80,
+            },
+            {
+                "title" : "Reversion",
+                "template": "# if(data.ReportingStatus != 'ABD' && data.ReportingStatus != 'CMP') { # <button class=\"btn btn-outline-warning\" onclick='LoadMilestoneReversionView(\"#: RecordID #\")'> <i class=\"mdi mdi-undo-variant\"></i> </button> # } else { var color = (ReportingStatus == 'CMP') ? 'green' : 'red' # <p style=\"color:#: color #\"> #: data.ReportingStatus #</p> # } #",
+                "excludeFromExport": True,
+                "width":80,
+            },            
+            {
                 "field" : "Name",
                 "title" : "Milestone Name",
                 "width": 200,
@@ -812,4 +824,460 @@ def MicroTrackingTimeLineRead(milestoneId):
         response.Message = str(ex)
         response.WasSuccessful = False
 
+    return jsonify(response.__dict__)
+
+
+@MilestoneAPI.route('/WorkHierarchyResource/<projectId>')
+@SessionManagement('Admin,Lead,Dev')
+def WorkHierarchyResource(projectId):
+    try:
+        response = Response()
+        userSessionDetails = GetUserSessionDetails()
+        userId = userSessionDetails.get("USER_ID")
+        role = userSessionDetails.get("USER_ROLE")
+        role = role.lower()
+        resource = {}
+
+        if role == 'admin' :
+            resource = WorkHierarchyResourcesForAdmin(userId,projectId)
+        elif role == 'lead' :
+            resource = WorkHierarchyResourcesForLead(userId,projectId)
+        elif role == 'dev':
+            resource = WorkHierarchyResourcesForDev(userId,projectId)
+
+        response.Data = resource
+        response.WasSuccessful = True
+    except Exception as ex:
+        response.message = str(ex)
+        response.WasSuccessful = False 
+    return jsonify(response.__dict__)
+
+def WorkHierarchyResourcesForDev(userId,projectId):
+    resource = {};  
+    resource["Fields"] = {
+            "ID" : {"type" : "string"},
+            "RecordID" : {"type" : "string"},
+            "Name" : {"type" : "string"},                
+            "Description" : {"type" : "string"},
+            "CreatedByName" : {"type" : "string"},
+            "AssignedToName" : {"type" : "string"},
+            "ParentID" : {"type" : "string"},
+            "CreatedBy" : {"type": "string"},
+            "CreatedOn": {"type": "date"},
+            "Deadline": {"type": "date"},
+            "IsStable": {"type": "string"},
+            "ReportingStatus": {"type": "string"},
+            "Remarks": {"type": "string"},
+            "Rating": {"type": "string"},
+        }
+
+    resource["Columns"] = [
+        {
+            "field" : "Name",
+            "title" : "Milestone Name",
+            "width": 200,
+        },
+        {
+            "field" : "Description",
+            "title" : "Milestone description",
+            "width":200,
+            "encoded": False,
+        },
+        {
+            "field" : "AssignedToName",
+            "title" : "Assigned to",
+            "width":200,
+        },        
+        {
+            "title" : "Goals",
+            "template": "<button class=\"btn btn-outline-primary\" onclick='LoadGoalsHierarchy(\"#: RecordID #\")'> <i class=\"mdi mdi-target\"></i> </button>",
+            "excludeFromExport": True,
+            "width":80,
+        },
+        {
+            "title" : "File submissions",
+            "template": "<button class=\"btn btn-outline-secondary\" onclick='LoadReadOnlyFileView(\"#: ID #\")'> <i class=\"mdi mdi-file-multiple\"></i> </button>",
+            "excludeFromExport": True,
+            "width":80,
+        },
+        {
+            "title" : "Macro Tracking",
+            "template": "<button class=\"btn btn-outline-info\" onclick='DisplayMacroTrackingForMilestoneInGrid(\"#: RecordID #\",true,true,divMainPage)'> <i class=\"mdi mdi-table\"> </button>",
+            "excludeFromExport": True,
+            "width":80,
+        }, 
+        {
+            "title" : "Macro Tracking",
+            "template": "<button class=\"btn btn-outline-info\" onclick='DisplayMacroTrackingForMilestoneInTimeLine(\"#: RecordID #\")'> <i class=\"mdi mdi-source-branch\"> </button>",
+            "excludeFromExport": True,
+            "width":80,
+        }, 
+        {
+            "title" : "Micro Tracking",
+            "template": "<button class=\"btn btn-outline-secondary\" onclick='DisplayMicroTrackingForMilestoneInGrid(\"#: RecordID #\",true,true,divMainPage)'> <i class=\"mdi mdi-table\"> </button>",
+            "excludeFromExport": True,
+            "width":80,
+        }, 
+        {
+            "title" : "Micro Tracking",
+            "template": "<button class=\"btn btn-outline-secondary\" onclick='DisplayMicroTrackingForMilestoneInTimeLine(\"#: RecordID #\",true,true,divMainPage)'> <i class=\"mdi mdi-source-branch\"> </button>",
+            "excludeFromExport": True,
+            "width":80,
+        },    
+        {
+            "field" : "CreatedOn",
+            "title" : "Milestone creation date",
+            "format" : "{0:dd/MM/yyyy}",
+            "width": 200,            
+        },
+        {
+            "field" : "Deadline",
+            "title" : "Milestone deadline",
+            "format" : "{0:dd/MM/yyyy}",
+            "width": 200,            
+        },
+        {
+            "field" : "Rating",
+            "title" : "Project rating",
+            "template": "<div id=\"ratingBar#: ID #\"></div>",
+            "width":200,
+        },
+        {
+            "field" : "Remarks",
+            "title" : "Milestone name",
+            "width":200,
+        },
+        {
+            "field" : "CreatedByName",
+            "title" : "Milestone Created by",
+            "width":200,
+        }        
+    ]
+
+    resource["ReadURL"] = "MilestoneAPI/DataRead/Dev/" + userId + "/" + projectId
+    return resource
+
+def WorkHierarchyResourcesForLead(userId,projectId):    
+    resource = {};  
+    resource["ReadURL"] = "MilestoneAPI/DataRead/Lead/" + userId + "/" + projectId
+    resource["Fields"] = {
+            "ID" : {"type" : "string"},
+            "RecordID" : {"type" : "string"},
+            "Name" : {"type" : "string"},                
+            "Description" : {"type" : "string"},
+            "CreatedByName" : {"type" : "string"},
+            "AssignedToName" : {"type" : "string"},
+            "ParentID" : {"type" : "string"},
+            "CreatedBy" : {"type": "string"},
+            "CreatedOn": {"type": "date"},
+            "Deadline": {"type": "date"},
+            "IsStable": {"type": "string"},
+            "ReportingStatus": {"type": "string"},
+            "Remarks": {"type": "string"},
+            "Rating": {"type": "string"},
+        }
+
+    resource["Columns"] = [
+        {
+            "field" : "Name",
+            "title" : "Milestone Name",
+            "width": 200,
+        },
+        {
+            "field" : "Description",
+            "title" : "Milestone description",
+            "width":200,
+            "encoded": False,
+        },
+        {
+            "field" : "AssignedToName",
+            "title" : "Assigned to",
+            "width":200,
+        },        
+        {
+            "title" : "Goals",
+            "template": "<button class=\"btn btn-outline-primary\" onclick='LoadGoalsHierarchy(\"#: RecordID #\")'> <i class=\"mdi mdi-target\"></i> </button>",
+            "excludeFromExport": True,
+            "width":80,
+        },
+        {
+            "title" : "File submissions",
+            "template": "<button class=\"btn btn-outline-secondary\" onclick='LoadReadOnlyFileView(\"#: ID #\")'> <i class=\"mdi mdi-file-multiple\"></i> </button>",
+            "excludeFromExport": True,
+            "width":80,
+        },
+        {
+            "title" : "Macro Tracking",
+            "template": "<button class=\"btn btn-outline-info\" onclick='DisplayMacroTrackingForMilestoneInGrid(\"#: RecordID #\",true,true,divMainPage)'> <i class=\"mdi mdi-table\"> </button>",
+            "excludeFromExport": True,
+            "width":80,
+        }, 
+        {
+            "title" : "Macro Tracking",
+            "template": "<button class=\"btn btn-outline-info\" onclick='DisplayMacroTrackingForMilestoneInTimeLine(\"#: RecordID #\")'> <i class=\"mdi mdi-source-branch\"> </button>",
+            "excludeFromExport": True,
+            "width":80,
+        }, 
+        {
+            "title" : "Micro Tracking",
+            "template": "<button class=\"btn btn-outline-secondary\" onclick='DisplayMicroTrackingForMilestoneInGrid(\"#: RecordID #\",true,true,divMainPage)'> <i class=\"mdi mdi-table\"> </button>",
+            "excludeFromExport": True,
+            "width":80,
+        }, 
+        {
+            "title" : "Micro Tracking",
+            "template": "<button class=\"btn btn-outline-secondary\" onclick='DisplayMicroTrackingForMilestoneInTimeLine(\"#: RecordID #\",true,true,divMainPage)'> <i class=\"mdi mdi-source-branch\"> </button>",
+            "excludeFromExport": True,
+            "width":80,
+        },    
+        {
+            "field" : "CreatedOn",
+            "title" : "Milestone creation date",
+            "format" : "{0:dd/MM/yyyy}",
+            "width": 200,            
+        },
+        {
+            "field" : "Deadline",
+            "title" : "Milestone deadline",
+            "format" : "{0:dd/MM/yyyy}",
+            "width": 200,            
+        },
+        {
+            "field" : "Rating",
+            "title" : "Project rating",
+            "template": "<div id=\"ratingBar#: ID #\"></div>",
+            "width":200,
+        },
+        {
+            "field" : "Remarks",
+            "title" : "Milestone name",
+            "width":200,
+        },
+        {
+            "field" : "CreatedByName",
+            "title" : "Milestone Created by",
+            "width":200,
+        }        
+    ]
+    return resource
+
+def WorkHierarchyResourcesForAdmin(userId,projectId):        
+    resource = {};  
+    resource["ReadURL"] = "MilestoneAPI/DataRead/Admin/" + userId + "/" + projectId
+    resource["Fields"] = {
+            "ID" : {"type" : "string"},
+            "RecordID" : {"type" : "string"},
+            "Name" : {"type" : "string"},                
+            "Description" : {"type" : "string"},
+            "CreatedByName" : {"type" : "string"},
+            "AssignedToName" : {"type" : "string"},
+            "ParentID" : {"type" : "string"},
+            "CreatedBy" : {"type": "string"},
+            "CreatedOn": {"type": "date"},
+            "Deadline": {"type": "date"},
+            "IsStable": {"type": "string"},
+            "ReportingStatus": {"type": "string"},
+            "Remarks": {"type": "string"},
+            "Rating": {"type": "string"},
+        }
+
+    resource["Columns"] = [
+        {
+            "field" : "Name",
+            "title" : "Milestone Name",
+            "width": 200,
+        },
+        {
+            "field" : "Description",
+            "title" : "Milestone description",
+            "width":200,
+            "encoded": False,
+        },
+        {
+            "field" : "AssignedToName",
+            "title" : "Assigned to",
+            "width":200,
+        },        
+        {
+            "title" : "Goals",
+            "template": "<button class=\"btn btn-outline-primary\" onclick='LoadGoalsHierarchy(\"#: RecordID #\")'> <i class=\"mdi mdi-target\"></i> </button>",
+            "excludeFromExport": True,
+            "width":80,
+        },
+        {
+            "title" : "File submissions",
+            "template": "<button class=\"btn btn-outline-secondary\" onclick='LoadReadOnlyFileView(\"#: ID #\")'> <i class=\"mdi mdi-file-multiple\"></i> </button>",
+            "excludeFromExport": True,
+            "width":80,
+        },
+        {
+            "title" : "Macro Tracking",
+            "template": "<button class=\"btn btn-outline-info\" onclick='DisplayMacroTrackingForMilestoneInGrid(\"#: RecordID #\",true,true,divMainPage)'> <i class=\"mdi mdi-table\"> </button>",
+            "excludeFromExport": True,
+            "width":80,
+        }, 
+        {
+            "title" : "Macro Tracking",
+            "template": "<button class=\"btn btn-outline-info\" onclick='DisplayMacroTrackingForMilestoneInTimeLine(\"#: RecordID #\")'> <i class=\"mdi mdi-source-branch\"> </button>",
+            "excludeFromExport": True,
+            "width":80,
+        }, 
+        {
+            "title" : "Micro Tracking",
+            "template": "<button class=\"btn btn-outline-secondary\" onclick='DisplayMicroTrackingForMilestoneInGrid(\"#: RecordID #\",true,true,divMainPage)'> <i class=\"mdi mdi-table\"> </button>",
+            "excludeFromExport": True,
+            "width":80,
+        }, 
+        {
+            "title" : "Micro Tracking",
+            "template": "<button class=\"btn btn-outline-secondary\" onclick='DisplayMicroTrackingForMilestoneInTimeLine(\"#: RecordID #\",true,true,divMainPage)'> <i class=\"mdi mdi-source-branch\"> </button>",
+            "excludeFromExport": True,
+            "width":80,
+        },    
+        {
+            "field" : "CreatedOn",
+            "title" : "Milestone creation date",
+            "format" : "{0:dd/MM/yyyy}",
+            "width": 200,            
+        },
+        {
+            "field" : "Deadline",
+            "title" : "Milestone deadline",
+            "format" : "{0:dd/MM/yyyy}",
+            "width": 200,            
+        },
+        {
+            "field" : "Rating",
+            "title" : "Project rating",
+            "template": "<div id=\"ratingBar#: ID #\"></div>",
+            "width":200,
+        },
+        {
+            "field" : "Remarks",
+            "title" : "Milestone name",
+            "width":200,
+        },
+        {
+            "field" : "CreatedByName",
+            "title" : "Milestone Created by",
+            "width":200,
+        }        
+    ]
+    return resource
+
+
+@MilestoneAPI.route('/ReversionMilestone/<milestoneChangeID>', methods = ['GET'])
+@SessionManagement('Admin')
+def Reversion(milestoneChangeID):    
+    try:
+        response = Response()
+        userId = GetUserSessionDetails()["USER_ID"]
+        response.Data = MilestoneModule.Reversion(milestoneChangeID,userId)
+        response.WasSuccessful = True
+    except Exception as ex:
+        response.Message = str(ex)
+        response.WasSuccessful = False
+
+    return jsonify(response.__dict__)
+
+@MilestoneAPI.route('/RebootMilestone/<milestoneId>', methods = ['GET'])
+@SessionManagement('Admin')
+def Reboot(milestoneId):    
+    try:
+        response = Response()
+        userId = GetUserSessionDetails()["USER_ID"]
+        response.Data = MilestoneModule.Reboot(milestoneId,userId)
+        response.WasSuccessful = True
+    except Exception as ex:
+        response.Message = str(ex)
+        response.WasSuccessful = False
+
+    return jsonify(response.__dict__)
+
+@MilestoneAPI.route('/MilestoneReversionGridViewResource/<milestoneId>')
+@SessionManagement('Admin')
+def MilestoneReversionGridViewResource(milestoneId):
+    try:
+        response = Response()
+        resource = {}
+        resource["ReadURL"] = "MilestoneAPI/MacroTrackingGridViewRead/" + milestoneId
+        
+        resource["Fields"] = {
+                "ID" : {"type" : "string"},
+                "RecordID" : {"type" : "string"},
+                "Name" : {"type" : "string"},                
+                "Description" : {"type" : "string"},
+                "CreatedByName" : {"type" : "string"},
+                "CreatedBy" : {"type": "string"},
+                "CreatedOn": {"type": "date"},
+                "Deadline": {"type": "date"},
+                "IsStable": {"type": "string"},
+                "ReportingStatus": {"type": "string"},
+                "Remarks": {"type": "string"},
+                "Rating": {"type": "string"},
+            }
+
+        resource["Columns"] = [
+            {
+                "field" : "Name",
+                "title" : "Project Name",
+                "width": 200,
+            },
+            {
+                "field" : "ReportingStatus",
+                "title" : "Project status",
+                "width": 200,
+            },
+            {
+                "field" : "CreatedOn",
+                "title" : "Project creation date",
+                "format" : "{0:dd/MM/yyyy}",
+                "width": 200,            
+            },
+            {
+                "field" : "Deadline",
+                "title" : "Project deadline",
+                "format" : "{0:dd/MM/yyyy}",
+                "width": 200,            
+            },
+            {
+                "field" : "Description",
+                "title" : "Project description",
+                "width":200,
+                "encoded": False,
+            },
+            {
+                "title" : "File submissions",
+                "template": "<button class=\"btn btn-outline-secondary\" onclick='LoadReadOnlyFileView(\"#: ID #\",true,true,divMainPage)'> <i class=\"mdi mdi-file-multiple\"> </i></button>",
+                "excludeFromExport": True,
+                "width":80,
+            },
+            {
+                "title" : "Revert milestone",
+                "template": "<button class=\"btn btn-outline-danger\" onclick='ReversionMilestone(\"#: ID #\")'> <i class=\"mdi mdi-undo\"> </i></button>",
+                "excludeFromExport": True,
+                "width":80,
+            },
+            {
+                "field" : "Rating",
+                "title" : "Project rating",
+                "template": "<div id=\"ratingBar#: ID #\"></div>",
+                "width":200,
+            },
+            {
+                "field" : "Remarks",
+                "title" : "Project remarks",
+                "width":200,
+            },
+            {
+                "field" : "CreatedByName",
+                "title" : "Project Created by",
+                "width":200,
+            }        
+        ]
+        response.Data = resource
+        response.WasSuccessful = True
+    except Exception as ex:
+        response.message = str(ex)
+        response.WasSuccessful = False 
     return jsonify(response.__dict__)

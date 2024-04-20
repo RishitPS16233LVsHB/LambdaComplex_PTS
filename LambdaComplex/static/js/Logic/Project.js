@@ -262,10 +262,20 @@ function DisplayMicroTrackingForProjectInTimeLine(recordID = null) {
     }
 }
 
+
 function LoadMileStones(recordId = null) {
     try {
         if (IsNullOrEmpty(recordId)) return;
         LoadGridView("MilestoneAPI/Resource/" + recordId);
+    }
+    catch (ex) {
+        toastr.error("Error while loading list of milestones: " + ex.message);
+    }
+}
+function LoadMileStonesHierarchy(recordId = null) {
+    try {
+        if (IsNullOrEmpty(recordId)) return;
+        LoadGridView("MilestoneAPI/WorkHierarchyResource/" + recordId);
     }
     catch (ex) {
         toastr.error("Error while loading list of milestones: " + ex.message);
