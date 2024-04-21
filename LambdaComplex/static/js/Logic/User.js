@@ -65,20 +65,20 @@ function CreateUser() {
             AjaxPOSTRequest(url, userDetails,
                 function (response) {
                     if (response.WasSuccessful) {
-                        toastr.success("User details updated successfully");
+                        toastr.success("User details created successfully");
                     } else {
                         toastr.error(response.Message + " was the error");
                     }
                 },
                 function (error) {
-                    toastr.error("Error occurred while updating user details");
+                    toastr.error("Error occurred while created user details");
                 },
                 true, true, true
             );
         });
 
     } catch (e) {
-        toastr.error("Error occurred in UpdateUserDetail: " + e.message);
+        toastr.error("Error occurred in CreateUserDetail: " + e.message);
     }
 }
 

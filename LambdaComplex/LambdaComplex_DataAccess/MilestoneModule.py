@@ -1,4 +1,5 @@
 from LambdaComplex_DataAccess.DatabaseUtilities import DatabaseUtilities
+from LambdaComplex_DataAccess.WorkTimeLineModule import WorkTimeLineModule
 from LambdaComplex_Entities.Tables import Tables
 
 class MilestoneModule:
@@ -6,6 +7,7 @@ class MilestoneModule:
     def CreateMilestone(milestoneData):
         try:
             query = f"""
+            SET NOCOUNT ON;
             declare @InsertID table(ID varchar(36));
             declare @cngInsertID varchar(36);
             INSERT INTO {Tables.Milestone}
@@ -70,8 +72,12 @@ class MilestoneModule:
             ,cast('{milestoneData["MilestoneDeadLine"]}' as datetime)
             ,'{milestoneData["MilestoneRemarks"]}'
             ,{milestoneData["MilestoneRating"]});
+            
+            select @cngInsertID as [ID]
             """
-            DatabaseUtilities.ExecuteNonQuery(query)
+            insertedID = DatabaseUtilities.ExecuteScalar(query)
+            WorkTimeLineModule.CreateWorkTimeLineEntry(f"""Created a milestone named: {milestoneData["MilestoneName"]}""",milestoneData["UserID"],insertedID)
+
         except Exception:
             raise
 
@@ -112,6 +118,8 @@ class MilestoneModule:
             """
             
             DatabaseUtilities.ExecuteNonQuery(query)
+            WorkTimeLineModule.CreateWorkTimeLineEntry(f"""Updated a milestone named: {milestoneData["MilestoneName"]}""",milestoneData["UserID"],milestoneData["RecordID"])
+            
         except Exception:
             raise
 
@@ -152,13 +160,15 @@ class MilestoneModule:
             """
             
             DatabaseUtilities.ExecuteNonQuery(query)
+            WorkTimeLineModule.CreateWorkTimeLineEntry(f"""Applied for change request a milestone named: {milestoneData["MilestoneName"]}""",milestoneData["UserID"],milestoneData["RecordID"])
+            return 1
         except Exception:
             raise
 
     @staticmethod
     def ChildPGRUpdateMilestone(milestoneData):       
         try:
-            query = f"""
+            query = f"""          
                 INSERT INTO {Tables.MilestoneChanges}
                 ([RecordID]
                 ,[Name]
@@ -173,7 +183,7 @@ class MilestoneModule:
                 ,[ReportingStatus]
                 ,[Deadline]
                 ,[Remarks]
-                ,[Rating])
+                ,[Rating])             
                  VALUES
                 ('{milestoneData["RecordID"]}'
                 ,'{milestoneData["MilestoneName"]}'
@@ -192,8 +202,12 @@ class MilestoneModule:
             """
             
             DatabaseUtilities.ExecuteNonQuery(query)
+            WorkTimeLineModule.CreateWorkTimeLineEntry(f"""Applied for progress report a milestone named: {milestoneData["MilestoneName"]}""",milestoneData["UserID"],milestoneData["RecordID"])
+            return 1
         except Exception:
             raise
+
+
 
     @staticmethod
     def GetLatestMilestonesForAdmins(projectId,userId):
@@ -395,8 +409,9 @@ class MilestoneModule:
         except Exception:
             raise
 
+
     @staticmethod
-    def AbandonMilestone(milestoneId,userId):
+    def AbandonMilestone(milestoneChangesId,userId):
         try:
             query = f"""
             INSERT INTO {Tables.MilestoneChanges}
@@ -421,7 +436,7 @@ class MilestoneModule:
                 )
             SELECT 
             TOP 1
-                '{milestoneId}' as [ID]
+                '{milestoneChangesId}' as [ID]
                 ,[RecordID]
                 ,[Name]
                 ,[Description]
@@ -439,14 +454,22 @@ class MilestoneModule:
                 ,getdate() as [CreatedOn]
                 ,getdate() as [ModifiedOn]
             FROM {Tables.MilestoneChanges}
-            WHERE ID = '{milestoneId}' AND [IsDeleted] = 0
+            WHERE ID = '{milestoneChangesId}' AND [IsDeleted] = 0
             """
-            return DatabaseUtilities.ExecuteNonQuery(query)
+            DatabaseUtilities.ExecuteNonQuery(query)
+            
+            query = f"""SELECT TOP(1) [RecordID][Name] FROM {Tables.MilestoneChanges} WHERE [RecordID] = '{milestoneChangesId}' AND [IsDeleted] = 0;"""
+            record = DatabaseUtilities.GetListOf(query)[0]
+            recordName = record["Name"]
+            milestoneId = record["RecordID"]
+            WorkTimeLineModule.CreateWorkTimeLineEntry(f"""Abandoned a milestone named: {recordName}""",userId,milestoneId)
+
+            return 1
         except Exception:
             raise
     
     @staticmethod
-    def FinishMilestone(milestoneId,userId):
+    def FinishMilestone(milestoneChangesId,userId):
         try:
             query = f"""
             INSERT INTO {Tables.MilestoneChanges}
@@ -471,7 +494,7 @@ class MilestoneModule:
                 )
             SELECT 
             TOP 1
-                '{milestoneId}' as [ID]
+                '{milestoneChangesId}' as [ID]
                 ,[RecordID]
                 ,[Name]
                 ,[Description]
@@ -482,21 +505,29 @@ class MilestoneModule:
                 ,'{userId}' as [ModifiedBy]
                 ,1 as [IsStable]
                 ,1 as [Version] 
-                ,'ACPT' as [ReportingStatus]
+                ,'CMP' as [ReportingStatus]
                 ,[Deadline]
                 ,[Remarks]
                 ,[Rating]
                 ,getdate() as [CreatedOn]
                 ,getdate() as [ModifiedOn]
             FROM {Tables.MilestoneChanges}
-            WHERE ID = '{milestoneId}' AND [IsDeleted] = 0
+            WHERE ID = '{milestoneChangesId}' AND [IsDeleted] = 0
             """
-            return DatabaseUtilities.ExecuteNonQuery(query)
+            DatabaseUtilities.ExecuteNonQuery(query)
+
+            query = f"""SELECT TOP(1) [RecordID][Name] FROM {Tables.MilestoneChanges} WHERE [RecordID] = '{milestoneChangesId}' AND [IsDeleted] = 0;"""
+            record = DatabaseUtilities.GetListOf(query)[0]
+            recordName = record["Name"]
+            milestoneId = record["RecordID"]
+            WorkTimeLineModule.CreateWorkTimeLineEntry(f"""Completed a milestone named: {recordName}""",userId,milestoneId)
+
+            return 1
         except Exception:
             raise
 
     @staticmethod
-    def AcceptChangesMilestone(milestoneId,userId):
+    def AcceptChangesMilestone(milestoneChangesId,userId):
         try:
             query = f"""
             UPDATE {Tables.MilestoneChanges} SET           
@@ -504,7 +535,7 @@ class MilestoneModule:
             [CreatedOn] = [CreatedOn],
             [RunningStatus] = 0,
             [IsStable] = 0
-            WHERE [Id] = '{milestoneId}'
+            WHERE [Id] = '{milestoneChangesId}'
             """            
             DatabaseUtilities.ExecuteNonQuery(query)
 
@@ -532,7 +563,7 @@ class MilestoneModule:
                 )
             SELECT 
             TOP 1
-                '{milestoneId}' as [ID]
+                '{milestoneChangesId}' as [ID]
                 ,[RecordID]
                 ,[Name]
                 ,[Description]
@@ -550,7 +581,7 @@ class MilestoneModule:
                 ,getdate() as [CreatedOn]
                 ,getdate() as [ModifiedOn]
             FROM {Tables.MilestoneChanges}
-            WHERE ID = '{milestoneId}' AND [IsDeleted] = 0
+            WHERE ID = '{milestoneChangesId}' AND [IsDeleted] = 0
             """
             DatabaseUtilities.ExecuteNonQuery(query)
 
@@ -578,7 +609,7 @@ class MilestoneModule:
                 )
             SELECT 
             TOP 1
-                '{milestoneId}' as [ID]
+                '{milestoneChangesId}' as [ID]
                 ,[RecordID]
                 ,[Name]
                 ,[Description]
@@ -596,16 +627,22 @@ class MilestoneModule:
                 ,getdate() as [CreatedOn]
                 ,getdate() as [ModifiedOn]
             FROM {Tables.MilestoneChanges}
-            WHERE ID = '{milestoneId}' AND [IsDeleted] = 0
+            WHERE ID = '{milestoneChangesId}' AND [IsDeleted] = 0
             """
             DatabaseUtilities.ExecuteNonQuery(query)
+
+            query = f"""SELECT TOP(1) [RecordID][Name] FROM {Tables.MilestoneChanges} WHERE [RecordID] = '{milestoneChangesId}' AND [IsDeleted] = 0;"""
+            record = DatabaseUtilities.GetListOf(query)[0]
+            recordName = record["Name"]
+            milestoneId = record["RecordID"]
+            WorkTimeLineModule.CreateWorkTimeLineEntry(f"""Accepted changes for a milestone named: {recordName}""",userId,milestoneId)
 
             return 1
         except Exception:
             raise
 
     @staticmethod
-    def RejectChangesMilestone(milestoneId,userId):
+    def RejectChangesMilestone(milestoneChangesId,userId):
         try:
             query = f"""
             UPDATE {Tables.MilestoneChanges} SET           
@@ -641,7 +678,7 @@ class MilestoneModule:
                 )
             SELECT
             TOP 1 
-                '{milestoneId}' as [ID]
+                '{milestoneChangesId}' as [ID]
                 ,[RecordID]
                 ,[Name]
                 ,[Description]
@@ -659,11 +696,20 @@ class MilestoneModule:
                 ,getdate() as [CreatedOn]
                 ,getdate() as [ModifiedOn]
             FROM {Tables.MilestoneChanges}
-            WHERE ID = '{milestoneId}' AND [IsDeleted] = 0
+            WHERE ID = '{milestoneChangesId}' AND [IsDeleted] = 0
             """
-            return DatabaseUtilities.ExecuteNonQuery(query)
+            DatabaseUtilities.ExecuteNonQuery(query)
+            
+            query = f"""SELECT TOP(1) [RecordID][Name] FROM {Tables.MilestoneChanges} WHERE [RecordID] = '{milestoneChangesId}' AND [IsDeleted] = 0;"""
+            record = DatabaseUtilities.GetListOf(query)[0]
+            recordName = record["Name"]
+            milestoneId = record["RecordID"]
+            WorkTimeLineModule.CreateWorkTimeLineEntry(f"Rejected changes milestone named: {recordName}",userId,milestoneId)
+            
+            return 1
         except Exception:
             raise
+
 
 
     @staticmethod
@@ -782,6 +828,8 @@ class MilestoneModule:
         except Exception:
             raise
 
+
+
     @staticmethod
     def Reversion(milestoneChangeId,userId):
         try:
@@ -875,6 +923,14 @@ class MilestoneModule:
             WHERE ID = '{milestoneChangeId}' AND [IsDeleted] = 0
             """
             DatabaseUtilities.ExecuteNonQuery(query)
+
+            query = f"""SELECT TOP(1) [RecordID][Name] FROM {Tables.MilestoneChanges} WHERE [RecordID] = '{milestoneChangeId}' AND [IsDeleted] = 0;"""
+            record = DatabaseUtilities.GetListOf(query)[0]
+            recordName = record["Name"]
+            milestoneId = record["RecordID"]
+            WorkTimeLineModule.CreateWorkTimeLineEntry(f"""Reverted a milestone named: {recordName}""",userId,milestoneId)
+
+            return 1
         except Exception:
             raise
 
@@ -977,6 +1033,13 @@ class MilestoneModule:
                 [ReportingStatus] = 'INITIAL'
             """
             DatabaseUtilities.ExecuteNonQuery(query)
+
+            query = f"""SELECT TOP(1) [Name] FROM {Tables.Milestone} WHERE [ID] = '{milestoneId}' AND [IsDeleted] = 0;"""
+            record = DatabaseUtilities.GetListOf(query)[0]
+            recordName = record["Name"]
+            WorkTimeLineModule.CreateWorkTimeLineEntry(f"""Rebooted a milestone named: {recordName}""",userId,milestoneId)
+
+            return 1
         except Exception:
             raise
     

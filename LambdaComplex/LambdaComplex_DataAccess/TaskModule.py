@@ -1,4 +1,5 @@
 from LambdaComplex_DataAccess.DatabaseUtilities import DatabaseUtilities
+from LambdaComplex_DataAccess.WorkTimeLineModule import WorkTimeLineModule
 from LambdaComplex_Entities.Tables import Tables
 
 class TaskModule:
@@ -6,6 +7,7 @@ class TaskModule:
     def CreateTask(taskData):
         try:
             query = f"""
+            SET NOCOUNT ON;
             declare @InsertID table(ID varchar(36));
             declare @cngInsertID varchar(36);
             INSERT INTO {Tables.Task}
@@ -70,8 +72,12 @@ class TaskModule:
             ,cast('{taskData["TaskDeadLine"]}' as datetime)
             ,'{taskData["TaskRemarks"]}'
             ,{taskData["TaskRating"]});
+
+            SELECT @cngInsertID as [ID]
             """
-            DatabaseUtilities.ExecuteNonQuery(query)
+            insertID = DatabaseUtilities.ExecuteScalar(query)
+            WorkTimeLineModule.CreateWorkTimeLineEntry(f"""Created a task named: {taskData["TaskName"]}""",taskData["UserID"],insertID)
+            return 1
         except Exception:
             raise
 
@@ -112,6 +118,10 @@ class TaskModule:
             """
             
             DatabaseUtilities.ExecuteNonQuery(query)
+
+            WorkTimeLineModule.CreateWorkTimeLineEntry(f"""Updated a task named: {taskData["TaskName"]}""",taskData["UserID"],taskData["RecordID"])
+
+            return 
         except Exception:
             raise
 
@@ -152,6 +162,10 @@ class TaskModule:
             """
             
             DatabaseUtilities.ExecuteNonQuery(query)
+
+            WorkTimeLineModule.CreateWorkTimeLineEntry(f"""Applied for change request for task named: {taskData["TaskName"]}""",taskData["UserID"],taskData["RecordID"])
+
+            return 1
         except Exception:
             raise
 
@@ -192,6 +206,10 @@ class TaskModule:
             """
             
             DatabaseUtilities.ExecuteNonQuery(query)
+
+            WorkTimeLineModule.CreateWorkTimeLineEntry(f"""Applied for progress report for task named: {taskData["TaskName"]}""",taskData["UserID"],taskData["RecordID"])
+            
+            return 1
         except Exception:
             raise
 
@@ -426,7 +444,16 @@ class TaskModule:
             FROM {Tables.TaskChanges}
             WHERE ID = '{taskId}' AND [IsDeleted] = 0
             """
-            return DatabaseUtilities.ExecuteNonQuery(query)
+            DatabaseUtilities.ExecuteNonQuery(query)
+            
+            query = f"""SELECT TOP(1) [RecordID][Name] FROM {Tables.TaskChanges} WHERE [RecordID] = '{taskId}' AND [IsDeleted] = 0;"""
+            record = DatabaseUtilities.GetListOf(query)[0]
+            recordName = record["Name"]
+            taskId = record["RecordID"]
+            WorkTimeLineModule.CreateWorkTimeLineEntry(f"""Abandoned a task named: {recordName}""",userId,taskId)
+
+            return 1
+
         except Exception:
             raise
     
@@ -477,12 +504,20 @@ class TaskModule:
             FROM {Tables.TaskChanges}
             WHERE ID = '{taskId}' AND [IsDeleted] = 0
             """
-            return DatabaseUtilities.ExecuteNonQuery(query)
+            DatabaseUtilities.ExecuteNonQuery(query)
+
+            query = f"""SELECT TOP(1) [RecordID][Name] FROM {Tables.TaskChanges} WHERE [RecordID] = '{taskId}' AND [IsDeleted] = 0;"""
+            record = DatabaseUtilities.GetListOf(query)[0]
+            recordName = record["Name"]
+            taskId = record["RecordID"]
+            WorkTimeLineModule.CreateWorkTimeLineEntry(f"""Completed a task named: {recordName}""",userId,taskId)
+
+            return 1
         except Exception:
             raise
 
     @staticmethod
-    def AcceptChangesTask(taskId,userId):
+    def AcceptChangesTask(taskChangeId,userId):
         try:
             query = f"""
             UPDATE {Tables.TaskChanges} SET           
@@ -490,7 +525,7 @@ class TaskModule:
             [CreatedOn] = [CreatedOn],
             [RunningStatus] = 0,
             [IsStable] = 0
-            WHERE [Id] = '{taskId}'
+            WHERE [Id] = '{taskChangeId}'
             """            
             DatabaseUtilities.ExecuteNonQuery(query)
 
@@ -518,7 +553,7 @@ class TaskModule:
                 )
             SELECT 
             TOP 1
-                '{taskId}' as [ID]
+                '{taskChangeId}' as [ID]
                 ,[RecordID]
                 ,[Name]
                 ,[Description]
@@ -536,7 +571,7 @@ class TaskModule:
                 ,getdate() as [CreatedOn]
                 ,getdate() as [ModifiedOn]
             FROM {Tables.TaskChanges}
-            WHERE ID = '{taskId}' AND [IsDeleted] = 0
+            WHERE ID = '{taskChangeId}' AND [IsDeleted] = 0
             """
             DatabaseUtilities.ExecuteNonQuery(query)
 
@@ -564,7 +599,7 @@ class TaskModule:
                 )
             SELECT 
             TOP 1
-                '{taskId}' as [ID]
+                '{taskChangeId}' as [ID]
                 ,[RecordID]
                 ,[Name]
                 ,[Description]
@@ -582,16 +617,22 @@ class TaskModule:
                 ,getdate() as [CreatedOn]
                 ,getdate() as [ModifiedOn]
             FROM {Tables.TaskChanges}
-            WHERE ID = '{taskId}' AND [IsDeleted] = 0
+            WHERE ID = '{taskChangeId}' AND [IsDeleted] = 0
             """
             DatabaseUtilities.ExecuteNonQuery(query)
+
+            query = f"""SELECT TOP(1) [RecordID][Name] FROM {Tables.TaskChanges} WHERE [ID] = '{taskChangeId}' AND [IsDeleted] = 0;"""
+            record = DatabaseUtilities.GetListOf(query)[0]
+            recordName = record["Name"]
+            taskId = record["RecordID"]
+            WorkTimeLineModule.CreateWorkTimeLineEntry(f"""Accepted changes for goal named: {recordName}""",userId,taskId)
 
             return 1
         except Exception:
             raise
 
     @staticmethod
-    def RejectChangesTask(taskId,userId):
+    def RejectChangesTask(taskChangeId,userId):
         try:
             query = f"""
             UPDATE {Tables.TaskChanges} SET           
@@ -627,7 +668,7 @@ class TaskModule:
                 )
             SELECT
             TOP 1 
-                '{taskId}' as [ID]
+                '{taskChangeId}' as [ID]
                 ,[RecordID]
                 ,[Name]
                 ,[Description]
@@ -645,9 +686,17 @@ class TaskModule:
                 ,getdate() as [CreatedOn]
                 ,getdate() as [ModifiedOn]
             FROM {Tables.TaskChanges}
-            WHERE ID = '{taskId}' AND [IsDeleted] = 0
+            WHERE ID = '{taskChangeId}' AND [IsDeleted] = 0
             """
-            return DatabaseUtilities.ExecuteNonQuery(query)
+            DatabaseUtilities.ExecuteNonQuery(query)
+
+            query = f"""SELECT TOP(1) [RecordID][Name] FROM {Tables.TaskChanges} WHERE [ID] = '{taskChangeId}' AND [IsDeleted] = 0;"""
+            record = DatabaseUtilities.GetListOf(query)[0]
+            recordName = record["Name"]
+            taskId = record["RecordID"]
+            WorkTimeLineModule.CreateWorkTimeLineEntry(f"""Accepted changes for goal named: {recordName}""",userId,taskId)
+            
+            return 1
         except Exception:
             raise
 
@@ -893,6 +942,14 @@ class TaskModule:
             WHERE ID = '{taskChangeId}' AND [IsDeleted] = 0
             """
             DatabaseUtilities.ExecuteNonQuery(query)
+
+            query = f"""SELECT TOP(1) [RecordID][Name] FROM {Tables.TaskChanges} WHERE [ID] = '{taskChangeId}' AND [IsDeleted] = 0;"""
+            record = DatabaseUtilities.GetListOf(query)[0]
+            recordName = record["Name"]
+            taskId = record["RecordID"]
+            WorkTimeLineModule.CreateWorkTimeLineEntry(f"""Reverted a goal named: {recordName}""",userId,taskId)
+
+            return 1
         except Exception:
             raise
 
@@ -995,6 +1052,13 @@ class TaskModule:
                 [ReportingStatus] = 'INITIAL'
             """
             DatabaseUtilities.ExecuteNonQuery(query)
+
+            query = f"""SELECT TOP(1) [Name] FROM {Tables.TaskChanges} WHERE [RecordID] = '{taskId}' AND [IsDeleted] = 0;"""
+            record = DatabaseUtilities.GetListOf(query)[0]
+            recordName = record["Name"]
+            WorkTimeLineModule.CreateWorkTimeLineEntry(f"""Rebooted a task named: {recordName}""",userId,taskId)
+
+            return 1
         except Exception:
             raise
     

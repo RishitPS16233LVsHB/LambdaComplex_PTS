@@ -1,11 +1,13 @@
 from LambdaComplex_DataAccess.DatabaseUtilities import DatabaseUtilities
 from LambdaComplex_Entities.Tables import Tables
+from LambdaComplex_DataAccess.WorkTimeLineModule import WorkTimeLineModule
 
 class GoalModule:
     @staticmethod
     def CreateGoal(goalData):
         try:
             query = f"""
+            SET NOCOUNT ON;
             declare @InsertID table(ID varchar(36));
             declare @cngInsertID varchar(36);
             INSERT INTO {Tables.Goal}
@@ -70,8 +72,13 @@ class GoalModule:
             ,{goalData["GoalRating"]}
             ,'{goalData["ParentID"]}'
             ,'{goalData["AssignedTo"]}');
+
+            SELECT @cngInsertID AS [ID];
             """
-            DatabaseUtilities.ExecuteNonQuery(query)
+            insertedID = DatabaseUtilities.ExecuteScalar(query)
+            WorkTimeLineModule.CreateWorkTimeLineEntry(f"""Created a goal named: {goalData["GoalName"]}""",goalData["UserID"],insertedID)
+            
+            return 1
         except Exception:
             raise
 
@@ -112,6 +119,8 @@ class GoalModule:
             """
             
             DatabaseUtilities.ExecuteNonQuery(query)
+            WorkTimeLineModule.CreateWorkTimeLineEntry(f"""Updated a goal named: {goalData["GoalName"]}""",goalData["UserID"],goalData["RecordID"])
+            return 1
         except Exception:
             raise
 
@@ -337,7 +346,15 @@ class GoalModule:
                         FROM {Tables.GoalChanges}
                         WHERE ID = '{goalChangeId}' AND [IsDeleted] = 0
             """
-            return DatabaseUtilities.ExecuteNonQuery(query)
+            DatabaseUtilities.ExecuteNonQuery(query)
+            
+            query = f"""SELECT TOP(1) [RecordID][Name] FROM {Tables.GoalChanges} WHERE [ID] = '{goalChangeId}' AND [IsDeleted] = 0;"""
+            record = DatabaseUtilities.GetListOf(query)[0]
+            recordName = record["Name"]
+            goalId = record["RecordID"]
+            WorkTimeLineModule.CreateWorkTimeLineEntry(f"""Abandoned a goal named: {recordName}""",userId,goalId)
+
+            return 1
         except Exception:
             raise
     
@@ -387,7 +404,15 @@ class GoalModule:
                         FROM {Tables.GoalChanges}
                         WHERE ID = '{goalChangeId}' AND [IsDeleted] = 0
             """
-            return DatabaseUtilities.ExecuteNonQuery(query)
+            DatabaseUtilities.ExecuteNonQuery(query)
+
+            query = f"""SELECT TOP(1) [RecordID][Name] FROM {Tables.GoalChanges} WHERE [ID] = '{goalChangeId}' AND [IsDeleted] = 0;"""
+            record = DatabaseUtilities.GetListOf(query)[0]
+            recordName = record["Name"]
+            goalId = record["RecordID"]
+            WorkTimeLineModule.CreateWorkTimeLineEntry(f"""Completed a goal named: {recordName}""",userId,goalId)
+
+            return 1
         except Exception:
             raise
 
@@ -585,6 +610,14 @@ class GoalModule:
             WHERE ID = '{goalChangeId}' AND [IsDeleted] = 0
             """
             DatabaseUtilities.ExecuteNonQuery(query)
+
+            query = f"""SELECT TOP(1) [RecordID][Name] FROM {Tables.GoalChanges} WHERE [ID] = '{goalChangeId}' AND [IsDeleted] = 0;"""
+            record = DatabaseUtilities.GetListOf(query)[0]
+            recordName = record["Name"]
+            goalId = record["RecordID"]
+            WorkTimeLineModule.CreateWorkTimeLineEntry(f"""Reverted a goal named: {recordName}""",userId,goalId)
+
+            return 1
         except Exception:
             raise
 
@@ -687,6 +720,13 @@ class GoalModule:
                 [ReportingStatus] = 'INITIAL'
             """
             DatabaseUtilities.ExecuteNonQuery(query)
+
+            query = f"""SELECT TOP(1) [Name] FROM {Tables.GoalChanges} WHERE [RecordID] = '{goalId}' AND [IsDeleted] = 0;"""
+            record = DatabaseUtilities.GetListOf(query)[0]
+            recordName = record["Name"]
+            WorkTimeLineModule.CreateWorkTimeLineEntry(f"""Rebooted a goal named: {recordName}""",userId,goalId)
+
+            return 1
         except Exception:
             raise
     

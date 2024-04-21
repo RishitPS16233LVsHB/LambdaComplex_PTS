@@ -443,14 +443,20 @@ function LoadReadOnlyFileView(recordId, isAsync, isLoader, element = "#divMainPa
  * @returns 
  */
 function ValidateForm() {
-    var validator = $("#FORM").kendoValidator().data("kendoValidator");
+
+    var kendoValidate = false;
+    try {
+        var validator = $("#FORM").kendoValidator().data("kendoValidator");
+        kendoValidate = validator.validate()
+    }
+    catch (ex) { }
 
     var form = document.getElementById("FORM");
     if (!form.checkValidity()) {
         form.reportValidity();
     }
 
-    return validator.validate() || form.checkValidity();
+    return form.checkValidity();
 }
 
 /**

@@ -2,6 +2,7 @@ import os
 from LambdaComplex_DataAccess.DatabaseUtilities import DatabaseUtilities
 from LambdaComplex_Entities import Credentials
 from LambdaComplex_Entities.Tables import Tables
+from LambdaComplex_DataAccess.WorkTimeLineModule import WorkTimeLineModule
 
 class FileUploadModule:
     @staticmethod
@@ -38,6 +39,9 @@ class FileUploadModule:
                 """
                 fileName = DatabaseUtilities.ExecuteScalar(query)
                 f['file'].save(Credentials.RootPath.replace('/','\\') + "\\static\\Uploads\\" + fileName)
+
+                totalFiles = len(fileList)
+                WorkTimeLineModule.CreateWorkTimeLineEntry(f"""Uploaded {totalFiles} file(s)""",userId,recordId)
         except Exception:
             raise
 
@@ -56,6 +60,7 @@ class FileUploadModule:
                             [ID] = '{id}' and [IsDeleted] = 0
                             """
             DatabaseUtilities.ExecuteNonQuery(update_query)
+            WorkTimeLineModule.CreateWorkTimeLineEntry(f"""Removed a file""",userId,id)
         except Exception:
             raise
 

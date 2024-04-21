@@ -1,11 +1,13 @@
 from LambdaComplex_DataAccess.DatabaseUtilities import DatabaseUtilities
 from LambdaComplex_Entities.Tables import Tables
+from LambdaComplex_DataAccess.WorkTimeLineModule import WorkTimeLineModule
 
 class ProjectModule:
     @staticmethod
     def CreateProject(projectData):
         try:
             query = f"""
+            SET NOCOUNT ON;
             declare @InsertID table(ID varchar(36));
             declare @cngInsertID varchar(36);
             INSERT INTO {Tables.Project}
@@ -62,8 +64,11 @@ class ProjectModule:
             ,cast('{projectData["ProjectDeadLine"]}' as datetime)
             ,'{projectData["ProjectRemarks"]}'
             ,{projectData["ProjectRating"]});
+
+            SELECT @cngInsertID as [ID];
             """
-            DatabaseUtilities.ExecuteNonQuery(query)
+            insertedID = DatabaseUtilities.ExecuteScalar(query)
+            WorkTimeLineModule.CreateWorkTimeLineEntry(f"""Created a project named: {projectData["ProjectName"]}""",projectData["UserID"],insertedID)
         except Exception:
             raise
 
@@ -100,6 +105,7 @@ class ProjectModule:
             """
             
             DatabaseUtilities.ExecuteNonQuery(query)
+            WorkTimeLineModule.CreateWorkTimeLineEntry(f"""Updated a project named: {projectData["ProjectName"]}""",projectData["UserID"],projectData["RecordID"])
         except Exception:
             raise
 
@@ -334,7 +340,15 @@ class ProjectModule:
             FROM {Tables.ProjectChanges}
             WHERE ID = '{projectChangeId}' AND [IsDeleted] = 0
             """
-            return DatabaseUtilities.ExecuteNonQuery(query)
+            DatabaseUtilities.ExecuteNonQuery(query)
+            
+            query = f"""SELECT TOP(1) [RecordID],[Name] FROM {Tables.ProjectChanges} WHERE [ID] = '{projectChangeId}' AND [IsDeleted] = 0;"""
+            record = DatabaseUtilities.GetListOf(query)[0]
+            recordID = record["RecordID"]
+            recordName = record["Name"]
+            WorkTimeLineModule.CreateWorkTimeLineEntry(f"""Abandoned a project named: {recordName}""",userId,recordID)
+            
+            return 1
         except Exception:
             raise
     
@@ -384,7 +398,15 @@ class ProjectModule:
             FROM {Tables.ProjectChanges}
             WHERE ID = '{projectChangeId}' AND [IsDeleted] = 0
             """
-            return DatabaseUtilities.ExecuteNonQuery(query)
+            DatabaseUtilities.ExecuteNonQuery(query)
+
+            query = f"""SELECT TOP(1) [RecordID],[Name] FROM {Tables.ProjectChanges} WHERE [ID] = '{projectChangeId}' AND [IsDeleted] = 0;"""
+            record = DatabaseUtilities.GetListOf(query)[0]
+            recordID = record["RecordID"]
+            recordName = record["Name"]
+            WorkTimeLineModule.CreateWorkTimeLineEntry(f"""Completed a project named: {recordName}""",userId,recordID)
+
+            return 1
         except Exception:
             raise
 
@@ -596,6 +618,14 @@ class ProjectModule:
             WHERE ID = '{projectChangeId}' AND [IsDeleted] = 0
             """
             DatabaseUtilities.ExecuteNonQuery(query)
+            
+            query = f"""SELECT TOP(1) [RecordID],[Name] FROM {Tables.ProjectChanges} WHERE [ID] = '{projectChangeId}' AND [IsDeleted] = 0;"""
+            record = DatabaseUtilities.GetListOf(query)[0]
+            recordID = record["RecordID"]
+            recordName = record["Name"]
+            WorkTimeLineModule.CreateWorkTimeLineEntry(f"""Reverted a project named: {recordName}""",userId,recordID)
+
+            return 1
         except Exception:
             raise
 
@@ -698,6 +728,13 @@ class ProjectModule:
                 [ReportingStatus] = 'INITIAL'
             """
             DatabaseUtilities.ExecuteNonQuery(query)
+
+            query = f"""SELECT TOP(1) [Name] FROM {Tables.Project} WHERE [ID] = '{projectId}' AND [IsDeleted] = 0;"""
+            record = DatabaseUtilities.GetListOf(query)[0]
+            recordName = record["Name"]
+            WorkTimeLineModule.CreateWorkTimeLineEntry(f"Rebooted a project named: {recordName}",userId,projectId)
+
+            return 1
         except Exception:
             raise
     
