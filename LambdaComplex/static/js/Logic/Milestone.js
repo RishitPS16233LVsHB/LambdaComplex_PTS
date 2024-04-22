@@ -346,7 +346,34 @@ function AbandonMilestone(milestoneChangeId = null) {
         });
     }
     catch (ex) {
-        toastr.error("Error while finishing milestone: " + ex.message);
+        toastr.error("Error while abandoning milestone: " + ex.message);
+    }
+}
+function ReviveMilestone(milestoneChangeId = null) {
+    try {
+        if (IsNullOrEmpty(milestoneChangeId)) return;
+        ConfirmationAlert('Milestone', 'Do you really want to revive this milestone?', function (value) {
+            var url = 'MilestoneAPI/ReviveMilestone/' + milestoneChangeId
+            AjaxGETRequest(
+                url,
+                function (response) {
+                    response = SafeJSONparse(response);
+                    if (response.WasSuccessful) {
+                        AlertWarning("Revive milestone....");
+                        RefreshDataView();
+                    }
+                    else {
+                        toastr.error("Alas! Error reviving milestone: " + response.Message);
+                    }
+                },
+                function (error) {
+
+                }, true, true, true
+            );
+        });
+    }
+    catch (ex) {
+        toastr.error("Error while reviving milestone: " + ex.message);
     }
 }
 

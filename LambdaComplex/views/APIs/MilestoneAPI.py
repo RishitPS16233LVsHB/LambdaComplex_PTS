@@ -289,6 +289,12 @@ def ResourcesForAdmin(userId,projectId):
                 "width":80,
             },
             {
+                "title" : "Revive",
+                "template": "# if(data.ReportingStatus == 'ABD' || data.ReportingStatus == 'CMP') { # <button class=\"btn btn-outline-success\" onclick='ReviveMilestone(\"#: ID #\")'> <i class=\"mdi mdi-book-open-page-variant\"></i> </button> # } #",
+                "excludeFromExport": True,
+                "width":80,
+            },            
+            {
                 "title" : "Reboot",
                 "template": "# if(data.ReportingStatus != 'ABD' && data.ReportingStatus != 'CMP') { # <button class=\"btn btn-outline-danger\" onclick='RebootMilestone(\"#: RecordID #\")'> <i class=\"mdi mdi-backup-restore\"></i> </button> # } else { var color = (ReportingStatus == 'CMP') ? 'green' : 'red' # <p style=\"color:#: color #\"> #: data.ReportingStatus #</p> # } #",
                 "excludeFromExport": True,
@@ -509,7 +515,7 @@ def FinishMilestone(milestoneChangeId):
 
     return jsonify(response.__dict__)
 
-@MilestoneAPI.route('/AbandonAbandon/<milestoneChangeId>', methods = ['GET'])
+@MilestoneAPI.route('/AbandonMilestone/<milestoneChangeId>', methods = ['GET'])
 @SessionManagement('Admin')
 def AbandonMilestone(milestoneChangeId):    
     try:
@@ -522,6 +528,21 @@ def AbandonMilestone(milestoneChangeId):
         response.WasSuccessful = False
 
     return jsonify(response.__dict__)
+
+@MilestoneAPI.route('/ReviveMilestone/<milestoneChangeId>', methods = ['GET'])
+@SessionManagement('Admin')
+def ReviveMilestone(milestoneChangeId):    
+    try:
+        response = Response()
+        userId = GetUserSessionDetails()["USER_ID"]
+        response.Data = MilestoneModule.ReviveMilestone(milestoneChangeId,userId)
+        response.WasSuccessful = True
+    except Exception as ex:
+        response.Message = str(ex)
+        response.WasSuccessful = False
+
+    return jsonify(response.__dict__)
+
 
 @MilestoneAPI.route('/AcceptChangesMilestone/<milestoneChangeId>', methods = ['GET'])
 @SessionManagement('Admin')

@@ -281,6 +281,12 @@ def ResourcesForLead(userId,goalId):
                 "width": 200,
             },
             {
+                "title" : "Revive",
+                "template": "# if(data.ReportingStatus == 'ABD' || data.ReportingStatus == 'CMP') { # <button class=\"btn btn-outline-success\" onclick='ReviveTask(\"#: ID #\")'> <i class=\"mdi mdi-book-open-page-variant\"></i> </button> # } #",
+                "excludeFromExport": True,
+                "width":80,
+            },
+            {
                 "title" : "Reboot",
                 "template": "# if(data.ReportingStatus != 'ABD' && data.ReportingStatus != 'CMP') { # <button class=\"btn btn-outline-danger\" onclick='RebootTask(\"#: RecordID #\")'> <i class=\"mdi mdi-backup-restore\"></i> </button> # } else { var color = (ReportingStatus == 'CMP') ? 'green' : 'red' # <p style=\"color:#: color #\"> #: data.ReportingStatus #</p> # } #",
                 "excludeFromExport": True,
@@ -504,13 +510,27 @@ def FinishTask(taskChangeId):
 
     return jsonify(response.__dict__)
 
-@TaskAPI.route('/AbandonAbandon/<taskChangeId>', methods = ['GET'])
+@TaskAPI.route('/AbandonTask/<taskChangeId>', methods = ['GET'])
 @SessionManagement('Lead')
 def AbandonTask(taskChangeId):    
     try:
         response = Response()
         userId = GetUserSessionDetails()["USER_ID"]
         response.Data = TaskModule.AbandonTask(taskChangeId,userId)
+        response.WasSuccessful = True
+    except Exception as ex:
+        response.Message = str(ex)
+        response.WasSuccessful = False
+
+    return jsonify(response.__dict__)
+
+@TaskAPI.route('/ReviveTask/<taskChangeId>', methods = ['GET'])
+@SessionManagement('Lead')
+def ReviveTask(taskChangeId):    
+    try:
+        response = Response()
+        userId = GetUserSessionDetails()["USER_ID"]
+        response.Data = TaskModule.ReviveTask(taskChangeId,userId)
         response.WasSuccessful = True
     except Exception as ex:
         response.Message = str(ex)

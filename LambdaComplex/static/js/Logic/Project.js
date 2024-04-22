@@ -150,9 +150,37 @@ function AbandonProject(projectChangeID = null) {
         });
     }
     catch (ex) {
-        toastr.error("Error while finishing project: " + ex.message);
+        toastr.error("Error while abandoning project: " + ex.message);
     }
 }
+function ReviveProject(projectChangeID = null) {
+    try {
+        if (IsNullOrEmpty(projectChangeID)) return;
+        ConfirmationAlert('Project', 'Do you really want to revive this project?', function (value) {
+            var url = 'ProjectAPI/ReviveProject/' + projectChangeID
+            AjaxGETRequest(
+                url,
+                function (response) {
+                    response = SafeJSONparse(response);
+                    if (response.WasSuccessful) {
+                        AlertWarning("Revive project....");
+                        RefreshDataView();
+                    }
+                    else {
+                        toastr.error("Alas! Error revive project: " + response.Message);
+                    }
+                },
+                function (error) {
+
+                }, true, true, true
+            );
+        });
+    }
+    catch (ex) {
+        toastr.error("Error while revive project: " + ex.message);
+    }
+}
+
 
 function RebootProject(projectID = null) {
     try {

@@ -531,6 +531,12 @@ def ResourcesForAdmin(userId):
                 "width":80,
             },
             {
+                "title" : "Revive",
+                "template": "# if(data.ReportingStatus == 'ABD' || data.ReportingStatus == 'CMP') { # <button class=\"btn btn-outline-success\" onclick='ReviveProject(\"#: ID #\")'> <i class=\"mdi mdi-book-open-page-variant\"></i> </button> # } #",
+                "excludeFromExport": True,
+                "width":80,
+            },            
+            {
                 "title" : "Reboot",
                 "template": "# if(data.ReportingStatus != 'ABD' && data.ReportingStatus != 'CMP') { # <button class=\"btn btn-outline-danger\" onclick='RebootProject(\"#: RecordID #\")'> <i class=\"mdi mdi-backup-restore\"></i> </button> # } else { var color = (ReportingStatus == 'CMP') ? 'green' : 'red' # <p style=\"color:#: color #\"> #: data.ReportingStatus #</p> # } #",
                 "excludeFromExport": True,
@@ -682,6 +688,20 @@ def AbandonProject(projectChangeID):
         response = Response()
         userId = GetUserSessionDetails()["USER_ID"]
         response.Data = ProjectModule.AbandonProject(projectChangeID,userId)
+        response.WasSuccessful = True
+    except Exception as ex:
+        response.Message = str(ex)
+        response.WasSuccessful = False
+
+    return jsonify(response.__dict__)
+
+@ProjectAPI.route('/ReviveProject/<projectChangeID>', methods = ['GET'])
+@SessionManagement('Admin')
+def ReviveProject(projectChangeID):    
+    try:
+        response = Response()
+        userId = GetUserSessionDetails()["USER_ID"]
+        response.Data = ProjectModule.ReviveProject(projectChangeID,userId)
         response.WasSuccessful = True
     except Exception as ex:
         response.Message = str(ex)

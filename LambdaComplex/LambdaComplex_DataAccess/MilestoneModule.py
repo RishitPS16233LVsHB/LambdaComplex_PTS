@@ -411,6 +411,109 @@ class MilestoneModule:
 
 
     @staticmethod
+    def ReviveMilestone(milestoneChangesId,userId):
+        try:
+            query = f"""
+            INSERT INTO {Tables.MilestoneChanges}
+                (
+                [ID]
+                ,[RecordID]
+                ,[Name]
+                ,[Description]
+                ,[RunningStatus]
+                ,[AssignedTo]
+                ,[ParentID]
+                ,[CreatedBy]
+                ,[ModifiedBy]
+                ,[IsStable]
+                ,[Version]
+                ,[ReportingStatus]
+                ,[Deadline]
+                ,[Remarks]
+                ,[Rating]
+                ,[CreatedOn]
+                ,[ModifiedOn]
+                )
+            SELECT 
+            TOP 1
+                '{milestoneChangesId}' as [ID]
+                ,[RecordID]
+                ,[Name]
+                ,[Description]
+                ,0 as [RunningStatus]
+                ,[AssignedTo]
+                ,[ParentID]
+                ,'{userId}' as [CreatedBy]
+                ,'{userId}' as [ModifiedBy]
+                ,0 as [IsStable]
+                ,1 as [Version] 
+                ,'RVE' as [ReportingStatus]
+                ,[Deadline]
+                ,[Remarks]
+                ,[Rating]
+                ,getdate() as [CreatedOn]
+                ,getdate() as [ModifiedOn]
+            FROM {Tables.MilestoneChanges}
+            WHERE ID = '{milestoneChangesId}' AND [IsDeleted] = 0
+            """
+            DatabaseUtilities.ExecuteNonQuery(query)
+
+            query = f"""
+            INSERT INTO {Tables.MilestoneChanges}
+                (
+                [ID]
+                ,[RecordID]
+                ,[Name]
+                ,[Description]
+                ,[RunningStatus]
+                ,[AssignedTo]
+                ,[ParentID]
+                ,[CreatedBy]
+                ,[ModifiedBy]
+                ,[IsStable]
+                ,[Version]
+                ,[ReportingStatus]
+                ,[Deadline]
+                ,[Remarks]
+                ,[Rating]
+                ,[CreatedOn]
+                ,[ModifiedOn]
+                )
+            SELECT 
+            TOP 1
+                '{milestoneChangesId}' as [ID]
+                ,[RecordID]
+                ,[Name]
+                ,[Description]
+                ,-1 as [RunningStatus]
+                ,[AssignedTo]
+                ,[ParentID]
+                ,'{userId}' as [CreatedBy]
+                ,'{userId}' as [ModifiedBy]
+                ,1 as [IsStable]
+                ,1 as [Version] 
+                ,'PAR' as [ReportingStatus]
+                ,[Deadline]
+                ,[Remarks]
+                ,[Rating]
+                ,getdate() as [CreatedOn]
+                ,getdate() as [ModifiedOn]
+            FROM {Tables.MilestoneChanges}
+            WHERE ID = '{milestoneChangesId}' AND [IsDeleted] = 0
+            """
+            DatabaseUtilities.ExecuteNonQuery(query)
+            
+            query = f"""SELECT TOP(1) [RecordID],[Name] FROM {Tables.MilestoneChanges} WHERE [RecordID] = '{milestoneChangesId}' AND [IsDeleted] = 0;"""
+            record = DatabaseUtilities.GetListOf(query)[0]
+            recordName = record["Name"]
+            milestoneId = record["RecordID"]
+            WorkTimeLineModule.CreateWorkTimeLineEntry(f"""Revived a milestone named: {recordName}""",userId,milestoneId)
+
+            return 1
+        except Exception:
+            raise
+
+    @staticmethod
     def AbandonMilestone(milestoneChangesId,userId):
         try:
             query = f"""
@@ -458,7 +561,7 @@ class MilestoneModule:
             """
             DatabaseUtilities.ExecuteNonQuery(query)
             
-            query = f"""SELECT TOP(1) [RecordID][Name] FROM {Tables.MilestoneChanges} WHERE [RecordID] = '{milestoneChangesId}' AND [IsDeleted] = 0;"""
+            query = f"""SELECT TOP(1) [RecordID],[Name] FROM {Tables.MilestoneChanges} WHERE [RecordID] = '{milestoneChangesId}' AND [IsDeleted] = 0;"""
             record = DatabaseUtilities.GetListOf(query)[0]
             recordName = record["Name"]
             milestoneId = record["RecordID"]
@@ -516,7 +619,7 @@ class MilestoneModule:
             """
             DatabaseUtilities.ExecuteNonQuery(query)
 
-            query = f"""SELECT TOP(1) [RecordID][Name] FROM {Tables.MilestoneChanges} WHERE [RecordID] = '{milestoneChangesId}' AND [IsDeleted] = 0;"""
+            query = f"""SELECT TOP(1) [RecordID],[Name] FROM {Tables.MilestoneChanges} WHERE [RecordID] = '{milestoneChangesId}' AND [IsDeleted] = 0;"""
             record = DatabaseUtilities.GetListOf(query)[0]
             recordName = record["Name"]
             milestoneId = record["RecordID"]
@@ -631,7 +734,7 @@ class MilestoneModule:
             """
             DatabaseUtilities.ExecuteNonQuery(query)
 
-            query = f"""SELECT TOP(1) [RecordID][Name] FROM {Tables.MilestoneChanges} WHERE [RecordID] = '{milestoneChangesId}' AND [IsDeleted] = 0;"""
+            query = f"""SELECT TOP(1) [RecordID],[Name] FROM {Tables.MilestoneChanges} WHERE [RecordID] = '{milestoneChangesId}' AND [IsDeleted] = 0;"""
             record = DatabaseUtilities.GetListOf(query)[0]
             recordName = record["Name"]
             milestoneId = record["RecordID"]
@@ -700,7 +803,7 @@ class MilestoneModule:
             """
             DatabaseUtilities.ExecuteNonQuery(query)
             
-            query = f"""SELECT TOP(1) [RecordID][Name] FROM {Tables.MilestoneChanges} WHERE [RecordID] = '{milestoneChangesId}' AND [IsDeleted] = 0;"""
+            query = f"""SELECT TOP(1) [RecordID],[Name] FROM {Tables.MilestoneChanges} WHERE [RecordID] = '{milestoneChangesId}' AND [IsDeleted] = 0;"""
             record = DatabaseUtilities.GetListOf(query)[0]
             recordName = record["Name"]
             milestoneId = record["RecordID"]
@@ -924,7 +1027,7 @@ class MilestoneModule:
             """
             DatabaseUtilities.ExecuteNonQuery(query)
 
-            query = f"""SELECT TOP(1) [RecordID][Name] FROM {Tables.MilestoneChanges} WHERE [RecordID] = '{milestoneChangeId}' AND [IsDeleted] = 0;"""
+            query = f"""SELECT TOP(1) [RecordID],[Name] FROM {Tables.MilestoneChanges} WHERE [RecordID] = '{milestoneChangeId}' AND [IsDeleted] = 0;"""
             record = DatabaseUtilities.GetListOf(query)[0]
             recordName = record["Name"]
             milestoneId = record["RecordID"]

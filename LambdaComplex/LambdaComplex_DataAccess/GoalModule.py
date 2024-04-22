@@ -301,6 +301,109 @@ class GoalModule:
             raise
     
     @staticmethod
+    def ReviveGoal(goalChangeId,userId):
+        try:
+            query = f"""
+            INSERT INTO {Tables.GoalChanges}
+                            (
+                            [ID]
+                            ,[RecordID]
+                            ,[Name]
+                            ,[Description]
+                            ,[RunningStatus]
+                            ,[AssignedTo]
+                            ,[ParentID]
+                            ,[CreatedBy]
+                            ,[ModifiedBy]
+                            ,[IsStable]
+                            ,[Version]
+                            ,[ReportingStatus]
+                            ,[Deadline]
+                            ,[Remarks]
+                            ,[Rating]
+                            ,[CreatedOn]
+                            ,[ModifiedOn]
+                            )
+                        SELECT 
+                        TOP 1
+                            '{goalChangeId}' as [ID]
+                            ,[RecordID]
+                            ,[Name]
+                            ,[Description]
+                            ,0 as [RunningStatus]
+                            ,[AssignedTo]
+                            ,[ParentID]
+                            ,'{userId}' as [CreatedBy]
+                            ,'{userId}' as [ModifiedBy]
+                            ,0 as [IsStable]
+                            ,1 as [Version] 
+                            ,'RVE' as [ReportingStatus]
+                            ,[Deadline]
+                            ,[Remarks]
+                            ,[Rating]
+                            ,getdate() as [CreatedOn]
+                            ,getdate() as [ModifiedOn]
+                        FROM {Tables.GoalChanges}
+                        WHERE ID = '{goalChangeId}' AND [IsDeleted] = 0
+            """
+            DatabaseUtilities.ExecuteNonQuery(query)
+
+            query = f"""
+            INSERT INTO {Tables.GoalChanges}
+                            (
+                            [ID]
+                            ,[RecordID]
+                            ,[Name]
+                            ,[Description]
+                            ,[RunningStatus]
+                            ,[AssignedTo]
+                            ,[ParentID]
+                            ,[CreatedBy]
+                            ,[ModifiedBy]
+                            ,[IsStable]
+                            ,[Version]
+                            ,[ReportingStatus]
+                            ,[Deadline]
+                            ,[Remarks]
+                            ,[Rating]
+                            ,[CreatedOn]
+                            ,[ModifiedOn]
+                            )
+                        SELECT 
+                        TOP 1
+                            '{goalChangeId}' as [ID]
+                            ,[RecordID]
+                            ,[Name]
+                            ,[Description]
+                            ,-1 as [RunningStatus]
+                            ,[AssignedTo]
+                            ,[ParentID]
+                            ,'{userId}' as [CreatedBy]
+                            ,'{userId}' as [ModifiedBy]
+                            ,1 as [IsStable]
+                            ,1 as [Version] 
+                            ,'PAR' as [ReportingStatus]
+                            ,[Deadline]
+                            ,[Remarks]
+                            ,[Rating]
+                            ,getdate() as [CreatedOn]
+                            ,getdate() as [ModifiedOn]
+                        FROM {Tables.GoalChanges}
+                        WHERE ID = '{goalChangeId}' AND [IsDeleted] = 0
+            """
+            DatabaseUtilities.ExecuteNonQuery(query)
+            
+            query = f"""SELECT TOP(1) [RecordID],[Name] FROM {Tables.GoalChanges} WHERE [ID] = '{goalChangeId}' AND [IsDeleted] = 0;"""
+            record = DatabaseUtilities.GetListOf(query)[0]
+            recordName = record["Name"]
+            goalId = record["RecordID"]
+            WorkTimeLineModule.CreateWorkTimeLineEntry(f"""Revived a goal named: {recordName}""",userId,goalId)
+
+            return 1
+        except Exception:
+            raise
+
+    @staticmethod
     def AbandonGoal(goalChangeId,userId):
         try:
             query = f"""
@@ -348,7 +451,7 @@ class GoalModule:
             """
             DatabaseUtilities.ExecuteNonQuery(query)
             
-            query = f"""SELECT TOP(1) [RecordID][Name] FROM {Tables.GoalChanges} WHERE [ID] = '{goalChangeId}' AND [IsDeleted] = 0;"""
+            query = f"""SELECT TOP(1) [RecordID],[Name] FROM {Tables.GoalChanges} WHERE [ID] = '{goalChangeId}' AND [IsDeleted] = 0;"""
             record = DatabaseUtilities.GetListOf(query)[0]
             recordName = record["Name"]
             goalId = record["RecordID"]
@@ -406,7 +509,7 @@ class GoalModule:
             """
             DatabaseUtilities.ExecuteNonQuery(query)
 
-            query = f"""SELECT TOP(1) [RecordID][Name] FROM {Tables.GoalChanges} WHERE [ID] = '{goalChangeId}' AND [IsDeleted] = 0;"""
+            query = f"""SELECT TOP(1) [RecordID],[Name] FROM {Tables.GoalChanges} WHERE [ID] = '{goalChangeId}' AND [IsDeleted] = 0;"""
             record = DatabaseUtilities.GetListOf(query)[0]
             recordName = record["Name"]
             goalId = record["RecordID"]
@@ -611,7 +714,7 @@ class GoalModule:
             """
             DatabaseUtilities.ExecuteNonQuery(query)
 
-            query = f"""SELECT TOP(1) [RecordID][Name] FROM {Tables.GoalChanges} WHERE [ID] = '{goalChangeId}' AND [IsDeleted] = 0;"""
+            query = f"""SELECT TOP(1) [RecordID],[Name] FROM {Tables.GoalChanges} WHERE [ID] = '{goalChangeId}' AND [IsDeleted] = 0;"""
             record = DatabaseUtilities.GetListOf(query)[0]
             recordName = record["Name"]
             goalId = record["RecordID"]

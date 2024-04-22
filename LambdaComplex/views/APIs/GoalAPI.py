@@ -459,6 +459,12 @@ def ResourcesForLead(userId,parentId):
             "width":80,
         },
         {
+            "title" : "Revive",
+            "template": "# if(data.ReportingStatus == 'ABD' || data.ReportingStatus == 'CMP') { # <button class=\"btn btn-outline-success\" onclick='ReviveGoal(\"#: ID #\")'> <i class=\"mdi mdi-book-open-page-variant\"></i> </button> # } #",
+            "excludeFromExport": True,
+            "width":80,
+        },        
+        {
             "title" : "Reboot",
             "template": "# if(data.ReportingStatus != 'ABD' && data.ReportingStatus != 'CMP') { # <button class=\"btn btn-outline-danger\" onclick='RebootGoal(\"#: RecordID #\")'> <i class=\"mdi mdi-backup-restore\"></i> </button> # } else { var color = (ReportingStatus == 'CMP') ? 'green' : 'red' # <p style=\"color:#: color #\"> #: data.ReportingStatus #</p> # } #",
             "excludeFromExport": True,
@@ -704,13 +710,13 @@ def UpdateGoal():
 
     return jsonify(response.__dict__)
 
-@GoalAPI.route('/FinishGoal/<milestoneChangeID>', methods = ['GET'])
+@GoalAPI.route('/FinishGoal/<goalChangeID>', methods = ['GET'])
 @SessionManagement('Lead')
-def FinishGoal(milestoneChangeID):    
+def FinishGoal(goalChangeID):    
     try:
         response = Response()
         userId = GetUserSessionDetails()["USER_ID"]
-        response.Data = GoalModule.FinishGoal(milestoneChangeID,userId)
+        response.Data = GoalModule.FinishGoal(goalChangeID,userId)
         response.WasSuccessful = True
     except Exception as ex:
         response.Message = str(ex)
@@ -718,13 +724,27 @@ def FinishGoal(milestoneChangeID):
 
     return jsonify(response.__dict__)
 
-@GoalAPI.route('/AbandonGoal/<milestoneChangeID>', methods = ['GET'])
+@GoalAPI.route('/AbandonGoal/<goalChangeID>', methods = ['GET'])
 @SessionManagement('Lead')
-def AbandonGoal(milestoneChangeID):    
+def AbandonGoal(goalChangeID):    
     try:
         response = Response()
         userId = GetUserSessionDetails()["USER_ID"]
-        response.Data = GoalModule.AbandonGoal(milestoneChangeID,userId)
+        response.Data = GoalModule.AbandonGoal(goalChangeID,userId)
+        response.WasSuccessful = True
+    except Exception as ex:
+        response.Message = str(ex)
+        response.WasSuccessful = False
+
+    return jsonify(response.__dict__)
+
+@GoalAPI.route('/ReviveGoal/<goalChangeID>', methods = ['GET'])
+@SessionManagement('Lead')
+def ReviveGoal(goalChangeID):    
+    try:
+        response = Response()
+        userId = GetUserSessionDetails()["USER_ID"]
+        response.Data = GoalModule.ReviveGoal(goalChangeID,userId)
         response.WasSuccessful = True
     except Exception as ex:
         response.Message = str(ex)

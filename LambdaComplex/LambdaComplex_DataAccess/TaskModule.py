@@ -397,9 +397,8 @@ class TaskModule:
             raise
 
 
-
     @staticmethod
-    def AbandonTask(taskId,userId):
+    def ReviveTask(taskChangeId,userId):
         try:
             query = f"""
             INSERT INTO {Tables.TaskChanges}
@@ -424,7 +423,110 @@ class TaskModule:
                 )
             SELECT 
             TOP 1
-                '{taskId}' as [ID]
+                '{taskChangeId}' as [ID]
+                ,[RecordID]
+                ,[Name]
+                ,[Description]
+                ,0 as [RunningStatus]
+                ,[AssignedTo]
+                ,[ParentID]
+                ,'{userId}' as [CreatedBy]
+                ,'{userId}' as [ModifiedBy]
+                ,0 as [IsStable]
+                ,1 as [Version] 
+                ,'RVE' as [ReportingStatus]
+                ,[Deadline]
+                ,[Remarks]
+                ,[Rating]
+                ,getdate() as [CreatedOn]
+                ,getdate() as [ModifiedOn]
+            FROM {Tables.TaskChanges}
+            WHERE ID = '{taskChangeId}' AND [IsDeleted] = 0
+            """
+            DatabaseUtilities.ExecuteNonQuery(query)
+
+            query = f"""
+            INSERT INTO {Tables.TaskChanges}
+                (
+                [ID]
+                ,[RecordID]
+                ,[Name]
+                ,[Description]
+                ,[RunningStatus]
+                ,[AssignedTo]
+                ,[ParentID]
+                ,[CreatedBy]
+                ,[ModifiedBy]
+                ,[IsStable]
+                ,[Version]
+                ,[ReportingStatus]
+                ,[Deadline]
+                ,[Remarks]
+                ,[Rating]
+                ,[CreatedOn]
+                ,[ModifiedOn]
+                )
+            SELECT 
+            TOP 1
+                '{taskChangeId}' as [ID]
+                ,[RecordID]
+                ,[Name]
+                ,[Description]
+                ,-1 as [RunningStatus]
+                ,[AssignedTo]
+                ,[ParentID]
+                ,'{userId}' as [CreatedBy]
+                ,'{userId}' as [ModifiedBy]
+                ,1 as [IsStable]
+                ,1 as [Version] 
+                ,'PAR' as [ReportingStatus]
+                ,[Deadline]
+                ,[Remarks]
+                ,[Rating]
+                ,getdate() as [CreatedOn]
+                ,getdate() as [ModifiedOn]
+            FROM {Tables.TaskChanges}
+            WHERE ID = '{taskChangeId}' AND [IsDeleted] = 0
+            """
+            DatabaseUtilities.ExecuteNonQuery(query)
+            
+            query = f"""SELECT TOP(1) [RecordID],[Name] FROM {Tables.TaskChanges} WHERE [ID] = '{taskChangeId}' AND [IsDeleted] = 0;"""
+            record = DatabaseUtilities.GetListOf(query)[0]
+            recordName = record["Name"]
+            taskId = record["RecordID"]
+            WorkTimeLineModule.CreateWorkTimeLineEntry(f"""Revived a task named: {recordName}""",userId,taskId)
+
+            return 1
+        except Exception:
+            raise
+    
+    @staticmethod
+    def AbandonTask(taskChangeId,userId):
+        try:
+            query = f"""
+            INSERT INTO {Tables.TaskChanges}
+                (
+                [ID]
+                ,[RecordID]
+                ,[Name]
+                ,[Description]
+                ,[RunningStatus]
+                ,[AssignedTo]
+                ,[ParentID]
+                ,[CreatedBy]
+                ,[ModifiedBy]
+                ,[IsStable]
+                ,[Version]
+                ,[ReportingStatus]
+                ,[Deadline]
+                ,[Remarks]
+                ,[Rating]
+                ,[CreatedOn]
+                ,[ModifiedOn]
+                )
+            SELECT 
+            TOP 1
+                '{taskChangeId}' as [ID]
                 ,[RecordID]
                 ,[Name]
                 ,[Description]
@@ -442,11 +544,11 @@ class TaskModule:
                 ,getdate() as [CreatedOn]
                 ,getdate() as [ModifiedOn]
             FROM {Tables.TaskChanges}
-            WHERE ID = '{taskId}' AND [IsDeleted] = 0
+            WHERE ID = '{taskChangeId}' AND [IsDeleted] = 0
             """
             DatabaseUtilities.ExecuteNonQuery(query)
             
-            query = f"""SELECT TOP(1) [RecordID][Name] FROM {Tables.TaskChanges} WHERE [RecordID] = '{taskId}' AND [IsDeleted] = 0;"""
+            query = f"""SELECT TOP(1) [RecordID],[Name] FROM {Tables.TaskChanges} WHERE [ID] = '{taskChangeId}' AND [IsDeleted] = 0;"""
             record = DatabaseUtilities.GetListOf(query)[0]
             recordName = record["Name"]
             taskId = record["RecordID"]
@@ -458,7 +560,7 @@ class TaskModule:
             raise
     
     @staticmethod
-    def FinishTask(taskId,userId):
+    def FinishTask(taskChangeId,userId):
         try:
             # insert a completion record for accepting changes 
             query = f"""            
@@ -484,7 +586,7 @@ class TaskModule:
                 )
             SELECT 
             TOP 1
-                '{taskId}' as [ID]
+                '{taskChangeId}' as [ID]
                 ,[RecordID]
                 ,[Name]
                 ,[Description]
@@ -502,11 +604,11 @@ class TaskModule:
                 ,getdate() as [CreatedOn]
                 ,getdate() as [ModifiedOn]
             FROM {Tables.TaskChanges}
-            WHERE ID = '{taskId}' AND [IsDeleted] = 0
+            WHERE ID = '{taskChangeId}' AND [IsDeleted] = 0
             """
             DatabaseUtilities.ExecuteNonQuery(query)
 
-            query = f"""SELECT TOP(1) [RecordID][Name] FROM {Tables.TaskChanges} WHERE [RecordID] = '{taskId}' AND [IsDeleted] = 0;"""
+            query = f"""SELECT TOP(1) [RecordID],[Name] FROM {Tables.TaskChanges} WHERE [ID] = '{taskChangeId}' AND [IsDeleted] = 0;"""
             record = DatabaseUtilities.GetListOf(query)[0]
             recordName = record["Name"]
             taskId = record["RecordID"]
@@ -621,7 +723,7 @@ class TaskModule:
             """
             DatabaseUtilities.ExecuteNonQuery(query)
 
-            query = f"""SELECT TOP(1) [RecordID][Name] FROM {Tables.TaskChanges} WHERE [ID] = '{taskChangeId}' AND [IsDeleted] = 0;"""
+            query = f"""SELECT TOP(1) [RecordID],[Name] FROM {Tables.TaskChanges} WHERE [ID] = '{taskChangeId}' AND [IsDeleted] = 0;"""
             record = DatabaseUtilities.GetListOf(query)[0]
             recordName = record["Name"]
             taskId = record["RecordID"]
@@ -690,7 +792,7 @@ class TaskModule:
             """
             DatabaseUtilities.ExecuteNonQuery(query)
 
-            query = f"""SELECT TOP(1) [RecordID][Name] FROM {Tables.TaskChanges} WHERE [ID] = '{taskChangeId}' AND [IsDeleted] = 0;"""
+            query = f"""SELECT TOP(1) [RecordID],[Name] FROM {Tables.TaskChanges} WHERE [ID] = '{taskChangeId}' AND [IsDeleted] = 0;"""
             record = DatabaseUtilities.GetListOf(query)[0]
             recordName = record["Name"]
             taskId = record["RecordID"]
@@ -943,7 +1045,7 @@ class TaskModule:
             """
             DatabaseUtilities.ExecuteNonQuery(query)
 
-            query = f"""SELECT TOP(1) [RecordID][Name] FROM {Tables.TaskChanges} WHERE [ID] = '{taskChangeId}' AND [IsDeleted] = 0;"""
+            query = f"""SELECT TOP(1) [RecordID],[Name] FROM {Tables.TaskChanges} WHERE [ID] = '{taskChangeId}' AND [IsDeleted] = 0;"""
             record = DatabaseUtilities.GetListOf(query)[0]
             recordName = record["Name"]
             taskId = record["RecordID"]

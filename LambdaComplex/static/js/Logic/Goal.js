@@ -204,9 +204,37 @@ function AbandonGoal(goalChangeID = null) {
         });
     }
     catch (ex) {
-        toastr.error("Error while finishing goal: " + ex.message);
+        toastr.error("Error while abandoning goal: " + ex.message);
     }
 }
+function ReviveGoal(goalChangeID = null) {
+    try {
+        if (IsNullOrEmpty(goalChangeID)) return;
+        ConfirmationAlert('Goal', 'Do you really want to revive this goal?', function (value) {
+            var url = 'GoalAPI/ReviveGoal/' + goalChangeID
+            AjaxGETRequest(
+                url,
+                function (response) {
+                    response = SafeJSONparse(response);
+                    if (response.WasSuccessful) {
+                        AlertWarning("Revive goal....");
+                        RefreshDataView();
+                    }
+                    else {
+                        toastr.error("Alas! Error reviving goal: " + response.Message);
+                    }
+                },
+                function (error) {
+
+                }, true, true, true
+            );
+        });
+    }
+    catch (ex) {
+        toastr.error("Error while reviving goal: " + ex.message);
+    }
+}
+
 
 function DisplayMacroTrackingForGoalInGrid(recordID = null) {
     try {

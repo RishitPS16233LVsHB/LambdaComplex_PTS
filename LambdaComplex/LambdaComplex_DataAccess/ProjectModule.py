@@ -294,6 +294,110 @@ class ProjectModule:
         except Exception:
             raise
     
+
+    @staticmethod
+    def ReviveProject(projectChangeId,userId):
+        try:
+            query = f"""
+            INSERT INTO {Tables.ProjectChanges}
+                (
+                [ID]
+                ,[RecordID]
+                ,[Name]
+                ,[Description]
+                ,[RunningStatus]
+                -- ,[AssignedTo]
+                -- ,[ParentID]
+                ,[CreatedBy]
+                ,[ModifiedBy]
+                ,[IsStable]
+                ,[Version]
+                ,[ReportingStatus]
+                ,[Deadline]
+                ,[Remarks]
+                ,[Rating]
+                ,[CreatedOn]
+                ,[ModifiedOn]
+                )
+            SELECT 
+            TOP 1
+                '{projectChangeId}' as [ID]
+                ,[RecordID]
+                ,[Name]
+                ,[Description]
+                ,0 as [RunningStatus]
+                -- ,[AssignedTo]
+                -- ,[ParentID]
+                ,'{userId}' as [CreatedBy]
+                ,'{userId}' as [ModifiedBy]
+                ,0 as [IsStable]
+                ,1 as [Version] 
+                ,'RVE' as [ReportingStatus]
+                ,[Deadline]
+                ,[Remarks]
+                ,[Rating]
+                ,getdate() as [CreatedOn]
+                ,getdate() as [ModifiedOn]
+            FROM {Tables.ProjectChanges}
+            WHERE ID = '{projectChangeId}' AND [IsDeleted] = 0
+            """
+            DatabaseUtilities.ExecuteNonQuery(query)
+
+            query = f"""
+            INSERT INTO {Tables.ProjectChanges}
+                (
+                [ID]
+                ,[RecordID]
+                ,[Name]
+                ,[Description]
+                ,[RunningStatus]
+                -- ,[AssignedTo]
+                -- ,[ParentID]
+                ,[CreatedBy]
+                ,[ModifiedBy]
+                ,[IsStable]
+                ,[Version]
+                ,[ReportingStatus]
+                ,[Deadline]
+                ,[Remarks]
+                ,[Rating]
+                ,[CreatedOn]
+                ,[ModifiedOn]
+                )
+            SELECT 
+            TOP 1
+                '{projectChangeId}' as [ID]
+                ,[RecordID]
+                ,[Name]
+                ,[Description]
+                ,-1 as [RunningStatus]
+                -- ,[AssignedTo]
+                -- ,[ParentID]
+                ,'{userId}' as [CreatedBy]
+                ,'{userId}' as [ModifiedBy]
+                ,1 as [IsStable]
+                ,1 as [Version] 
+                ,'PAR' as [ReportingStatus]
+                ,[Deadline]
+                ,[Remarks]
+                ,[Rating]
+                ,getdate() as [CreatedOn]
+                ,getdate() as [ModifiedOn]
+            FROM {Tables.ProjectChanges}
+            WHERE ID = '{projectChangeId}' AND [IsDeleted] = 0
+            """
+            DatabaseUtilities.ExecuteNonQuery(query)
+            
+            query = f"""SELECT TOP(1) [RecordID],[Name] FROM {Tables.ProjectChanges} WHERE [ID] = '{projectChangeId}' AND [IsDeleted] = 0;"""
+            record = DatabaseUtilities.GetListOf(query)[0]
+            recordID = record["RecordID"]
+            recordName = record["Name"]
+            WorkTimeLineModule.CreateWorkTimeLineEntry(f"""Revived a project named: {recordName}""",userId,recordID)
+            
+            return 1
+        except Exception:
+            raise
+
     @staticmethod
     def AbandonProject(projectChangeId,userId):
         try:

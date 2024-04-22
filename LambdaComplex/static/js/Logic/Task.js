@@ -300,10 +300,36 @@ function AbandonTask(taskChangeId = null) {
         });
     }
     catch (ex) {
-        toastr.error("Error while finishing task: " + ex.message);
+        toastr.error("Error while abandoning task: " + ex.message);
     }
 }
+function ReviveTask(taskChangeId = null) {
+    try {
+        if (IsNullOrEmpty(taskChangeId)) return;
+        ConfirmationAlert('Task', 'Do you really want to revive this task?', function (value) {
+            var url = 'TaskAPI/ReviveTask/' + taskChangeId
+            AjaxGETRequest(
+                url,
+                function (response) {
+                    response = SafeJSONparse(response);
+                    if (response.WasSuccessful) {
+                        AlertSuccess("Revived task....");
+                        RefreshDataView();
+                    }
+                    else {
+                        toastr.error("Alas! Error reviving task: " + response.Message);
+                    }
+                },
+                function (error) {
 
+                }, true, true, true
+            );
+        });
+    }
+    catch (ex) {
+        toastr.error("Error while reviving task: " + ex.message);
+    }
+}
 
 function RebootTask(taskID = null) {
     try {
