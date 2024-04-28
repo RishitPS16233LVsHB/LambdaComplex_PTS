@@ -97,6 +97,12 @@ def FileListResource(recordId):
                 "width":80,
             },
             {
+                "title" : "View",
+                "template": "<button class=\"btn btn-outline-secondary\" onclick='ViewFile(\"#: StoredFileName #\",\"#: FileType #\")'> <i class=\"mdi mdi-eye\"> </button>",
+                "excludeFromExport": True,
+                "width":80,
+            },
+            {
                 "field" : "FileName",
                 "title" : "Filename",
                 "width":200,
@@ -145,6 +151,12 @@ def ReadOnlyFileListResource(recordId):
             {
                 "title" : "Download",
                 "template": "<button class=\"btn btn-outline-warning\" onclick='DownloadFile(\"#: StoredFileName #\")'> <i class=\"mdi mdi-file-multiple\"> </button>",
+                "excludeFromExport": True,
+                "width":80,
+            },
+            {
+                "title" : "View",
+                "template": "<button class=\"btn btn-outline-secondary\" onclick='ViewFile(\"#: StoredFileName #\",\"#: FileType #\")'> <i class=\"mdi mdi-eye\"> </button>",
                 "excludeFromExport": True,
                 "width":80,
             },

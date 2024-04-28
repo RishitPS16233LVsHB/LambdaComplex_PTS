@@ -496,23 +496,4 @@ function DecodeHtmlEntities(htmlString) {
     return textarea.value;
 }
 
-function DownloadFile(fileName) {
-    // Static URL
-    var url = `/static/Uploads/` + fileName;
 
-    // Create a new anchor element
-    var a = document.createElement('a');
-    // Set the href attribute to the static URL
-    a.href = url;
-    // Set the download attribute to the desired file name
-    a.download = fileName;
-
-    // Append the anchor element to the body
-    document.body.appendChild(a);
-
-    // Trigger a click event on the anchor element
-    a.click();
-
-    // Clean up: remove the anchor element from the DOM
-    document.body.removeChild(a);
-}
