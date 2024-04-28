@@ -218,7 +218,7 @@ def ResourcesForLead(userId,projectId):
         },   
         {
             "title" : "File submissions",
-            "template": "# if(data.ReportingStatus != 'CHR' || data.ReportingStatus != 'PGR') { # <button class=\"btn btn-outline-secondary\" onclick='LoadReadOnlyFileView(\"#: ID #\",true,true,divMainPage)'> <i class=\"mdi mdi-file-multiple\"></i> </button> # } else { # <button class=\"btn btn-outline-warning\" onclick='LoadFileSubmissionView(\"#: ID #\",true,true,divMainPage)'> <i class=\"mdi mdi-file-multiple\"></i> </button> # } #",
+            "template": "# if(data.ReportingStatus != 'CHR' && data.ReportingStatus != 'PGR') { # <button class=\"btn btn-outline-secondary\" onclick='LoadReadOnlyFileView(\"#: ID #\",true,true,divMainPage)'> <i class=\"mdi mdi-file-multiple\"></i> </button> # } else { # <button class=\"btn btn-outline-warning\" onclick='LoadFileSubmissionView(\"#: ID #\",true,true,divMainPage)'> <i class=\"mdi mdi-file-multiple\"></i> </button> # } #",
             "excludeFromExport": True,
             "width":80,
         },
