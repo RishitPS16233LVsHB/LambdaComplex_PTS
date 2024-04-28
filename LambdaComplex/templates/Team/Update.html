@@ -11,7 +11,7 @@
                     <label for="txtTeamName" class="col-sm-3 col-form-label">Team name</label><br>
                     <div class="col-sm-9">
                         <input type="text" class="form-control" id="txtTeamName" placeholder=" Team name"
-                            value="{{ TeamName }}" required>
+                            value="{{ TeamName }}" readonly required>
                     </div>
                 </div>
                 <div class="form-group row">
@@ -26,13 +26,13 @@
                 <div class="form-group row">
                     <label for="cmbLeader" class="col-sm-3 col-form-label">Leader</label><br>
                     <div class="col-sm-9">
-                        <input id="cmbLeader" class="form-control" required value="{{ LeaderID }}">
+                        <input id="cmbLeader" class="form-control" required value="{{ LeaderID }}" readonly>
                     </div>
                 </div>
                 <div class="form-group row">
                     <label for="cmbProject" class="col-sm-3 col-form-label">Project</label><br>
                     <div class="col-sm-9">
-                        <input id="cmbProject" class="form-control" required value="{{ ProjectID }}">
+                        <input id="cmbProject" class="form-control" required value="{{ ProjectID }}" readonly>
                     </div>
                 </div>
                 <button type="button" class="btn btn-gradient-primary me-2" onclick="UpdateTeam()">Update Team</button>

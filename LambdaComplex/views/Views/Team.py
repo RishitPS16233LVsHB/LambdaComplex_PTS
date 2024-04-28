@@ -23,7 +23,7 @@ def LisTeamMembers(teamId):
 @Team.route('/UpdateView/<teamId>')
 @SessionManagement('Admin')
 def UpdateView(teamId):
-    teamData = TeamModule.GetTeamData(teamId)[0];
+    teamData = TeamModule.GetTeamData(teamId);
 
     # teamDescription is editor value always unescape editor values
     teamDescription = html.unescape(teamData["TeamDescription"])

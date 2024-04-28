@@ -48,40 +48,34 @@ class WorkTimeLineModule:
                     [FirstName]+'.'+[LastName] as [Name],
                     'USER' as [AffectedModule] 
                     FROM {Tables.User} 
-                    WHERE [IsDeleted] = 0
                 UNION ALL
                 SELECT 
                     [ID],
                     [Name],'PROJECT' as [AffectedModule] 
                     FROM {Tables.Project} 
-                    WHERE [IsDeleted] = 0
                 UNION ALL
                 SELECT 
                     [ID],
                     [Name],
                     'MILESTONE' as [AffectedModule] 
                     FROM {Tables.Milestone} 
-                    WHERE [IsDeleted] = 0
                 UNION ALL
                 SELECT 
                     [ID],
                     [Name],
                     'GOAL' as [AffectedModule] 
                     FROM {Tables.Goal} 
-                    WHERE [IsDeleted] = 0
                 UNION ALL
                 SELECT 
                     [ID],
                     [Name],
                     'TASK' as [AffectedModule] FROM {Tables.Task} 
-                    WHERE [IsDeleted] = 0
                 UNION ALL
                 SELECT 
                     [ID],
                     [TeamName] as [Name],
                     'TEAM' as [AffectedModule] 
-                    FROM {Tables.Team} WHERE 
-                    [IsDeleted] = 0
+                    FROM {Tables.Team} 
             ) 
             as MDT on MDT.[ID] = WT.[RecordID]
             INNER JOIN {Tables.User} UM on WT.[CreatedBy] = UM.[ID]

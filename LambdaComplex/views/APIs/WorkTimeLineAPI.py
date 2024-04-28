@@ -119,10 +119,10 @@ def WorkTimeTimeLineRead(userId,dateString):
         resource["Data"] = WorkTimeLineModule.GetWorkTimeLineForDate(userId,dateString)
         resource["Mappings"] = {
             "time" : "CreatedOn",
-            "header" : "Module",
-            "h1Body" : "CreatedOn",
+            "header" : "AffectedModule",
+            "h1Body" : "AffectedEntityName",
             "paraBody" : "Message",
-            "footer": "ActionDoneBy" 
+            "footer": "CreatedOn" 
         }
         response.Data = resource 
         response.WasSuccessful = True

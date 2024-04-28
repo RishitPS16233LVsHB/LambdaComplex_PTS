@@ -1,4 +1,4 @@
-from LambdaComplex_DataAccess import UserModule
+from LambdaComplex_DataAccess.UserModule import UserModule
 from LambdaComplex_DataAccess.DatabaseUtilities import DatabaseUtilities  
 from LambdaComplex_Entities.Tables import Tables
 from LambdaComplex_DataAccess.WorkTimeLineModule import WorkTimeLineModule
@@ -97,7 +97,7 @@ class TeamModule:
             UM.[EmailID]
             FROM {Tables.TeamMember} TM 
             INNER JOIN {Tables.User} UM ON UM.[ID] = TM.[TeamMemberID] 
-            WHERE TM.[ID] = '{teamId}' AND 
+            WHERE TM.[TeamID] = '{teamId}' AND 
             UM.[IsDeleted] = 0 AND
             TM.[IsDeleted] = 0
             """
@@ -124,7 +124,7 @@ class TeamModule:
             WHERE [ID] = '{teamId}' AND [IsDeleted] = 0
             """
             result = DatabaseUtilities.GetListOf(query)
-            return result
+            return result[0] if result else None
         except Exception:
             raise
 
@@ -190,6 +190,10 @@ class TeamModule:
     @staticmethod
     def RemoveTeam(userId,teamId):
         try:
+            team = TeamModule.GetTeamData(teamId)
+            teamMembers = TeamModule.GetTeamMemberList(teamId)
+            teamName = team["TeamName"]
+
             query = f"""            
             UPDATE {Tables.Team}
             SET [IsDeleted] = 1,
@@ -210,10 +214,6 @@ class TeamModule:
             if DatabaseUtilities.ExecuteNonQuery(query) == 0:
                 return
             
-            team = TeamModule.GetTeamData(teamId)[0]
-            teamMembers = TeamModule.GetTeamMemberList(teamId)
-            teamName = team["TeamName"]
-
             # create Work time line event for main user
             message = 'Disbanded a team: ' + teamName
             WorkTimeLineModule.CreateWorkTimeLineEntry(message,userId,teamId)
@@ -235,6 +235,19 @@ class TeamModule:
     @staticmethod
     def AddTeamMember(teamId, teamMemberId, userId):
         try:
+
+            query = f"""
+            SELECT COUNT(*) as [PresenceInTeam]
+            FROM {Tables.TeamMember} 
+            WHERE 
+                [TeamID] = '{teamId}' AND
+                [teamMemberID] = '{teamMemberId}' AND
+                [IsDeleted] = 0
+            """
+            presenceInTeam = DatabaseUtilities.GetListOf(query)[0]["PresenceInTeam"]
+            if(presenceInTeam):
+                raise Exception("Team member already in the team")
+
             query = f"""            
             INSERT INTO {Tables.TeamMember}
                     ([TeamID]
@@ -251,7 +264,6 @@ class TeamModule:
 
             # from Main user perspective                       
             teamName = TeamModule.GetTeamData(teamId)["TeamName"]
-
             userDetails = UserModule.GetUserDetails(teamMemberId);
             firstName = userDetails["FirstName"]
             lastName = userDetails["LastName"]
@@ -283,7 +295,8 @@ class TeamModule:
             FROM {Tables.TeamMember} 
             WHERE ID = '{recordId}'
             """
-            return DatabaseUtilities.GetListOf(query)
+            teamMemberRecord = DatabaseUtilities.GetListOf(query)
+            return teamMemberRecord[0] if teamMemberRecord else None
         except Exception:
             raise
 
