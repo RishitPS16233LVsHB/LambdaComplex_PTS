@@ -348,6 +348,12 @@ def ResourcesForDev(userId,parentId):
 
     resource["Columns"] = [
         {
+            "title" : "Tasks",
+            "template": "# if(data.ReportingStatus != 'ABD' && data.ReportingStatus != 'CMP') { # <button class=\"btn btn-outline-primary\" onclick='LoadTasks(\"#: RecordID #\")'> <i class=\"mdi mdi-clipboard-check\"></i> </button> # } else { var color = (ReportingStatus == 'CMP') ? 'green' : 'red' # <p style=\"color:#: color #\"> #: data.ReportingStatus #</p> # } #",
+            "excludeFromExport": True,
+            "width":80,
+        },
+        {
             "field" : "Name",
             "title" : "Goal Name",
             "width": 200,
@@ -362,12 +368,6 @@ def ResourcesForDev(userId,parentId):
             "field" : "AssignedToName",
             "title" : "Assigned to",
             "width": 200,
-        },
-        {
-            "title" : "Tasks",
-            "template": "# if(data.ReportingStatus != 'ABD' && data.ReportingStatus != 'CMP') { # <button class=\"btn btn-outline-primary\" onclick='LoadTasks(\"#: RecordID #\")'> <i class=\"mdi mdi-clipboard-check\"></i> </button> # } else { var color = (ReportingStatus == 'CMP') ? 'green' : 'red' # <p style=\"color:#: color #\"> #: data.ReportingStatus #</p> # } #",
-            "excludeFromExport": True,
-            "width":80,
         },
         {
             "title" : "Macro Tracking",
@@ -459,6 +459,12 @@ def ResourcesForLead(userId,parentId):
             "width":80,
         },
         {
+            "title" : "Tasks",
+            "template": "# if(data.ReportingStatus != 'ABD' && data.ReportingStatus != 'CMP') { # <button class=\"btn btn-outline-primary\" onclick='LoadTasks(\"#: RecordID #\")'> <i class=\"mdi mdi-clipboard-check\"></i> </button> # } else { var color = (ReportingStatus == 'CMP') ? 'green' : 'red' # <p style=\"color:#: color #\"> #: data.ReportingStatus #</p> # } #",
+            "excludeFromExport": True,
+            "width":80,
+        },          
+        {
             "title" : "Revive",
             "template": "# if(data.ReportingStatus == 'ABD' || data.ReportingStatus == 'CMP') { # <button class=\"btn btn-outline-success\" onclick='ReviveGoal(\"#: ID #\")'> <i class=\"mdi mdi-book-open-page-variant\"></i> </button> # } #",
             "excludeFromExport": True,
@@ -504,12 +510,6 @@ def ResourcesForLead(userId,parentId):
             "title" : "Assigned to",
             "width": 200,
         }, 
-        {
-            "title" : "Tasks",
-            "template": "# if(data.ReportingStatus != 'ABD' && data.ReportingStatus != 'CMP') { # <button class=\"btn btn-outline-primary\" onclick='LoadTasks(\"#: RecordID #\")'> <i class=\"mdi mdi-clipboard-check\"></i> </button> # } else { var color = (ReportingStatus == 'CMP') ? 'green' : 'red' # <p style=\"color:#: color #\"> #: data.ReportingStatus #</p> # } #",
-            "excludeFromExport": True,
-            "width":80,
-        },  
         {
             "title" : "Macro Tracking",
             "template": "<button class=\"btn btn-outline-info\" onclick='DisplayMacroTrackingForGoalInGrid(\"#: RecordID #\")'> <i class=\"mdi mdi-table\"> </button>",
@@ -593,6 +593,12 @@ def ResourcesForAdmin(userId,parentId):
 
         resource["Columns"] = [
             {
+                "title" : "Tasks",
+                "template": "# if(data.ReportingStatus != 'ABD' && data.ReportingStatus != 'CMP') { # <button class=\"btn btn-outline-primary\" onclick='LoadTasks(\"#: RecordID #\")'> <i class=\"mdi mdi-clipboard-check\"></i> </button> # } else { var color = (ReportingStatus == 'CMP') ? 'green' : 'red' # <p style=\"color:#: color #\"> #: data.ReportingStatus #</p> # } #",
+                "excludeFromExport": True,
+                "width":80,
+            },            
+            {
                 "field" : "Name",
                 "title" : "Goal Name",
                 "width": 200,
@@ -618,12 +624,6 @@ def ResourcesForAdmin(userId,parentId):
                 "title" : "Goal deadline",
                 "format" : "{0:dd/MM/yyyy}",
                 "width": 200,            
-            },
-            {
-                "title" : "Tasks",
-                "template": "# if(data.ReportingStatus != 'ABD' && data.ReportingStatus != 'CMP') { # <button class=\"btn btn-outline-primary\" onclick='LoadTasks(\"#: RecordID #\")'> <i class=\"mdi mdi-clipboard-check\"></i> </button> # } else { var color = (ReportingStatus == 'CMP') ? 'green' : 'red' # <p style=\"color:#: color #\"> #: data.ReportingStatus #</p> # } #",
-                "excludeFromExport": True,
-                "width":80,
             },
             {
                 "field" : "Description",

@@ -297,19 +297,7 @@ def ResourcesForLead(userId,goalId):
                 "template": "# if(data.ReportingStatus != 'ABD' && data.ReportingStatus != 'CMP') { # <button class=\"btn btn-outline-warning\" onclick='LoadTaskReversionView(\"#: RecordID #\")'> <i class=\"mdi mdi-undo-variant\"></i> </button> # } else { var color = (ReportingStatus == 'CMP') ? 'green' : 'red' # <p style=\"color:#: color #\"> #: data.ReportingStatus #</p> # } #",
                 "excludeFromExport": True,
                 "width":80,
-            },            
-            {
-                "title" : "Abandon",
-                "template": "# if(data.ReportingStatus == 'PAR' || data.ReportingStatus == 'INITIAL') { # <button class=\"btn btn-outline-danger\" onclick='AbandonTask(\"#: ID #\")'> <i class=\"mdi mdi-close\"></i> </button> # } else { var color = (ReportingStatus == 'CMP') ? 'green' : 'red' # <p style=\"color:#: color #\">#: data.ReportingStatus #</p> # } #",
-                "excludeFromExport": True,
-                "width":80,
-            },
-            {
-                "title" : "Complete",
-                "template": "# if(data.ReportingStatus == 'PAR' || data.ReportingStatus == 'INITIAL') { # <button class=\"btn btn-outline-success\" onclick='FinishTask(\"#: ID #\")'> <i class=\"mdi mdi-check\"></i> </button> # } else { var color = (ReportingStatus == 'CMP') ? 'green' : 'red' # <p style=\"color:#: color #\">#: data.ReportingStatus #</p> # } #",
-                "excludeFromExport": True,
-                "width":80,
-            },            
+            },                      
             {
                 "field" : "AssignedToName",
                 "title" : "Assigned to",
