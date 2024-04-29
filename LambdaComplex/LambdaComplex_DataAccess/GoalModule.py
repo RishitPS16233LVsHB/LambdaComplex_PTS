@@ -824,7 +824,7 @@ class GoalModule:
             """
             DatabaseUtilities.ExecuteNonQuery(query)
 
-            query = f"""SELECT TOP(1) [Name] FROM {Tables.GoalChanges} WHERE [RecordID] = '{goalId}' AND [IsDeleted] = 0;"""
+            query = f"""SELECT TOP(1) [Name] FROM {Tables.Goal} WHERE [ID] = '{goalId}' AND [IsDeleted] = 0;"""
             record = DatabaseUtilities.GetListOf(query)[0]
             recordName = record["Name"]
             WorkTimeLineModule.CreateWorkTimeLineEntry(f"""Rebooted a goal named: {recordName}""",userId,goalId)

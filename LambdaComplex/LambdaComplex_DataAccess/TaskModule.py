@@ -1155,7 +1155,7 @@ class TaskModule:
             """
             DatabaseUtilities.ExecuteNonQuery(query)
 
-            query = f"""SELECT TOP(1) [Name] FROM {Tables.TaskChanges} WHERE [RecordID] = '{taskId}' AND [IsDeleted] = 0;"""
+            query = f"""SELECT TOP(1) [Name] FROM {Tables.Task} WHERE [ID] = '{taskId}' AND [IsDeleted] = 0;"""
             record = DatabaseUtilities.GetListOf(query)[0]
             recordName = record["Name"]
             WorkTimeLineModule.CreateWorkTimeLineEntry(f"""Rebooted a task named: {recordName}""",userId,taskId)

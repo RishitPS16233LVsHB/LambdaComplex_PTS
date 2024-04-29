@@ -734,7 +734,7 @@ class MilestoneModule:
             """
             DatabaseUtilities.ExecuteNonQuery(query)
 
-            query = f"""SELECT TOP(1) [RecordID],[Name] FROM {Tables.MilestoneChanges} WHERE [RecordID] = '{milestoneChangesId}' AND [IsDeleted] = 0;"""
+            query = f"""SELECT TOP(1) [RecordID],[Name] FROM {Tables.MilestoneChanges} WHERE [ID] = '{milestoneChangesId}' AND [IsDeleted] = 0;"""
             record = DatabaseUtilities.GetListOf(query)[0]
             recordName = record["Name"]
             milestoneId = record["RecordID"]
