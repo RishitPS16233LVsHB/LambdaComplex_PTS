@@ -222,10 +222,11 @@ function ApproveTaskEdit(taskChangeId = null) {
     }
 }
 function RejectTaskEdit(taskChangeId = null) {
+
     try {
         if (IsNullOrEmpty(taskChangeId)) return;
         ConfirmationAlert('Task', 'Do you really want to reject this changes/report in task?', function (value) {
-            var url = 'TaskAPI/RejectChangesTask/' + taskChangeId
+            var url = 'TaskAPI/RejectChangesTask/' + taskChangeId;
             AjaxGETRequest(
                 url,
                 function (response) {

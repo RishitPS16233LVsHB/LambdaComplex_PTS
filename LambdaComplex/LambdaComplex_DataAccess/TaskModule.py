@@ -742,7 +742,7 @@ class TaskModule:
             [CreatedOn] = [CreatedOn],
             [IsStable] = 0,
             [RunningStatus] = 0
-            WHERE [Id] = '{taskId}'
+            WHERE [Id] = '{taskChangeId}'
             """            
             DatabaseUtilities.ExecuteNonQuery(query)
 
@@ -796,7 +796,7 @@ class TaskModule:
             record = DatabaseUtilities.GetListOf(query)[0]
             recordName = record["Name"]
             taskId = record["RecordID"]
-            WorkTimeLineModule.CreateWorkTimeLineEntry(f"""Accepted changes for goal named: {recordName}""",userId,taskId)
+            WorkTimeLineModule.CreateWorkTimeLineEntry(f"""Rejected changes for goal named: {recordName}""",userId,taskId)
             
             return 1
         except Exception:
