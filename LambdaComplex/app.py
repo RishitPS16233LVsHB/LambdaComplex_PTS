@@ -1,6 +1,6 @@
-# This one's for you my dearest
+# This one's for you my dearest HB
 
-from flask import Flask, session
+from flask import Flask
 
 from flask_session import Session
 
