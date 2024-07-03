@@ -19,4 +19,4 @@ Step 5(OPTIONAL) In Credentials.py you can notice there are System user name and
 
 Step 6 Till now if everything is working then open Main LambdaComplex folder in VS Code(Note you have to open the LambdaComplex folder inside of the main project folder not the main folder)
 
-Step 7 Hitting run will start the web application and you can debug it how ever you like and login as 'Root_admin' with password 'LC_Admin@2024' then you will be logged in as Admin user
+Step 7 Hitting run will start the web application and you can debug it how ever you like and login as 'Root.Admin' with password 'LC_Admin@2024' then you will be logged in as Admin user
