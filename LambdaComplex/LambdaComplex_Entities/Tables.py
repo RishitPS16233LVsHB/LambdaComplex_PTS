@@ -30,3 +30,7 @@ class Tables:
     # Task 
     Task = "[LambdaComplex].[dbo].[LambdaComplex_Task_Mst_Tbl]"
     TaskChanges = "[LambdaComplex].[dbo].[LambdaComplex_Task_Changes_Trn_Tbl]"
+    
+    # Chat
+    Chat = "[LambdaComplex].[dbo].[LambdaComplex_Chat_Mst_Tbl]"
+    ChatMessage = "[LambdaComplex].[dbo].[LambdaComplex_ChatMessage_Mst_Tbl]"
